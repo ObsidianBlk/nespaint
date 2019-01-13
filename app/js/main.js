@@ -1,15 +1,19 @@
+import {NESPainter} from "/app/js/NESPainter.js";
 import {NESPalette} from "/app/js/NESPalette.js";
 
-
 function initialize(DOC){
-  var canvas = DOC.getElementById("painter");
-  if (!canvas){
-    throw new Error("DOM Missing painter canvas.");
-  }
-  var ctx = canvas.getContext("2d");
-  if (!ctx){
-    throw new Error("Failed to obtain canvas context.");
-  }
+  var nespainter = new NESPainter(DOC.getElementById("painter"));
+  //if (!canvas){
+  //  throw new Error("DOM Missing painter canvas.");
+  //}
+  //var ctx = canvas.getContext("2d");
+  //if (!ctx){
+  //  throw new Error("Failed to obtain canvas context.");
+  //}
+
+  console.log(nespainter.scale);
+  nespainter.scale_up(5);
+  console.log(nespainter.scale);
 
   var nespal = new NESPalette();
   nespal.set_palette([
