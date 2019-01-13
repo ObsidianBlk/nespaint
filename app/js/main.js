@@ -1,7 +1,6 @@
 
 
 function initialize(DOC){
-  console.log(DOC);
   var canvas = DOC.getElementById("painter");
   if (!canvas){
     throw new Error("DOM Missing painter canvas.");
