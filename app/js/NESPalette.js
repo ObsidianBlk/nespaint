@@ -25,7 +25,7 @@ export class NESPalette {
     if (p < 0 || p >= 8){ // Setting ALL palettes!
       if (apci.length != 25)
         throw new RangeError("Color array must contain 25 color values to fill all palettes.");
-      this.__BGColor = idx[0];
+      this.__BGColor = apci[0];
       for (var i=0; i < 24; i++){
         if (typeof(apci[i+1]) == 'number'){
           this.__palette[i] = apci[i+1]
