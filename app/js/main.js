@@ -1,6 +1,16 @@
 import {NESPainter} from "/app/js/NESPainter.js";
 import {NESPalette} from "/app/js/NESPalette.js";
 
+function on_palette_changed(e){
+  if (e.type == "ALL"){
+    console.log("ALL");
+  } else if (e.type == "TILE"){
+    console.log("TILE Palette:", e.pindex, " | Color:", e.cindex);
+  } else if (e.type == "SPRITE"){
+    console.log("SPRITE Palette:", e.pindex, " | Color:", e.cindex);
+  }
+}
+
 function initialize(DOC){
   var nespainter = new NESPainter(DOC.getElementById("painter"));
   //if (!canvas){
@@ -16,6 +26,7 @@ function initialize(DOC){
   console.log(nespainter.scale);
 
   var nespal = new NESPalette();
+  nespal.listen("palettes_changed", on_palette_changed);
   nespal.set_palette([
     44,
     11,12,13,
