@@ -1,7 +1,8 @@
+import {EventCaller} from "/app/js/EventCaller.js"
 
-
-export class NESPalette { 
+export class NESPalette extends EventCaller{ 
   constructor(){
+    super();
     this.__BGColor = 63; // Index to the background color ALL palettes MUST share.
     this.__palette = [
       // Tile/Background Palettes
@@ -41,6 +42,7 @@ export class NESPalette {
         }
       }
     }
+    this.emit("palettes_changed", [{type:"ALL"}]);
     return this;
   }
 
@@ -56,10 +58,13 @@ export class NESPalette {
     if (sci < 0 || sci >= 64){
       throw new RangeError("System color index is out of bounds.");
     }
-    if (pci == 0)
+    if (pci == 0){
       this.__BGColor = sci;
-    else 
+      this.emit("palettes_changed", [{type:"ALL", cindex:0}]); 
+    } else { 
       this.__palette[(p*3) + (pci-1)] = sci;
+      this.emit("palettes_changes", [{type:(p < 4) ? "TILE" : "SPRITE", pindex:p, cindex:pci}]);
+    }
     return this;
   }
 
