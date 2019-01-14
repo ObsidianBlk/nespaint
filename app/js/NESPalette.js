@@ -17,52 +17,74 @@ export class NESPalette {
     ];
   }
 
-  set_palette(idx, p=8){
+  set_palette(apci, p=8){
     if (typeof(p) != 'number')
       throw new TypeError("First argument expected to be a number.");
-    if (!(idx instanceof Array))
+    if (!(apci instanceof Array))
       throw new TypeError("Expected an array of color index values.");
     if (p < 0 || p >= 8){ // Setting ALL palettes!
-      if (idx.length != 25)
+      if (apci.length != 25)
         throw new RangeError("Color array must contain 25 color values to fill all palettes.");
       this.__BGColor = idx[0];
       for (var i=0; i < 24; i++){
-        this.__palette[i] = idx[i+1]
+        if (typeof(apci[i+1]) == 'number'){
+          this.__palette[i] = apci[i+1]
+        }
       }
     } else { // Setting a specific palette.
-      if (idx.length != 3)
+      if (apci.length != 3)
         throw new RangeError("Color array must contain three color values.");
       p *= 3;
       for (var i=0; i < 4; i++){
-        if (typeof(idx[i]) === 'number'){
-          this.__palette[p+i] = idx[i];
+        if (typeof(apci[i]) === 'number'){
+          this.__palette[p+i] = apci[i];
         }
       }
     }
+    return this;
   }
 
-  get_palette_syscolor_index(p, idx){
-    if (typeof(p) != 'number' || typeof(idx) != 'number')
+  set_palette_syscolor_index(p, pci, sci){
+    if (typeof(p) != 'number' || typeof(pci) != 'number' || typeof(sci) != 'number')
+      throw new TypeError("Palette, palette color, and system color index expected to be numbers.");
+    if (p < 0 || p >= 8){
+      throw new RangeError("Palette index is out of bounds.");
+    }
+    if (pci < 0 || pci >= 4){
+      throw new RangeError("Palette color index is out of bounds.");
+    }
+    if (sci < 0 || sci >= 64){
+      throw new RangeError("System color index is out of bounds.");
+    }
+    if (pci == 0)
+      this.__BGColor = sci;
+    else 
+      this.__palette[(p*3) + (pci-1)] = sci;
+    return this;
+  }
+
+  get_palette_syscolor_index(p, pci){
+    if (typeof(p) != 'number' || typeof(pci) != 'number')
       throw new TypeError("Palette and color index expected to be numbers.");
     if (p < 0 || p >= 8){
       throw new RangeError("Palette index is out of bounds.");
     }
-    if (idx < 0 || idx >= 4){
+    if (pci < 0 || pci >= 4){
       throw new RangeError("Palette color index is out of bounds.");
     }
-    return (idx === 0) ? this.__BGColor : this.__palette[(p*3)+(idx-1)];
+    return (pci === 0) ? this.__BGColor : this.__palette[(p*3)+(pci-1)];
   }
 
-  get_palette_color(p, idx){
-    if (typeof(p) != 'number' || typeof(idx) != 'number')
+  get_palette_color(p, pci){
+    if (typeof(p) != 'number' || typeof(pci) != 'number')
       throw new TypeError("Palette and color index expected to be numbers.");
     if (p < 0 || p >= 8){
       throw new RangeError("Palette index is out of bounds.");
     }
-    if (idx < 0 || idx >= 4){
+    if (pci < 0 || pci >= 4){
       throw new RangeError("Palette color index is out of bounds.");
     }
-    return NESPalette.SystemColor(this.get_palette_syscolor_index(p, idx));
+    return NESPalette.SystemColor(this.get_palette_syscolor_index(p, pci));
   }
 
   to_asm(memname="PaletteData"){
