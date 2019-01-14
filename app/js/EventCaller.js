@@ -83,7 +83,13 @@ export class EventCaller{
     this.__listeners = {};
   }
 
-  emit(eventName, args=null){
+  emit(){
+    var args = Array.from(arguments);
+    if (args.length <= 0)
+      throw new Error("Missing required eventName argument.");
+    var eventName = args[0];
+    args = args.slice(1);
+
     if (typeof(eventName) !== 'string')
       throw new TypeError("Expected eventName to be string.");
     if (eventName.length <= 0)
