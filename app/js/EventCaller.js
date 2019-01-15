@@ -20,6 +20,13 @@ export class EventCaller{
   }
 
   /**
+   *  @type {Array[string]}
+   */
+  get watchedEvents(){
+    return Object.keys(this.__listeners);
+  }
+
+  /**
    *  Returns true if the given callback is listening for the given event, and false otherwise.
    *  @param {string} eventName - The name of the event to check.
    *  @param {Function} callback - The function/method to check for
