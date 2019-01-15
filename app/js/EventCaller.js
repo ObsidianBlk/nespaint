@@ -137,7 +137,7 @@ export class EventCaller{
     if (eventName.length <= 0)
       throw new ValueError("Argument eventName cannot be a zero-length string.");
     if (this.__listener.hasOwnProperty(eventName)){
-      return this.__listener.length;
+      return this.__listener[eventName].length;
     }
     return 0;
   }
