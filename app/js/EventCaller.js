@@ -1,10 +1,16 @@
 
-
+/**
+ *  Event caller/listener system. Intended to be extended by classes which require
+ *  an event callback system.
+ */
 export class EventCaller{
   constructor(){
     this.__listeners = {};
   }
 
+  /**
+   *  @type {number}
+   */
   get totalListeners(){
     var count = 0;
     for (key in Object.keys(this.__listeners)){
@@ -13,6 +19,13 @@ export class EventCaller{
     return count;
   }
 
+  /**
+   *  Returns true if the given callback is listening for the given event, and false otherwise.
+   *  @param {string} eventName - The name of the event to check.
+   *  @param {Function} callback - The function/method to check for
+   *  @param {Object} [owner=null] - The object to use as "this" when calling the callback function.
+   *  @returns {bool}
+   */
   is_listening(eventName, callback, owner=null){
     if (typeof(eventName) !== 'string')
       throw new TypeError("Expected eventName to be string.");
@@ -32,6 +45,16 @@ export class EventCaller{
     return false;
   }
 
+  /**
+   *  Sets the given callback to listen for the given event.
+   *  If [once] is true, the callback will be cleared from the listeners list after the named
+   *  event has been emitted.
+   *  @param {string} eventName - The name of the event to listen for.
+   *  @param {Function} callback - The function to call when the given event is emitted.
+   *  @param {Object} [owner=null] - The owner to use when calling the callback.
+   *  @param {bool} [once=false] - If true, the callback will be cleared after the next emit of the given event.
+   *  @returns {this}
+   */
   listen(eventName, callback, owner=null, once=false){
     try{
       if (!this.is_listening(eventName, callback, owner)){
@@ -46,6 +69,15 @@ export class EventCaller{
     return this;
   }
 
+  /**
+   *  Removes the given callback from the given event.
+   *  NOTE: If the listener callback was set with it's owner, that owner must be included
+   *  to remove the listener callback successfully.
+   *  @param {string} eventName - The name of the event to remove from.
+   *  @param {Function} callback - The function/method to remove.
+   *  @param {Object} [owner=null] - The owner of the callback.
+   *  @returns {this}
+   */
   unlisten(eventName, callback, owner=null){
     if (typeof(eventName) !== 'string')
       throw new TypeError("Expected eventName to be string.");
@@ -68,6 +100,11 @@ export class EventCaller{
     return this;
   }
 
+  /**
+   *  Removes all listeners from the given event.
+   *  @param {string} eventName - The name of the event to clear listeners from.
+   *  @returns {this}
+   */
   unlisten_event(eventName){
     if (typeof(eventName) !== 'string')
       throw new TypeError("Expected eventName to be string.");
@@ -78,11 +115,25 @@ export class EventCaller{
     return this;
   }
 
+  /**
+   *  Removes all listeners.
+   *  @returns {this}
+   */
   unlisten_all(){
     // NOTE: Perhaps it's better to loop through and delete each property? This should do for now though.
     this.__listeners = {};
+    return this;
   }
 
+  /**
+   *  Emits the given event, calling all listener callbacks attached to the event and passing each
+   *  the arguments (if any) given.
+   *  NOTE: All listeners of the given event designated to only listen once will be removed after
+   *  this call.
+   *  @param {string} eventName - The name of the event to emit.
+   *  @param {...*} args - The arguments to pass to every listener of this event.
+   *  @returns {this}
+   */
   emit(){
     var args = Array.from(arguments);
     if (args.length <= 0)
