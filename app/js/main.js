@@ -1,3 +1,4 @@
+import EventWindow from "/app/js/ui/EventWindow.js";
 import {NESPainter} from "/app/js/NESPainter.js";
 import {NESPalette} from "/app/js/NESPalette.js";
 
@@ -11,15 +12,14 @@ function on_palette_changed(e){
   }
 }
 
+function on_click(e){
+  console.log(e.target);
+}
+
 function initialize(DOC){
+  EventWindow.listen("onclick", on_click);
+
   var nespainter = new NESPainter(DOC.getElementById("painter"));
-  //if (!canvas){
-  //  throw new Error("DOM Missing painter canvas.");
-  //}
-  //var ctx = canvas.getContext("2d");
-  //if (!ctx){
-  //  throw new Error("Failed to obtain canvas context.");
-  //}
 
   console.log(nespainter.scale);
   nespainter.scale_up(5);
