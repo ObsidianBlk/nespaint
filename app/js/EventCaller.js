@@ -125,6 +125,24 @@ export class EventCaller{
     return this;
   }
 
+
+  /**
+   *  Returns the count of listeners attached to the given event.
+   *  @param {string} eventName - The name of the event to get the count of.
+   *  @returns {number}
+   */
+  event_listener_count(eventName){
+    if (typeof(eventName) !== 'string')
+      throw new TypeError("Expected eventName to be string.");
+    if (eventName.length <= 0)
+      throw new ValueError("Argument eventName cannot be a zero-length string.");
+    if (this.__listener.hasOwnProperty(eventName)){
+      return this.__listener.length;
+    }
+    return 0;
+  }
+
+
   /**
    *  Emits the given event, calling all listener callbacks attached to the event and passing each
    *  the arguments (if any) given.
