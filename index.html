@@ -6,13 +6,31 @@
 
     <title>NES Painter</title>
 
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
     <link rel="stylesheet" href="app/css/nespaint.css">
   </head>
   <body>
 
-    <canvas id="painter" width:"128" height:"256"></canvas>
+    <div class="header">
+      <div class="home-menu pure-menu pure-menu-horizontal">
+        <a class="pure-menu-heading" href="">Your Site</a>
+        <ul class="pure-menu-list">
+          <li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Home</a></li>
+          <li class="pure-menu-item"><a href="#" class="pure-menu-link">Tour</a></li>
+          <li class="pure-menu-item"><a href="#" class="pure-menu-link">Sign Up</a></li>
+        </ul>
+      </div>
+    </div>
 
+    <div class="content-wrapper">
+      <div class="pure-g">
+        <div class="pure-u-1-6"></div>
+        <div class="pure-u-2-3">
+          <canvas id="painter" width:"128" height:"256"></canvas>
+        </div>
+      </div>
+    </div>
   </body>
   <script src="app/js/main.js" type="module"></script>
 </html>
