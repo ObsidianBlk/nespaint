@@ -1,5 +1,9 @@
 import {EventCaller} from "/app/js/EventCaller.js"
 
+/**
+ * Object for manipulating the eight NES palettes.
+ * @extends EventCaller
+ */
 export class NESPalette extends EventCaller{ 
   constructor(){
     super();
@@ -18,6 +22,15 @@ export class NESPalette extends EventCaller{
     ];
   }
 
+  /**
+   *  Sets one or all of the eight color palettes to the values given. By default, function
+   *  assumes the given array is for all eight palettes (or 25 total color indexes, 3 per palette
+   *  and 1 background/transparency color used by ALL palettes).
+   *  If a single palette is being set, the array must only contain 3 entries.
+   *  @param {Array} apci - Array of color indexes to store into the palette(s)
+   *  @param {number} [p=8] - Zero-based index of the palette being set. Any value outside the range of 0 - 7 will set ALL palettes.
+   *  @returns {this}
+   */
   set_palette(apci, p=8){
     if (typeof(p) != 'number')
       throw new TypeError("First argument expected to be a number.");
@@ -46,6 +59,14 @@ export class NESPalette extends EventCaller{
     return this;
   }
 
+  /**
+   *  Sets a palette's color index value to a given system color index.
+   *  NOTE: Setting palette color index 0 for ANY palette changes that index for ALL palettes.
+   *  @param {number} p - The index of the palette being set.
+   *  @param {number} pci - The palette color index (0 - 3) to set.
+   *  @param {number} sci - The system color index (0 - 63) value to set to.
+   *  @returns {this}
+   */
   set_palette_syscolor_index(p, pci, sci){
     if (typeof(p) != 'number' || typeof(pci) != 'number' || typeof(sci) != 'number')
       throw new TypeError("Palette, palette color, and system color index expected to be numbers.");
@@ -68,6 +89,12 @@ export class NESPalette extends EventCaller{
     return this;
   }
 
+  /**
+   *  Returns the system color index at the given palette color index.
+   *  @param {number} p - The index (0 - 7) of the palette.
+   *  @param {number} pci - The palette color index (0 - 3).
+   *  @returns {number} - The index of the system color used.
+   */
   get_palette_syscolor_index(p, pci){
     if (typeof(p) != 'number' || typeof(pci) != 'number')
       throw new TypeError("Palette and color index expected to be numbers.");
@@ -80,6 +107,13 @@ export class NESPalette extends EventCaller{
     return (pci === 0) ? this.__BGColor : this.__palette[(p*3)+(pci-1)];
   }
 
+  /**
+   *  Returns a hex string color value used by the NES system at the index stored at the given
+   *  palette color index.
+   *  @param {number} p - The index (0 - 7) of the palette.
+   *  @param {number} pci - The palette color index (0 - 3).
+   *  @returns {string}
+   */
   get_palette_color(p, pci){
     if (typeof(p) != 'number' || typeof(pci) != 'number')
       throw new TypeError("Palette and color index expected to be numbers.");
@@ -92,6 +126,11 @@ export class NESPalette extends EventCaller{
     return NESPalette.SystemColor(this.get_palette_syscolor_index(p, pci));
   }
 
+  /**
+   *  Generates a small 6502 assembly block string containing the current palette data.
+   *  @param {string} [memname="PaletteData"] The label named under which to store the data.
+   *  @returns {string}
+   */
   to_asm(memname="PaletteData"){
     var NumToHex=function(n){
       var h = n.toString(16);
@@ -125,6 +164,9 @@ export class NESPalette extends EventCaller{
 
 // NES Palette color information comes from the following site...
 // http://www.thealmightyguru.com/Games/Hacking/Wiki/index.php/NES_Palette 
+/**
+ *  Hex string color values representing the NES system palette.
+ */
 NESPalette.SystemColor = [
   "#7C7C7C",
   "#0000FC",
