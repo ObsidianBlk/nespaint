@@ -20,16 +20,15 @@ class EventWindow extends EventCaller{
         window[eventName] = (function(event){
           this.emit(eventName, event);
         }).bind(this);
-      }
-      super.listen(eventName, callback, owner, once);
-      return this;
+      } 
     }
-    throw new ValueError("Window object has no event named '" + eventName +"'.");
+    super.listen(eventName, callback, owner, once);
+    return this;
   }
 
-  unlisten(eventName, callback, owner=null){
+  unlisten(eventName, callback, owner=null){ 
+    super.unlisten(eventName, callback, owner);
     if (window.hasOwnProperty(eventName)){
-      super.unlisten(eventName, callback, owner);
       if (super.event_listener_count(eventName) == 0){
         window[eventName] = undefined;
       }
@@ -37,9 +36,9 @@ class EventWindow extends EventCaller{
     return this;
   }
 
-  unlisten_event(eventName){
+  unlisten_event(eventName){ 
+    super.unlisten_event(eventName);
     if (window.hasOwnProperty(eventName)){
-      super.unlisten_event(eventName);
       window[eventName] = undefined;
     }
     return this;
