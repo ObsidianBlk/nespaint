@@ -1,4 +1,4 @@
-import '/app/js/EventCaller.js'
+import {EventCaller} from '/app/js/EventCaller.js'
 
 /**
  *  Wraps the browser's window object around the EventCaller allowing the user to connect to system events
@@ -6,9 +6,12 @@ import '/app/js/EventCaller.js'
  *
  *  Users should not directly set the window event handler functions if using this class.
  */
-export class EventWindow extends EventCaller{
+class EventWindow extends EventCaller{
   constructor(){
     super();
+    if (!EventWindow.instance)
+      EventWindow.instance = this;
+    return EventWindow.instance;
   }
 
   listen(eventName, callback, owner=null, once=false){
@@ -53,3 +56,9 @@ export class EventWindow extends EventCaller{
     return this;
   }
 }
+
+
+const instance = new EventWindow();
+Object.freeze(instance);
+export default instance;
+
