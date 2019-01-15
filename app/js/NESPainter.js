@@ -8,7 +8,7 @@ export class NESPainter {
 
     if (!canvas)
       throw new Error("Expected a canvas element.");
-    this.__canvas = canvas
+    this.__canvas = canvas;
     this.__context = this.__canvas.getContext("2d");
     if (!this.__context)
       throw new Error("Failed to obtain canvas context.");
