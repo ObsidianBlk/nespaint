@@ -22,17 +22,24 @@
       <div class="home-menu pure-menu pure-menu-horizontal">
         <a class="pure-menu-heading" href="">Your Site</a>
         <ul class="pure-menu-list">
-          <li class="pure-menu-item pure-menu-selected"><a href="#" emit="modal-open" emit-args='{"id":"Welcome"}' class="pure-menu-link">Home</a></li>
-          <li class="pure-menu-item"><a href="#" class="pure-menu-link">Tour</a></li>
-          <li class="pure-menu-item"><a href="#" class="pure-menu-link">Sign Up</a></li>
+          <li class="pure-menu-item pure-menu-selected">
+            <button emit="modal-open" emit-args='{"id":"Welcome"}' class="pure-button">
+              <i class="fa fa-brush"></i>
+            </button>
+          </li>
+          <li class="pure-menu-item">
+            <button emit="modal-open" emit-args='{"id":"Welcome"}' class="pure-button">
+              <i class="fa fa-eraser"></i>
+            </button>
+          </li>
         </ul>
       </div>
     </div>
 
     <div class="content-wrapper">
       <div class="pure-g">
-        <div class="pure-u-1-6"></div>
-        <div class="pure-u-2-3">
+        <div class="pure-u-1-8"></div>
+        <div class="pure-u-3-4">
           <canvas id="painter" width:"128" height:"256"></canvas>
         </div>
       </div>

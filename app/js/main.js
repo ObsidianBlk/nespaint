@@ -1,4 +1,6 @@
-import EventWindow from "/app/js/ui/EventWindow.js";
+import GlobalEvents from "/app/js/EventCaller.js";
+//import EventWindow from "/app/js/ui/EventWindow.js";
+import EmitterElements from "/app/js/ui/Emitters.js";
 import Modal from "/app/js/ui/Modal.js";
 import {NESPainter} from "/app/js/NESPainter.js";
 import {NESPalette} from "/app/js/NESPalette.js";
@@ -13,18 +15,14 @@ function on_palette_changed(e){
   }
 }
 
-function on_click(e){
-  console.log(e.target);
-}
-
 function handle_emitted(){
   console.log("EMITTED EVENT!");
 }
 
 function initialize(DOC){
-  EventWindow.listen("onclick", on_click);
-  EventWindow.enable_emitter_attributes();
-  EventWindow.listen("emitted-event", handle_emitted);
+  EmitterElements.initialize();
+  //EventWindow.enable_emitter_attributes();
+  GlobalEvents.listen("emitted-event", handle_emitted);
 
   var nespainter = new NESPainter(DOC.getElementById("painter"));
 

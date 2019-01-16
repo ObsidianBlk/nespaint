@@ -1,24 +1,24 @@
-import EventWindow from "/app/js/ui/EventWindow.js";
+import GlobalEvents from "/app/js/EventCaller.js";
 
 
 class Modal{
   constructor(){
     this.__currentModalEl = null;
 
-    EventWindow.listen("onclick", (function(event){
+    window.addEventListener("click", (function(event){
       if (event.target === this.__currentModalEl){
         this.close_modal();
       }
     }).bind(this));
 
-    EventWindow.listen("modal-open", (function(event){
+    GlobalEvents.listen("modal-open", (function(event){
       if (event.hasOwnProperty("id") && typeof(event.id) === 'string'){
         var force = (event.hasOwnProperty("force")) ? event.force === true : false;
         this.open_modal_id(event.id, force);
       }
     }).bind(this));
 
-    EventWindow.listen("modal-close", (function(event){
+    GlobalEvents.listen("modal-close", (function(event){
       this.close_modal();
     }).bind(this));
   }
