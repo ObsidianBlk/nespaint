@@ -4,12 +4,22 @@ import EventWindow from "/app/js/ui/EventWindow.js";
 class Modal{
   constructor(){
     this.__currentModalEl = null;
-    this.__initialized = false;
 
     EventWindow.listen("onclick", (function(event){
       if (event.target === this.__currentModalEl){
         this.close_modal();
       }
+    }).bind(this));
+
+    EventWindow.listen("modal-open", (function(event){
+      if (event.hasOwnProperty("id") && typeof(event.id) === 'string'){
+        var force = (event.hasOwnProperty("force")) ? event.force === true : false;
+        this.open_modal_id(event.id, force);
+      }
+    }).bind(this));
+
+    EventWindow.listen("modal-close", (function(event){
+      this.close_modal();
     }).bind(this));
   }
 
@@ -17,20 +27,28 @@ class Modal{
     return this.__currentModalEl;
   }
 
-  open_modal_by_id(idname){
-    if (this.__initialized === true && this.__currentModalEl === null){
-      var el = document.getElementById(idname);
-      if (el){
-        return this.open_modal_element(el);
+  open_modal_id(idname, force=false){
+    var el = document.getElementById(idname);
+    if (el.classList.contains("modal") && this.__currentModalEl !== el){
+      if (this.__currentModalEl !== null && force)
+        this.close_modal();
+      if (this.__currentModalEl === null){
+        if (el){
+          return this.open_modal_element(el);
+        }
       }
     }
     return this;
   }
 
-  open_modal_element(el){
-    if (this.__initialized === true, this.__currentModalEl === null && el.classList.contains("modal")){
-      el.classList.add("modal-visible");
-      this.__currentModalEl = el;
+  open_modal_element(el, force=false){
+    if (el.classList.contains("modal")){
+      if (this.__currentModalEl !== null && force)
+        this.close_modal();
+      if this.__currentModalEl === null){
+        el.classList.add("modal-visible");
+        this.__currentModalEl = el;
+      }
     }
     return this;
   }
@@ -38,25 +56,9 @@ class Modal{
   close_modal(){
     if (this.__currentModalEl !== null){
       this.__currentModalEl.classList.remove("modal-visible");
+      this.__currentModalEl = null;
     }
     return this;
-  }
-
-  initialize_btn_element(el){
-    if (this.__initialized === true){
-      if (el.hasAttribute("data-modal-open")){
-
-      } else if (el.hasAttribute("data-modal-close")){
-
-      } else if (el.hasAttribute("data-modal-toggle")){
-
-      }
-    }
-    return this;
-  }
-
-  initialize(){
-    ;
   }
 }
 
