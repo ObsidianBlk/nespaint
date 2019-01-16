@@ -16,8 +16,14 @@ function on_click(e){
   console.log(e.target);
 }
 
+function handle_emitted(){
+  console.log("EMITTED EVENT!");
+}
+
 function initialize(DOC){
   EventWindow.listen("onclick", on_click);
+  EventWindow.enable_emitter_attributes();
+  EventWindow.listen("emitted-event", handle_emitted);
 
   var nespainter = new NESPainter(DOC.getElementById("painter"));
 
