@@ -12,11 +12,17 @@
   </head>
   <body>
 
+    <div id="Welcome" class="modal">
+      <div class="modal-content">
+        Welcome to the modal!
+      </div>
+    </div>
+
     <div class="header">
       <div class="home-menu pure-menu pure-menu-horizontal">
         <a class="pure-menu-heading" href="">Your Site</a>
         <ul class="pure-menu-list">
-          <li class="pure-menu-item pure-menu-selected"><a href="#" emit="emitted-event" class="pure-menu-link">Home</a></li>
+          <li class="pure-menu-item pure-menu-selected"><a href="#" emit="modal-open" emit-args='{"id":"Welcome"}' class="pure-menu-link">Home</a></li>
           <li class="pure-menu-item"><a href="#" class="pure-menu-link">Tour</a></li>
           <li class="pure-menu-item"><a href="#" class="pure-menu-link">Sign Up</a></li>
         </ul>
