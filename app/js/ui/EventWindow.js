@@ -1,5 +1,29 @@
 import {EventCaller} from '/app/js/EventCaller.js'
 
+
+
+function handle_emitter(event){
+  var el = event.target;
+  if (el.hasAttribute("emit")){
+    var args = [el.getAttribute("emit")];
+    if (el.hasAttribute("emit-args")){
+      try {
+        var j = JSON.parse(el.getAttribute("emit-args"));
+        if (j instanceof Array){
+          args.concat(j);
+        } else {
+          args.push(j);
+        }
+      } catch (e) {
+        console.log("Failed to emit '" + args[0] + "'. Arguments not in valid JSON form.");
+        return;
+      }
+    }
+    EventWindow.instance.emit.apply(EventWindow.instance, args);
+  }
+}
+
+
 /**
  *  Wraps the browser's window object around the EventCaller allowing the user to connect to system events
  *  by listening for those events (ex: "onclick", "onresize", etc).
@@ -12,6 +36,18 @@ class EventWindow extends EventCaller{
     if (!EventWindow.instance)
       EventWindow.instance = this;
     return EventWindow.instance;
+  }
+
+  get emitter_attributes_enabled(){
+    return this.is_listening("onclick", handle_emitter);
+  }
+
+  enable_emitter_attributes(enable=true){
+    if (enable === true){
+      this.listen("onclick", handle_emitter);
+    } else {
+      this.unlisten("onclick", handle_emitter);
+    }
   }
 
   listen(eventName, callback, owner=null, once=false){
