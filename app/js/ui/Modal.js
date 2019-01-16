@@ -45,7 +45,7 @@ class Modal{
     if (el.classList.contains("modal")){
       if (this.__currentModalEl !== null && force)
         this.close_modal();
-      if this.__currentModalEl === null){
+      if (this.__currentModalEl === null){
         el.classList.add("modal-visible");
         this.__currentModalEl = el;
       }
@@ -64,5 +64,4 @@ class Modal{
 
 
 const instance = new Modal();
-Object.freeze(instance);
 export default instance;

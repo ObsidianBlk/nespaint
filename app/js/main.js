@@ -1,4 +1,5 @@
 import EventWindow from "/app/js/ui/EventWindow.js";
+import Modal from "/app/js/ui/Modal.js";
 import {NESPainter} from "/app/js/NESPainter.js";
 import {NESPalette} from "/app/js/NESPalette.js";
 
