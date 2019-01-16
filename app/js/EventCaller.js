@@ -195,7 +195,8 @@ export class EventCaller{
 }
 
 
-
+const GlobalEvent = new EventCaller();
+export default GlobalEvent;
 
 
 
