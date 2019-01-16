@@ -63,6 +63,8 @@ export class EventCaller{
    *  @returns {this}
    */
   listen(eventName, callback, owner=null, once=false){
+    if (typeof(callback) !== 'function')
+      throw new TypeError("Expected callback argument to be a function or class method.");
     try{
       if (!this.is_listening(eventName, callback, owner)){
         if (!this.__listeners.hasOwnProperty(eventName)){
