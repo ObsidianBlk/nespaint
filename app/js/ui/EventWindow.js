@@ -94,6 +94,6 @@ class EventWindow extends EventCaller{
 
 
 const instance = new EventWindow();
-Object.freeze(instance);
+//Object.freeze(instance);
 export default instance;
 
