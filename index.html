@@ -23,26 +23,26 @@
         <a class="pure-menu-heading" href="">
           <span class="color-NES-06">NES </span>
           <span class="color-NES-random">P</span><span class="color-NES-random">a</span><span class="color-NES-random">i</span><span class="color-NES-random">n</span><span class="color-NES-random">t</span>
-        </a>
-        <ul class="pure-menu-list">
-          <li class="pure-menu-item pure-menu-selected">
-            <button emit="modal-open" emit-args='{"id":"Welcome"}' class="pure-button">
-              <i class="fa fa-brush"></i>
-            </button>
-          </li>
-          <li class="pure-menu-item">
-            <button emit="modal-open" emit-args='{"id":"Welcome"}' class="pure-button">
-              <i class="fa fa-eraser"></i>
-            </button>
-          </li>
-        </ul>
+        </a> 
       </div>
     </div>
 
     <div class="content-wrapper">
       <div class="pure-g">
-        <div class="pure-u-1-8"></div>
-        <div class="pure-u-3-4">
+        <div class="pure-u-1-8">
+          <div class="pure-button-group" role="group" aria-label="...">
+            <button emit="modal-open" emit-args='{"id":"Welcome"}' class="pure-button">
+              <i class="fa fa-brush"></i>
+            </button>
+            <button emit="modal-open" emit-args='{"id":"Welcome"}' class="pure-button">
+              <i class="fa fa-eraser"></i>
+            </button>
+            <button class="pure-button pure-button-active">
+              <i class="fa fa-eye-dropper"></i>
+            </button>
+          </div>
+        </div>
+        <div class="pure-u-2-3">
           <canvas id="painter" width:"128" height:"256"></canvas>
         </div>
       </div>
