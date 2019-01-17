@@ -2,24 +2,21 @@ import GlobalEvents from "/app/js/EventCaller.js";
 
 
 function handle_emitter(event){
-  var el = event.target;
-  if (el){
-    if (el.hasAttribute("emit")){
-      var args = [el.getAttribute("emit")];
-      if (el.hasAttribute("emit-args")){
-        try {
-          var j = JSON.parse(el.getAttribute("emit-args"));
-          if (j instanceof Array){
-            args.concat(j);
-          } else {
-            args.push(j);
-          }
-        } catch (e) {
-          console.log("Failed to emit '" + args[0] + "'. Attribute 'emit-args' contains malformed JSON.");
+  if (this.hasAttribute("emit")){
+    var args = [this.getAttribute("emit")];
+    if (this.hasAttribute("emit-args")){
+      try {
+        var j = JSON.parse(this.getAttribute("emit-args"));
+        if (j instanceof Array){
+          args.concat(j);
+        } else {
+          args.push(j);
         }
+      } catch (e) {
+        console.log("Failed to emit '" + args[0] + "'. Attribute 'emit-args' contains malformed JSON.");
       }
-      GlobalEvents.emit.apply(GlobalEvents, args);
     }
+    GlobalEvents.emit.apply(GlobalEvents, args);
   }
 }
 
