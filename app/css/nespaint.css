@@ -1,5 +1,7 @@
+
 body{
   background-color:#303030;
+  font-family: 'Roboto', sans-serif;
 }
 
 .pure-menu{
@@ -13,13 +15,19 @@ body{
   height:100%;
 }
 
-
 .content-wrapper{
   width:100%;
   height:100%;
   overflow:hidden;
 }
 
+div.NES-palette{
+  font-size:0.65em;
+}
+
+.NES-palette button{
+  width:2rem;
+}
 
 span.color-NES-06{
   background-color:#000;
