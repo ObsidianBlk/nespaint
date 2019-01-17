@@ -16,6 +16,10 @@ body{
 }
 
 
+span.color-NES-06{
+  color:#A80020;
+}
+
 /* NOTE: Modal styles were borrowed from
  * https://www.w3schools.com/howto/howto_css_modals.asp
  * and modified.

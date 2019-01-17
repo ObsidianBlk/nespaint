@@ -19,7 +19,20 @@ function handle_emitted(){
   console.log("EMITTED EVENT!");
 }
 
+function TitlePainter(pal){
+  var elist = document.querySelectorAll(".color-NES-random");
+  if (elist){
+    elist.forEach(function(el){
+      var ca = Math.floor(Math.random() * 11) + 1;
+      var cb = Math.floor(Math.random() * 3);
+      var index = (cb*16)+ca;
+      el.style.color = pal[index];
+    });
+  }
+}
+
 function initialize(DOC){
+  TitlePainter(NESPalette.SystemColor);
   EmitterElements.initialize();
   //EventWindow.enable_emitter_attributes();
   GlobalEvents.listen("emitted-event", handle_emitted);
