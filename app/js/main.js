@@ -2,6 +2,7 @@ import GlobalEvents from "/app/js/EventCaller.js";
 //import EventWindow from "/app/js/ui/EventWindow.js";
 import EmitterElements from "/app/js/ui/Emitters.js";
 import Modal from "/app/js/ui/Modal.js";
+import CTRLPalettes from "/app/js/ui/CTRLPalettes.js";
 import {NESPainter} from "/app/js/NESPainter.js";
 import {NESPalette} from "/app/js/NESPalette.js";
 
@@ -44,9 +45,9 @@ function initialize(DOC){
   nespainter.scale_up(5);
   console.log(nespainter.scale);
 
-  var nespal = new NESPalette();
-  nespal.listen("palettes_changed", on_palette_changed);
-  nespal.set_palette([
+  CTRLPalettes.palette = new NESPalette();
+  CTRLPalettes.palette.listen("palettes_changed", on_palette_changed);
+  CTRLPalettes.palette.set_palette([
     44,
     11,12,13,
     54,23,43,
@@ -57,7 +58,7 @@ function initialize(DOC){
     9,0,32,
     5,10,20
   ]);
-  console.log(nespal.to_asm());
+  console.log(CTRLPalettes.palette.to_asm());
 }
 
 
