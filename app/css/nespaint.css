@@ -21,8 +21,14 @@ body{
   overflow:hidden;
 }
 
+.simple-padding{
+  padding-top: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
 div.NES-palette{
-  font-size:0.65em;
+  font-size:0.55em;
 }
 
 .NES-palette button{
