@@ -1,4 +1,3 @@
-import GlobalEvents from "/app/js/EventCaller.js";
 import {NESPalette} from "/app/js/NESPalette.js";
 
 const ATTRIB_NESIDX = "nesidx";
