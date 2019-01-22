@@ -84,7 +84,7 @@ export class NESPalette extends EventCaller{
       this.emit("palettes_changed", {type:"ALL", cindex:0}); 
     } else { 
       this.__palette[(p*3) + (pci-1)] = sci;
-      this.emit("palettes_changes", {type:(p < 4) ? "TILE" : "SPRITE", pindex:p, cindex:pci});
+      this.emit("palettes_changed", {type:(p < 4) ? "TILE" : "SPRITE", pindex:p, cindex:pci});
     }
     return this;
   }
