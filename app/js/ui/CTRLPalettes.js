@@ -59,22 +59,49 @@ function GetPaletteIndexes(el){
   return null;
 }
 
+function SetPaletteElStyle(el, c){
+  el.style["background-color"] = c;
+  el.style.color = InvertColor(c);
+}
+
+function SetColorPaletteEls(mode, pal){
+  var elist = document.querySelectorAll("[" + ATTRIB_PALIDX + "]");
+  elist.forEach(function(el){
+    var i = GetPaletteIndexes(el);
+    if (i !== null){
+      SetPaletteElStyle(el, pal.get_palette_color((mode*4) + i.pi, i.ci));
+    }
+  });
+}
+
+function FindAndColorPalette(mode, pi, ci, pal){
+  if ((mode == 0 && pi < 4) || (mode == 1 && pi >= 4)){
+    var el = document.querySelector("[" + ATTRIB_PALIDX +"='" + (pi%4) + "']" +
+      "[" + ATTRIB_COLIDX + "='" + ci + "']");
+    if (el){
+      SetPaletteElStyle(el, pal.get_palette_color(pi, ci));
+    }
+  }
+}
+
 
 class CTRLPalettes{
   constructor(){
     this.__NESPalette = null;
-    this.__pi = 0; // Palette index.
-    this.__ci = 0; // Palette color index.
+    this.__activePaletteEl = null;
     this.__mode = 0; // 0 = Tile palette mode | 1 = Sprite palette mode.
 
     var self = this;
 
     var handle_syspalette_clicked = function(event){
-      if (this.hasAttribute(ATTRIB_NESIDX)){
+      if (self.__activePaletteEl !== null && this.hasAttribute(ATTRIB_NESIDX)){
         var idx = parseInt(this.getAttribute(ATTRIB_NESIDX), 16);
         if (idx >= 0 && idx < NESPalette.SystemColor.length){
-          console.log(idx);
-          // TODO: Set a selected Tile/Sprite palette index to the color index clicked.
+          var i = GetPaletteIndexes(self.__activePaletteEl);
+          if (self.__palette !== null && i !== null){
+            self.__NESPalette.set_palette_syscolor_index(i.pi, i.ci, idx);
+            SetPaletteElStyle(self.__activePaletteEl, NESPalette.SystemColor[idx]);
+          }
         }
       }
     };
@@ -82,8 +109,7 @@ class CTRLPalettes{
     elist.forEach(function(el){
       var idx = parseInt(el.getAttribute(ATTRIB_NESIDX), 16);
       if (idx >= 0 && idx < NESPalette.SystemColor.length){
-        el.style["background-color"] = NESPalette.SystemColor[idx];
-        el.style.color = InvertColor(NESPalette.SystemColor[idx], true);
+        SetPaletteElStyle(el, NESPalette.SystemColor[idx]);
         el.addEventListener("click", handle_syspalette_clicked);
       }
     });
@@ -91,10 +117,15 @@ class CTRLPalettes{
 
     var handle_palcolor_clicked = function(event){
       if (this.hasAttribute(ATTRIB_PALIDX) && this.hasAttribute(ATTRIB_COLIDX)){
-        var i = GetPaletteIndexes(this);
-        if (i !== null){
-          if (self.__pi !== i.pi || self.__ci !== i.ci){
-            // TODO: Instead of storing __pi and __ci, hold the active element.
+        if (this !== self.__activePaletteEl){
+          var i = GetPaletteIndexes(this);
+          if (i !== null){
+            if (self.__activePaletteEl !== null){
+              self.__activePaletteEl.classList.remove(CLASS_BTN_ACTIVE);
+            }
+            this.classList.add(CLASS_BTN_ACTIVE);
+            self.__activePaletteEl = this;
+            //self.emit("active_palette_color", i);
           }
         }
       }
@@ -115,15 +146,31 @@ class CTRLPalettes{
     if (!(p instanceof NESPalette)){
       throw new TypeError("Expected NESPalette object instance.");
     }
-    this.__NESPalette = p;
+    var self = this;
+    var handle_palettes_changed = function(event){
+      if (self.__NESPalette !== null){
+        if (event.type == "ALL"){
+          SetColorPaletteEls(self.__mode, self.__NESPalette);
+        } else {
+          FindAndColorPalette(self.__mode, event.pindex, event.cindex, self.__NESPalette);
+        }
+      }
+    }
+
+    // Disconnect listener from old palette and connect it to new palette.
+    if (this.__NESPalette !== p){
+      if (this.__NESPalette !== null){
+        this.__NESPalette.unlisten("palettes_changed", handle_palettes_changed);
+      }
+      this.__NESPalette = p;
+      this.__NESPalette.listen("palettes_changed", handle_palettes_changed);
+    }
     var elist = document.querySelectorAll("[" + ATTRIB_PALIDX + "]");
     elist.forEach((function(el){
       if (el.hasAttribute(ATTRIB_COLIDX)){
         var i = GetPaletteIndexes(el);
         if (i !== null){
-          var c = p.get_palette_color((this.__mode * 4) + i.pi, i.ci);
-          el.style["background-color"] = c;
-          el.style.color = InvertColor(c, true);
+          SetPaletteElStyle(el, p.get_palette_color((this.__mode * 4) + i.pi, i.ci));
         }
       }
     }).bind(this));
