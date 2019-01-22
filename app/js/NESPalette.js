@@ -123,7 +123,7 @@ export class NESPalette extends EventCaller{
     if (pci < 0 || pci >= 4){
       throw new RangeError("Palette color index is out of bounds.");
     }
-    return NESPalette.SystemColor(this.get_palette_syscolor_index(p, pci));
+    return NESPalette.SystemColor[this.get_palette_syscolor_index(p, pci)];
   }
 
   /**
