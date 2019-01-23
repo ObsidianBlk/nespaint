@@ -2,6 +2,7 @@ import GlobalEvents from "/app/js/EventCaller.js";
 import EmitterElements from "/app/js/ui/Emitters.js";
 import Modal from "/app/js/ui/Modal.js";
 import CTRLPalettes from "/app/js/ui/CTRLPalettes.js";
+import CTRLPainter from "/app/js/ui/CTRLPainter.js";
 //import {NESPainter} from "/app/js/NESPainter.js";
 import {NESPalette} from "/app/js/NESPalette.js";
 
