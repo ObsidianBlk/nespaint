@@ -146,12 +146,12 @@ class CTRLPalettes{
     // ------------------------------------------------------------------------------------
     // Setting some hooks to watch for some global events.
     // ------------------------------------------------------------------------------------
-    var handle_set_app_palette(p){
+    var handle_set_app_palette = function(p){
       if (p instanceof NESPalette){
         self.palette = p;
       }
     }
-    GlobalEvents.listen("set_app_palette", handle_syspalette_changed);
+    GlobalEvents.listen("set_app_palette", handle_set_app_palette);
   }
 
   get palette(){

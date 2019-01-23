@@ -1,9 +1,8 @@
 import GlobalEvents from "/app/js/EventCaller.js";
-//import EventWindow from "/app/js/ui/EventWindow.js";
 import EmitterElements from "/app/js/ui/Emitters.js";
 import Modal from "/app/js/ui/Modal.js";
 import CTRLPalettes from "/app/js/ui/CTRLPalettes.js";
-import {NESPainter} from "/app/js/NESPainter.js";
+//import {NESPainter} from "/app/js/NESPainter.js";
 import {NESPalette} from "/app/js/NESPalette.js";
 
 function on_palette_changed(e){
@@ -39,15 +38,13 @@ function initialize(DOC){
   //EventWindow.enable_emitter_attributes();
   GlobalEvents.listen("emitted-event", handle_emitted);
 
-  var nespainter = new NESPainter(DOC.getElementById("painter"));
+  //var nespainter = new NESPainter(DOC.getElementById("painter"));
 
-  console.log(nespainter.scale);
-  nespainter.scale_up(5);
-  console.log(nespainter.scale);
-
-  CTRLPalettes.palette = new NESPalette();
-  CTRLPalettes.palette.listen("palettes_changed", on_palette_changed);
-  CTRLPalettes.palette.set_palette([
+  var palette = new NESPalette();
+  // TODO: This is just test code. I should remove this.
+  palette.listen("palettes_changed", on_palette_changed);
+  // TODO: At least define a more useful set of palettes. As it is, these are just random.
+  palette.set_palette([
     44,
     11,12,13,
     54,23,43,
@@ -58,7 +55,8 @@ function initialize(DOC){
     9,0,32,
     5,10,20
   ]);
-  console.log(CTRLPalettes.palette.to_asm());
+  console.log(palette.to_asm());
+  GlobalEvents.emit("set_app_palette", palette);
 }
 
 
