@@ -1,3 +1,4 @@
+import GlobalEvents from "/app/js/EventCaller.js";
 import {NESPalette} from "/app/js/NESPalette.js";
 
 const ATTRIB_NESIDX = "nesidx";
@@ -92,6 +93,9 @@ class CTRLPalettes{
 
     var self = this;
 
+    // ------------------------------------------------------------------------------------
+    // Defining hooks for the main system palette interactions.
+    // ------------------------------------------------------------------------------------
     var handle_syspalette_clicked = function(event){
       if (self.__activePaletteEl !== null && this.hasAttribute(ATTRIB_NESIDX)){
         var idx = parseInt(this.getAttribute(ATTRIB_NESIDX), 16);
@@ -114,6 +118,9 @@ class CTRLPalettes{
     });
 
 
+    // ------------------------------------------------------------------------------------
+    // Defining hooks for the drawing palette interactions.
+    // ------------------------------------------------------------------------------------
     var handle_palcolor_clicked = function(event){
       if (this.hasAttribute(ATTRIB_PALIDX) && this.hasAttribute(ATTRIB_COLIDX)){
         if (this !== self.__activePaletteEl){
@@ -135,6 +142,16 @@ class CTRLPalettes{
         el.addEventListener("click", handle_palcolor_clicked);
       }
     });
+
+    // ------------------------------------------------------------------------------------
+    // Setting some hooks to watch for some global events.
+    // ------------------------------------------------------------------------------------
+    var handle_set_app_palette(p){
+      if (p instanceof NESPalette){
+        self.palette = p;
+      }
+    }
+    GlobalEvents.listen("set_app_palette", handle_syspalette_changed);
   }
 
   get palette(){
