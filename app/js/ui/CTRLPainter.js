@@ -1,3 +1,4 @@
+import Utils from "/app/js/Utils.js";
 import GlobalEvents from "/app/js/EventCaller.js";
 
 const EL_CANVAS_ID = "painter";
@@ -19,7 +20,12 @@ class CTRLPainter {
       throw new Error("Failed to obtain canvas context.");
 
     //var imgdata = this.__context.getImageData();
-    console.log(this.__canvas.width + ", " + this.__canvas.height);
+    var handle_resize = Utils.debounce((function(){
+      console.log("DEBOUNCED");
+      console.log(this.__canvas.width + ", " + this.__canvas.height);
+      console.log(this.__canvas.clientWidth + ", " + this.__canvas.height);
+    }).bind(this), 250);
+    window.addEventListener("resize", handle_resize);
   }
 
   get scale(){
