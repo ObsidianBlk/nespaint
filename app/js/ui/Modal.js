@@ -1,4 +1,4 @@
-import GlobalEvents from "/app/js/EventCaller.js";
+import GlobalEvents from "/app/js/common/EventCaller.js";
 
 
 class Modal{

@@ -1,4 +1,4 @@
-import {EventCaller} from "/app/js/EventCaller.js"
+import {EventCaller} from "/app/js/common/EventCaller.js"
 
 /**
  * Object for manipulating the eight NES palettes.

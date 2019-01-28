@@ -1,10 +1,10 @@
-import GlobalEvents from "/app/js/EventCaller.js";
+import GlobalEvents from "/app/js/common/EventCaller.js";
 import EmitterElements from "/app/js/ui/Emitters.js";
 import Modal from "/app/js/ui/Modal.js";
-import CTRLPalettes from "/app/js/ui/CTRLPalettes.js";
-import CTRLPainter from "/app/js/ui/CTRLPainter.js";
+import CTRLPalettes from "/app/js/ctrls/CTRLPalettes.js";
+import CTRLPainter from "/app/js/ctrls/CTRLPainter.js";
 //import {NESPainter} from "/app/js/NESPainter.js";
-import {NESPalette} from "/app/js/NESPalette.js";
+import {NESPalette} from "/app/js/models/NESPalette.js";
 
 function on_palette_changed(e){
   if (e.type == "ALL"){

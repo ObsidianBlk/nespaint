@@ -1,5 +1,5 @@
-import GlobalEvents from "/app/js/EventCaller.js";
-import {NESPalette} from "/app/js/NESPalette.js";
+import GlobalEvents from "/app/js/common/EventCaller.js";
+import {NESPalette} from "/app/js/models/NESPalette.js";
 
 const ATTRIB_NESIDX = "nesidx";
 // The two attributes below MUST BOTH be in the element.

@@ -1,5 +1,5 @@
-import Utils from "/app/js/Utils.js";
-import GlobalEvents from "/app/js/EventCaller.js";
+import Utils from "/app/js/common/Utils.js";
+import GlobalEvents from "/app/js/common/EventCaller.js";
 
 const EL_CANVAS_ID = "painter";
 

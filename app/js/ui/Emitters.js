@@ -1,4 +1,4 @@
-import GlobalEvents from "/app/js/EventCaller.js";
+import GlobalEvents from "/app/js/common/EventCaller.js";
 
 
 function handle_emitter(event){
