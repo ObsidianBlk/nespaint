@@ -20,10 +20,15 @@ class CTRLPainter {
       throw new Error("Failed to obtain canvas context.");
 
     //var imgdata = this.__context.getImageData();
-    var handle_resize = Utils.debounce((function(){
+    var handle_resize = Utils.debounce((function(e){
       console.log("DEBOUNCED");
+      console.log(e);
+      var w = this.__canvas.clientWidth;
+      var h = this.__canvas.clientHeight;
+      this.__canvas.width = w;
+      this.__canvas.height = h;
       console.log(this.__canvas.width + ", " + this.__canvas.height);
-      console.log(this.__canvas.clientWidth + ", " + this.__canvas.height);
+      console.log(this.__canvas.clientWidth + ", " + this.__canvas.clientHeight);
     }).bind(this), 250);
     window.addEventListener("resize", handle_resize);
   }
