@@ -235,6 +235,8 @@ function ReorderEventName(ename){
 export default class Input{
   constructor(){
     this.__emitter = new EventCaller();
+    this.__preventDefaults = false;
+
     this.enableKeyboardInput = (function(){
       var handle_keydown = (function(e){
         if (AddToKeymap(e.keyCode, "keydown")){
@@ -286,6 +288,39 @@ export default class Input{
       }).bind(this);
     }).apply(this);
 
+    this.enableMouseInput = (function(){
+      var handle_mousemove = (function(e){
+        // TODO: Finish me!
+      }).bind(this);
+
+      var handle_mousedown = (function(e){
+        // TODO: Finish me!
+      }).bind(this);
+
+      var handle_mouseup = (function(e){
+        // TODO: Finish me!
+      }).bind(this);
+
+      var handle_mousewheel = (function(e){
+        // TODO: Finish me!
+      }).bind(this);
+
+      return (function(enable){
+        enable = (enable !== false);
+        if (enable){
+          window.addEventListener("mousemove", handle_mousemove);
+          window.addEventListener("mousedown", handle_mousedown);
+          window.addEventListener("mouseup", handle_mouseup);
+          window.addEventListener("mousewheel", handle_mousewheel);
+        } else {
+          window.removeEventListener("mousemove", handle_mousemove);
+          window.removeEventListener("mousedown", handle_mousedown);
+          window.removeEventListener("mouseup", handle_mouseup);
+          window.removeEventListener("mousewheel", handle_mousewheel);
+        }
+      }).bind(this);
+    }).apply(this);
+
     this.enableKeyboardInput();
   }
 
@@ -309,6 +344,11 @@ export default class Input{
 
   get currentCodes(){
     return KEYMAP["currentcodes"].map(e=>e[0]);
+  }
+
+  get preventDefaults(){return this.__preventDefaults;}
+  set preventDefaults(p){
+    this.__preventDefaults = (p === true);
   }
 
   isKeyDown(key){
