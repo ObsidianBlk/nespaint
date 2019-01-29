@@ -1,5 +1,6 @@
 import GlobalEvents from "/app/js/common/EventCaller.js";
 import EmitterElements from "/app/js/ui/Emitters.js";
+import Input from "/app/js/ui/Input.js";
 import Modal from "/app/js/ui/Modal.js";
 import CTRLPalettes from "/app/js/ctrls/CTRLPalettes.js";
 import CTRLPainter from "/app/js/ctrls/CTRLPainter.js";
@@ -19,6 +20,10 @@ function on_palette_changed(e){
 function handle_emitted(){
   console.log("EMITTED EVENT!");
 }
+
+function handle_keyevent(e){
+  console.log(e);
+};
 
 function TitlePainter(pal){
   var elist = document.querySelectorAll(".color-NES-random");
@@ -58,6 +63,11 @@ function initialize(DOC){
   ]);
   console.log(palette.to_asm());
   GlobalEvents.emit("set_app_palette", palette);
+
+  var input = new Input();
+  input.listen("keydown", handle_keyevent);
+  input.listen("keyup", handle_keyevent);
+  input.listen("keypress", handle_keyevent);
 }
 
 
