@@ -313,8 +313,10 @@ export default class Input{
           var rect = this.__mouseTarget.getBoundingClientRect();
           pos.x -= rect.left;
           pos.y -= rect.top;
-          pos.inbounds = (pos.x >= 0 && pos.x < rect.right && pos.y >= 0 && pos.y < rect.bottom);
+          pos.inbounds = (pos.x >= 0 && pos.x < rect.width && pos.y >= 0 && pos.y < rect.height);
         }
+        pos.x = Math.floor(pos.x);
+        pos.y = Math.floor(pos.y);
         return pos;
       }).bind(this);
 
@@ -400,7 +402,7 @@ export default class Input{
           this.__mousePosition = pos;
           this.__mouseLastButton = button;
           this.__mouseLastAction = "mouseup";
-          this.__emitter.emit("mouseup", {
+          var data = {
             source: this,
             lastX: pos.lastX,
             lastY: pos.lastY,
@@ -408,7 +410,11 @@ export default class Input{
             y: pos.y,
             button: button,
             action: "mouseup"
-          });
+          }
+          this.__emitter.emit("mouseup", data);
+          if (diff <= MOUSECLICK_DELAY && this.__mouseButtons.length <= 0){
+            this.__emitter.emit("mouseclick", data);
+          }
         }
       }).bind(this);
 
@@ -418,6 +424,13 @@ export default class Input{
         // TODO: Finish me!
       }).bind(this);
 
+      // This event is purely for preventing Default behaviors on mouse events we're not using.
+      var handle_mouseprevdef = (function(e){
+        var pos = mousePosition(e);
+        if (this.__preventDefaults && pos.inbounds)
+          e.preventDefault();
+      }).bind(this);
+
       return (function(enable){
         enable = (enable !== false);
         if (enable){
@@ -425,11 +438,15 @@ export default class Input{
           window.addEventListener("mousedown", handle_mousedown);
           window.addEventListener("mouseup", handle_mouseup);
           window.addEventListener("mousewheel", handle_mousewheel);
+          window.addEventListener("click", handle_mouseprevdef);
+          window.addEventListener("dblclick", handle_mouseprevdef);
         } else {
           window.removeEventListener("mousemove", handle_mousemove);
           window.removeEventListener("mousedown", handle_mousedown);
           window.removeEventListener("mouseup", handle_mouseup);
           window.removeEventListener("mousewheel", handle_mousewheel);
+          window.removeEventListener("click", handle_mouseprevdef);
+          window.removeEventListener("dblclick", handle_mouseprevdef);
         }
       }).bind(this);
     }).apply(this);
@@ -516,7 +533,7 @@ export default class Input{
   }
 
   listen(ename, func, owner=null, once=false){
-    if ((["keyup", "keydown", "keypress", "mousemove", "mousedown", "mouseup"]).indexOf(ename) >= 0){
+    if ((["keyup", "keydown", "keypress", "mousemove", "mousedown", "mouseup", "mouseclick"]).indexOf(ename) >= 0){
       this.__emitter.listen(ename, func, owner, once);
     } else {
       ename = ReorderEventName(ename);
@@ -529,7 +546,7 @@ export default class Input{
   }
 
   unlisten(ename, func, owner=null){
-    if ((["keyup", "keydown", "keypress", "mousemove", "mousedown", "mouseup"]).indexOf(ename) >= 0){
+    if ((["keyup", "keydown", "keypress", "mousemove", "mousedown", "mouseup", "mouseclick"]).indexOf(ename) >= 0){
       this.__emitter.unlisten(ename, func, owner);
     } else {
       ename = ReorderEventName(ename);
