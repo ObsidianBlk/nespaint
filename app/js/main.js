@@ -23,7 +23,11 @@ function handle_emitted(){
 
 function handle_keyevent(e){
   console.log(e);
-};
+}
+
+function handle_mouseevent(e){
+  console.log(e);
+}
 
 function TitlePainter(pal){
   var elist = document.querySelectorAll(".color-NES-random");
@@ -68,6 +72,10 @@ function initialize(DOC){
   input.listen("keydown", handle_keyevent);
   input.listen("keyup", handle_keyevent);
   input.listen("keypress", handle_keyevent);
+
+  input.listen("mousemove", handle_mouseevent);
+  input.listen("mousedown", handle_mouseevent);
+  input.listen("mouseup", handle_mouseevent);
 }
 
 

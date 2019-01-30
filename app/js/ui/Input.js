@@ -1,5 +1,5 @@
 import {EventCaller} from "/app/js/common/EventCaller.js";
-
+import Utils from "/app/js/common/Utils.js";
 
 // Keycode list based on...
 // https://keycode.info/
@@ -135,6 +135,7 @@ var KEYMAP = {
 
 // TODO: Reeval this idea.
 const KEYPRESS_DELAY = 350; // Time in milliseconds. NOTE: May make this a variable in future.
+const MOUSECLICK_DELAY = 350; // Time in milliseconds.
 
 function AssignCodeName(code, name){
   name = name.toLowerCase();
@@ -236,6 +237,17 @@ export default class Input{
   constructor(){
     this.__emitter = new EventCaller();
     this.__preventDefaults = false;
+    // Internet Explorer... that fudged up p.o.s. has to make mouse button detection difficult
+    // with different button values from ALL other browsers. So... if Input has this value set to
+    // true, then mouseup and mousedown events will base it's detection of IE button values, instead
+    // of the real values.
+    this.__ieMouseMode = false;
+    // If set, this is the element that the mouse will focus on and adjust it's position against.
+    this.__mouseTarget = null;
+    this.__mousePosition = null;
+    this.__mouseLastButton = -1;
+    this.__mouseLastButtonAction = "";
+    this.__mouseButtons = [];
 
     this.enableKeyboardInput = (function(){
       var handle_keydown = (function(e){
@@ -289,19 +301,119 @@ export default class Input{
     }).apply(this);
 
     this.enableMouseInput = (function(){
-      var handle_mousemove = (function(e){
-        // TODO: Finish me!
+      var mousePosition = (function(e){
+        var pos = {
+          lastX: (this.__mousePosition !== null) ? this.__mousePosition.x : null,
+          lastY: (this.__mousePosition !== null) ? this.__mousePosition.y : null,
+          x: e.clientX,
+          y: e.clientY,
+          inbounds: true
+        }
+        if (this.__mouseTarget !== null){
+          var rect = this.__mouseTarget.getBoundingClientRect();
+          pos.x -= rect.left;
+          pos.y -= rect.top;
+          pos.inbounds = (pos.x >= 0 && pos.x < rect.right && pos.y >= 0 && pos.y < rect.bottom);
+        }
+        return pos;
       }).bind(this);
 
-      var handle_mousedown = (function(e){
-        // TODO: Finish me!
+      var buttonID = (function(e){
+        var btn = e.button;
+        if ((this.__ieMouseMode && btn === 1) || (!this.__ieMouseMode && btn === 0)){
+          btn = 0;
+        } else if ((this.__ieMouseMode && e.button === 4) || (!this.__ieMouseMode && e.button === 1)){
+          btn = 1;
+        }
+        return btn;
+      }).bind(this);
+
+      var addMouseButton = (function(btn){
+        if (this.__mouseButtons.findIndex(b=>b[0]===btn) < 0){
+          this.__mouseButtons.push([btn, Math.floor(Date.now())]);
+          return true;
+        }
+        return false;
+      }).bind(this);
+
+      var removeMouseButton = (function(btn){
+        var idx = this.__mouseButtons.findIndex(b=>b[0]===btn);
+        var diff = -1;
+        if (idx >= 0){
+          diff = Math.floor(Date.now()) - this.__mouseButtons[idx][1];
+          this.__mouseButtons.splice(idx, 1);
+        }
+        return diff;
+      }).bind(this);
+
+      var handle_mousemove = (function(e){
+        if (this.__preventDefaults)
+          e.preventDefault();
+        var pos = mousePosition(e);
+        if (pos.inbounds){
+          this.__mousePosition = pos;
+          this.__emitter.emit("mousemove", {
+            source: this,
+            lastX: pos.lastX,
+            lastY: pos.lastY,
+            x: pos.x,
+            y: pos.y,
+            button: this.__mouseLastButton,
+            action: "mousemove"
+          });
+        }
+      }).bind(this);
+
+      var handle_mousedown = (function(e){ 
+        var button = buttonID(e);
+        var pos = mousePosition(e);
+        if (pos.inbounds){
+          if (this.__preventDefaults)
+            e.preventDefault();
+          if (addMouseButton(button)){
+            this.__mousePosition = pos;
+            this.__mouseLastButton = button;
+            this.__mouseLastButtonAction = "mousedown";
+            this.__emitter.emit("mousedown", {
+              source: this,
+              lastX: pos.lastX,
+              lastY: pos.lastY,
+              x: pos.x,
+              y: pos.y,
+              button: button,
+              action: "mousedown"
+            });
+          }
+        }
       }).bind(this);
 
       var handle_mouseup = (function(e){
-        // TODO: Finish me!
+        if (this.__preventDefaults)
+          e.preventDefault();
+        var button = buttonID(e);
+        var pos = mousePosition(e);
+        // NOTE: I still want to check for button removal, even before testing if an event should
+        // fire, so that I don't have any phantom buttons listed as "pressed" in the mouseButtons list.
+        var diff = removeMouseButton(button);
+        if (pos.inbounds && diff >= 0){
+          this.__mousePosition = pos;
+          this.__mouseLastButton = button;
+          this.__mouseLastButtonAction = "mouseup";
+          this.__emitter.emit("mouseup", {
+            source: this,
+            lastX: pos.lastX,
+            lastY: pos.lastY,
+            x: pos.x,
+            y: pos.y,
+            button: button,
+            action: "mouseup"
+          });
+        }
       }).bind(this);
 
       var handle_mousewheel = (function(e){
+        if (this.__preventDefaults)
+          e.preventDefault();
         // TODO: Finish me!
       }).bind(this);
 
@@ -322,6 +434,7 @@ export default class Input{
     }).apply(this);
 
     this.enableKeyboardInput();
+    this.enableMouseInput();
   }
 
   get lastkey(){
@@ -349,6 +462,18 @@ export default class Input{
   get preventDefaults(){return this.__preventDefaults;}
   set preventDefaults(p){
     this.__preventDefaults = (p === true);
+  }
+
+  get ieMouseMode(){return this.__ieMouseMode;}
+  set ieMouseMode(m){this.__ieMouseMode = (m === true);}
+
+  get mouseTargetElement(){return this.__mouseTarget;}
+  set mouseTargetElement(el){
+    if (el === null || Utils.isElement(el)){
+      this.__mouseTarget = el;
+    } else {
+      throw new TypeError("Expected Mouse Target Element to be null or an HTMLElement object.");
+    }
   }
 
   isKeyDown(key){
