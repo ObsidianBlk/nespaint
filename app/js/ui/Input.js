@@ -249,6 +249,9 @@ export default class Input{
     this.__mouseLastAction = "";
     this.__mouseButtons = [];
 
+    this.__keyboardEnabled = false;
+    this.__mouseEnabled = false;
+
     this.enableKeyboardInput = (function(){
       var handle_keydown = (function(e){
         if (AddToKeymap(e.keyCode, "keydown")){
@@ -289,11 +292,13 @@ export default class Input{
 
       return (function(enable){
         enable = (enable !== false);
+        // NOTE: There shouldn't be any harm if the user repeatedly enables or disables keyboard.
         if (enable){
+          this.__keyboardEnabled = true;
           window.addEventListener("keydown", handle_keydown, false);
-          //window.addEventListener("keypress", handle_keypress, false);
           window.addEventListener("keyup", handle_keyup, false);
         } else {
+          this.__keyboardEnabled = false;
           window.removeEventListener("keydown", handle_keydown);
           window.removeEventListener("keyup", handle_keyup);
         }
@@ -348,11 +353,15 @@ export default class Input{
         return diff;
       }).bind(this);
 
-      var handle_mousemove = (function(e){
-        if (this.__preventDefaults)
-          e.preventDefault();
+      var handle_mousemove = (function(e){ 
         var pos = mousePosition(e);
         if (pos.inbounds){
+          if (this.__preventDefaults){
+            e.preventDefault();
+            if (e.stopPropagation)
+              e.stopPropagation();
+            e.cancelBubble = true;
+          }
           this.__mousePosition = pos;
           this.__mouseLastAction = "mousemove";
           this.__emitter.emit("mousemove", {
@@ -365,14 +374,19 @@ export default class Input{
             action: "mousemove"
           });
         }
+        return false;
       }).bind(this);
 
       var handle_mousedown = (function(e){ 
         var button = buttonID(e);
         var pos = mousePosition(e);
         if (pos.inbounds){
-          if (this.__preventDefaults)
+          if (this.__preventDefaults){
             e.preventDefault();
+            if (e.stopPropagation)
+              e.stopPropagation();
+            e.cancelBubble = true;
+          }
           if (addMouseButton(button)){
             this.__mousePosition = pos;
             this.__mouseLastButton = button;
@@ -388,34 +402,42 @@ export default class Input{
             });
           }
         }
+        return false;
       }).bind(this);
 
-      var handle_mouseup = (function(e){
-        if (this.__preventDefaults)
-          e.preventDefault();
+      var handle_mouseup = (function(e){ 
         var button = buttonID(e);
         var pos = mousePosition(e);
         // NOTE: I still want to check for button removal, even before testing if an event should
         // fire, so that I don't have any phantom buttons listed as "pressed" in the mouseButtons list.
         var diff = removeMouseButton(button);
-        if (pos.inbounds && diff >= 0){
-          this.__mousePosition = pos;
-          this.__mouseLastButton = button;
-          this.__mouseLastAction = "mouseup";
-          var data = {
-            source: this,
-            lastX: pos.lastX,
-            lastY: pos.lastY,
-            x: pos.x,
-            y: pos.y,
-            button: button,
-            action: "mouseup"
+        if (pos.inbounds){
+          if (this.__preventDefaults){
+            e.preventDefault();
+            if (e.stopPropagation)
+              e.stopPropagation();
+            e.cancelBubble = true;
           }
-          this.__emitter.emit("mouseup", data);
-          if (diff <= MOUSECLICK_DELAY && this.__mouseButtons.length <= 0){
-            this.__emitter.emit("mouseclick", data);
+          if (diff >= 0){
+            this.__mousePosition = pos;
+            this.__mouseLastButton = button;
+            this.__mouseLastAction = "mouseup";
+            var data = {
+              source: this,
+              lastX: pos.lastX,
+              lastY: pos.lastY,
+              x: pos.x,
+              y: pos.y,
+              button: button,
+              action: "mouseup"
+            }
+            this.__emitter.emit("mouseup", data);
+            if (diff <= MOUSECLICK_DELAY && this.__mouseButtons.length <= 0){
+              this.__emitter.emit("mouseclick", data);
+            }
           }
         }
+        return false;
       }).bind(this);
 
       var handle_mousewheel = (function(e){
@@ -426,27 +448,37 @@ export default class Input{
 
       // This event is purely for preventing Default behaviors on mouse events we're not using.
       var handle_mouseprevdef = (function(e){
-        var pos = mousePosition(e);
-        if (this.__preventDefaults && pos.inbounds)
-          e.preventDefault();
+        var pos = mousePosition(e);;
+        if (this.__preventDefaults && (pos === null || pos.inbounds)){
+            e.preventDefault();
+            if (e.stopPropagation)
+              e.stopPropagation();
+            e.cancelBubble = true;
+        }
+        return false;
       }).bind(this);
 
       return (function(enable){
         enable = (enable !== false);
+        // NOTE: There shouldn't be any harm if the user repeatedly enables or disables mouse.
         if (enable){
+          this.__mouseEnabled = true;
           window.addEventListener("mousemove", handle_mousemove);
           window.addEventListener("mousedown", handle_mousedown);
           window.addEventListener("mouseup", handle_mouseup);
           window.addEventListener("mousewheel", handle_mousewheel);
           window.addEventListener("click", handle_mouseprevdef);
           window.addEventListener("dblclick", handle_mouseprevdef);
+          window.addEventListener("contextmenu", handle_mouseprevdef);
         } else {
+          this.__mouseEnabled = false;
           window.removeEventListener("mousemove", handle_mousemove);
           window.removeEventListener("mousedown", handle_mousedown);
           window.removeEventListener("mouseup", handle_mouseup);
           window.removeEventListener("mousewheel", handle_mousewheel);
           window.removeEventListener("click", handle_mouseprevdef);
           window.removeEventListener("dblclick", handle_mouseprevdef);
+          window.removeEventListener("contextmenu", handle_mouseprevdef);
         }
       }).bind(this);
     }).apply(this);
@@ -454,6 +486,9 @@ export default class Input{
     this.enableKeyboardInput();
     this.enableMouseInput();
   }
+
+  get mouseInputEnabled(){return this.__mouseEnabled;}
+  get keyboardInputEnabled(){return this.__keyboardEnabled;}
 
   get lastkey(){
     if (KEYMAP["lastcode"] !== null){
