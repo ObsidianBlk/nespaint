@@ -246,7 +246,7 @@ export default class Input{
     this.__mouseTarget = null;
     this.__mousePosition = null;
     this.__mouseLastButton = -1;
-    this.__mouseLastButtonAction = "";
+    this.__mouseLastAction = "";
     this.__mouseButtons = [];
 
     this.enableKeyboardInput = (function(){
@@ -352,6 +352,7 @@ export default class Input{
         var pos = mousePosition(e);
         if (pos.inbounds){
           this.__mousePosition = pos;
+          this.__mouseLastAction = "mousemove";
           this.__emitter.emit("mousemove", {
             source: this,
             lastX: pos.lastX,
@@ -373,7 +374,7 @@ export default class Input{
           if (addMouseButton(button)){
             this.__mousePosition = pos;
             this.__mouseLastButton = button;
-            this.__mouseLastButtonAction = "mousedown";
+            this.__mouseLastAction = "mousedown";
             this.__emitter.emit("mousedown", {
               source: this,
               lastX: pos.lastX,
@@ -398,7 +399,7 @@ export default class Input{
         if (pos.inbounds && diff >= 0){
           this.__mousePosition = pos;
           this.__mouseLastButton = button;
-          this.__mouseLastButtonAction = "mouseup";
+          this.__mouseLastAction = "mouseup";
           this.__emitter.emit("mouseup", {
             source: this,
             lastX: pos.lastX,
@@ -457,6 +458,32 @@ export default class Input{
 
   get currentKeyCodes(){
     return KEYMAP["currentcodes"].map(e=>e[0]);
+  }
+
+  get lastMouseAction(){
+    return this.__mouseLastAction;
+  }
+
+  get lastMouseButton(){
+    return this.__mouseLastButton;
+  }
+
+  get lastMousePosition(){
+    if (this.__mousePosition === null || this.__mousePosition.lastX === null)
+      return null;
+    return {
+      x: this.__mousePosition.lastX,
+      y: this.__mousePosition.lastY
+    };
+  }
+
+  get currentMousePosition(){
+    if (this.__mousePosition === null)
+      return null;
+    return {
+      x: this.__mousePosition.x,
+      y: this.__mousePosition.y
+    };
   }
 
   get preventDefaults(){return this.__preventDefaults;}
