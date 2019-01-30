@@ -447,7 +447,7 @@ export default class Input{
     return "0";
   }
 
-  get lastaction(){
+  get lastkeyaction(){
     return KEYMAP["lastaction"];
   }
 
@@ -455,7 +455,7 @@ export default class Input{
     return KeymapEventName();
   }
 
-  get currentCodes(){
+  get currentKeyCodes(){
     return KEYMAP["currentcodes"].map(e=>e[0]);
   }
 
