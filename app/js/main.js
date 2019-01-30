@@ -29,6 +29,10 @@ function handle_mouseevent(e){
   console.log(e);
 }
 
+function handle_mouseclickevent(e){
+  console.log("MOUSE CLICK ON BUTTON: ", e.button);
+}
+
 function TitlePainter(pal){
   var elist = document.querySelectorAll(".color-NES-random");
   if (elist){
@@ -69,6 +73,8 @@ function initialize(DOC){
   GlobalEvents.emit("set_app_palette", palette);
 
   var input = new Input();
+  input.preventDefaults = true;
+  input.mouseTargetElement = document.getElementById("painter");
   input.listen("keydown", handle_keyevent);
   input.listen("keyup", handle_keyevent);
   input.listen("keypress", handle_keyevent);
@@ -76,6 +82,7 @@ function initialize(DOC){
   input.listen("mousemove", handle_mouseevent);
   input.listen("mousedown", handle_mouseevent);
   input.listen("mouseup", handle_mouseevent);
+  input.listen("mouseclick", handle_mouseclickevent);
 }
 
 
