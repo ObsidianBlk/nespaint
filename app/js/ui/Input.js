@@ -133,6 +133,19 @@ var KEYMAP = {
   "currentcodes":[]
 };
 
+
+var MOUSEBYCODE = {
+  0: "mbl", // (M)ouse (B)utton (L)eft
+  1: "mbm", // (M)ouse (B)utton (M)iddle
+  2: "mbr"  // (M)ouse (B)utton (R)ight
+};
+
+var MOUSEBYNAME = {
+  "mbl": 0,
+  "mbm": 1,
+  "mbr": 2
+};
+
 // TODO: Reeval this idea.
 const KEYPRESS_DELAY = 350; // Time in milliseconds. NOTE: May make this a variable in future.
 const MOUSECLICK_DELAY = 350; // Time in milliseconds.
