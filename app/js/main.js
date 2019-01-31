@@ -4,7 +4,6 @@ import Input from "/app/js/ui/Input.js";
 import Modal from "/app/js/ui/Modal.js";
 import CTRLPalettes from "/app/js/ctrls/CTRLPalettes.js";
 import CTRLPainter from "/app/js/ctrls/CTRLPainter.js";
-//import {NESPainter} from "/app/js/NESPainter.js";
 import {NESPalette} from "/app/js/models/NESPalette.js";
 
 function on_palette_changed(e){
