@@ -4,7 +4,7 @@ import {EventCaller} from "/app/js/common/EventCaller.js"
  * Object for manipulating the eight NES palettes.
  * @extends EventCaller
  */
-export class NESPalette extends EventCaller{ 
+export default class NESPalette extends EventCaller{ 
   constructor(){
     super();
     this.__BGColor = 63; // Index to the background color ALL palettes MUST share.
