@@ -1,0 +1,99 @@
+GlobalEvents
+--------------------
+"set_app_palette" (NESPalette)
+"emitted-event" ()
+
+
+Input
+--------------------
+"<variable keyboard key combination>" ({
+  source: <InputObject>,
+  iscombo: <boolean>,
+  keys: <string [matching event name]>,
+  keycode: <number [ascii of keyboard key pressed]>,
+  keyname: <string [name of keyboard key pressed]>,
+  action: <string [keyboard action triggering event]>
+})
+
+"keydown" ({
+  source: <InputObject>,
+  iscombo: <boolean>,
+  keys: <string [names of all currently pressed keys]>,
+  keycode: <number [ascii of keyboard key pressed]>,
+  keyname: <string [name of keyboard key pressed]>,
+  action: <string [matching event name]>
+})
+
+"keypress" [only if no other keys are pressed] ({
+  source: <InputObject>,
+  iscombo: <boolean [should always be false]>,
+  keys: <string [should be zero-length string]>,
+  keycode: <number [ascii of keyboard key released]>,
+  keyname: <string [name of keyboard key released]>,
+  action: <string [always "keyup"]>
+})
+
+"keyup" ({
+  source: <InputObject>,
+  iscombo: <boolean>,
+  keys: <string [name of all keys remaining pressed]>,
+  keycode: <number [ascii of keyboard key released]>,
+  keyname: <string [name of keyboard key released]>,
+  action: <string [always "keyup"]>
+})
+
+
+"mousemove" ({
+  source: <InputObject>,
+  lastX: <number | null [Last recorded X mouse pos]>,
+  lastY: <number | null [Last recorded Y mouse pos]>,
+  x: <number [current X mouse pos]>,
+  y: <number [current Y mouse pos]>,
+  button: <number [last mouse button triggered]>,
+  action: <string ["mousemove"]>
+})
+
+"mousedown" ({
+  source: <InputObject>,
+  lastX: <number | null [Last recorded X mouse pos]>,
+  lastY: <number | null [Last recorded Y mouse pos]>,
+  x: <number [current X mouse pos]>,
+  y: <number [current Y mouse pos]>,
+  button: <number [button pressed]>,
+  action: <string ["mousedown"]>
+})
+
+"mouseup" ({
+  source: <InputObject>,
+  lastX: <number | null [Last recorded X mouse pos]>,
+  lastY: <number | null [Last recorded Y mouse pos]>,
+  x: <number [current X mouse pos]>,
+  y: <number [current Y mouse pos]>,
+  button: <number [mouse button released]>,
+  action: <string ["mouseup"]>
+})
+
+"mouseclick" [Only if no other buttons pressed] ({
+  source: <InputObject>,
+  lastX: <number | null [Last recorded X mouse pos]>,
+  lastY: <number | null [Last recorded Y mouse pos]>,
+  x: <number [current X mouse pos]>,
+  y: <number [current Y mouse pos]>,
+  button: <number [mouse button released within delay]>,
+  action: <string ["mouseup"]>
+})
+
+NESPalette
+--------------------
+"palettes_changed" ({
+  type: <string ["ALL"]>,
+  cindex: <number [always 0]>
+})
+
+"palettes_changed" ({
+  type: <string ["TILE" | "SPRITE"]>,
+  pindex: <number [0 - 3]>,
+  cindex: <number [1 - 3]>
+})
+
+
