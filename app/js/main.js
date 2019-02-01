@@ -5,6 +5,8 @@ import Modal from "/app/js/ui/Modal.js";
 import CTRLPalettes from "/app/js/ctrls/CTRLPalettes.js";
 import CTRLPainter from "/app/js/ctrls/CTRLPainter.js";
 import NESPalette from "/app/js/models/NESPalette.js";
+import NESTile from "/app/js/models/NESTile.js";
+
 
 function on_palette_changed(e){
   if (e.type == "ALL"){
@@ -82,6 +84,17 @@ function initialize(DOC){
   input.listen("mousedown", handle_mouseevent);
   input.listen("mouseup", handle_mouseevent);
   input.listen("mouseclick", handle_mouseclickevent);
+
+  var TileA = new NESTile();
+  var TileB = new NESTile();
+  TileB.setPixelIndex(0,0,2);
+  //var TileC = TileB.clone().flip(1);
+  var TileC = TileB.clone();
+  TileC.flip(1);
+
+  console.log("TileA does NOT match TileB: ", TileA.isEq(TileB) == -1);
+  console.log("TileA does NOT match TileC: ", TileA.isEq(TileC) == -1);
+  console.log("TileB DOES match TileC with Flag 1: ", TileB.isEq(TileC) == 1);
 }
 
 

@@ -1,0 +1,167 @@
+import NESPalette from "/app/js/models/NESPalette.js";
+
+function BitMask(offset){
+  switch(offset){
+    case 0:
+      return 63;  // Mask '00111111'
+    case 1:
+      return 207; // Mask '11001111'
+    case 2:
+      return 243; // Mask '11110011'
+  }
+  return 252; // Mask '11111100'
+}
+
+function SetDataArrayColor(arr, x, y, ci){
+  var index = (y*8)+x;
+  var dindex = Math.floor(index*0.25);
+  var bitoffset = 6 - ((index % 4) * 2);
+  arr[dindex] = (arr[dindex] & BitMask(bitoffset)) ^ (ci << bitoffset);
+}
+
+
+function GetDataArrayColor(arr, x, y){
+  var index = (y*8)+x;
+  var dindex = Math.floor(index*0.25);
+  var bitoffset = 6 - ((index % 4) * 2);
+  return (arr[dindex] & (3 << bitoffset)) >> bitoffset;
+
+}
+
+
+export default class NESTile{
+  constructor(){
+    this.__palette = null;
+    this.__paletteIndex = 0;
+    this.__data = new Uint8Array(16);
+  }
+
+  get dataArray(){
+    var d = [];
+    for (var x = 0; x < 8; x++){
+      for (var y = 0; y < 8; y++){
+        d.push(this.getPixelIndex(x, y));
+      }
+    }
+    return d;
+  }
+
+  get base64(){
+    var b = ""
+    for (var i = 0; i < this.__data.length; i++) {
+      b += String.fromCharCode(this.__data[i]);
+    }
+    return window.btoa(b);
+  }
+  set base64(s){
+    var b =  window.atob(s);
+    var len = b.length;
+    if (b.length !== 16){
+      throw new Error("Base64 string contains invalid byte count.");
+    }
+    var bytes = new Uint8Array(b.length);
+    for (var i=0; i < b.length; i++){
+      bytes[i] = b.charCodeAt(i);
+    }
+    this.__data = bytes;
+  }
+
+  get palette(){return this.__palette;}
+  set palette(p){
+    if (p !== null && !(p instanceof NESPalette)){
+      throw new TypeError("Expected NESPalette instance or null.");
+    }
+    this.__palette = p;
+  }
+
+  setPixelIndex(x, y, ci){
+    if (x < 0 || x >= 8 || y < 0 || y >= 8){
+      throw new ValueError("Coordinates out of bounds.");
+    }
+    if (ci < 0 || ci >= 4){
+      throw new ValueError("Color index out of bounds.");
+    }
+    SetDataArrayColor(this.__data, x, y, ci);
+    return this;
+  }
+
+  getPixelIndex(x, y){
+    if (x < 0 || x >= 8 || y < 0 || y >= 8){
+      throw new ValueError("Coordinates out of bounds.");
+    }
+    return GetDataArrayColor(this.__data, x, y);
+  }
+
+  getPixel(x, y){
+    var ci = 0;
+    try {
+      ci = this.getPixelIndex(x, y);
+    } catch (e) {
+      throw e;
+    }
+    if (this.__palette !== null){
+      return this.__palette.get_palette_color(this.__paletteIndex, ci);
+    }
+    switch(ci){
+      case 1:
+        return "#555555";
+      case 2:
+        return "#AAAAAA";
+      case 3:
+        return "#FFFFFF";
+    }
+    return 0;
+  }
+
+  flip(flag){
+    if (flag >= 1 && flag <= 3){
+      var newData = new Uint8Array(16);
+      for (var x = 0; x < 8; x++){
+        for (var y = 0; y < 8; y++){
+          var ci = GetDataArrayColor(this.__data, x, y);
+          SetDataArrayColor(
+              newData,
+              (flag == 1 || flag == 3) ? 7 - x: x,
+              (flag == 2 || flag == 3) ? 7 - y: y,
+              ci
+          );
+          console.log(newData);
+          //newData[r[0]] = 2;
+          //newData[r[0]] = r[1];
+        }
+      }
+      this.__data = newData;
+    }
+    return this;
+  }
+
+
+  clone(){
+    var t = new NESTile();
+    t.base64 = this.base64;
+    return t;
+  }
+
+  isEq(tile){
+    if (!(tile instanceof NESTile)){
+      throw new TypeError("Expected NESTile instance.");
+    }
+    var b64 = this.base64;
+    if (tile.base64 === b64){
+      return 0;
+    }
+    if (tile.clone().flip(1).base64 === b64){
+      return 1;
+    }
+    if (tile.clone().flip(2).base64 === b64){
+      return 2;
+    }
+    if (tile.clone().flip(3).base64 === b64){
+      return 3;
+    }
+    return -1;
+  }
+}
+
+
+
