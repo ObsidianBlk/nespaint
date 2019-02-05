@@ -15,8 +15,11 @@ function BitMask(offset){
 function SetDataArrayColor(arr, x, y, ci){
   var index = (y*8)+x;
   var dindex = Math.floor(index*0.25);
-  var bitoffset = 6 - ((index % 4) * 2);
-  arr[dindex] = (arr[dindex] & BitMask(bitoffset)) ^ (ci << bitoffset);
+  var bitoffset = (index % 4);
+  arr[dindex] = (arr[dindex] & BitMask(bitoffset)) ^ (ci << ((3 - bitoffset)*2));
+  //if (dindex === 1){
+  //  console.log("index: ", dindex, " | value: ", arr[dindex], " | (x,y): (", x, ",", y, ") | Bit Offset: ", bitoffset, "Color: ", ci);
+  //}
 }
 
 
@@ -125,11 +128,12 @@ export default class NESTile{
               (flag == 2 || flag == 3) ? 7 - y: y,
               ci
           );
-          console.log(newData);
+          //console.log(newData);
           //newData[r[0]] = 2;
           //newData[r[0]] = r[1];
         }
       }
+      //console.log(newData);
       this.__data = newData;
     }
     return this;
