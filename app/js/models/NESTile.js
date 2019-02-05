@@ -39,6 +39,34 @@ export default class NESTile{
     this.__data = new Uint8Array(16);
   }
 
+  get pixels(){
+    return new Proxy(this, {
+      get: function(obj, prop){
+        if (!Number.isInt(prop))
+          throw new TypeError("Expected integer index.");
+        if (prop < 0 || prop >= 64)
+          throw new RangeError("Index out of bounds.");
+        var dindex = Math.floor(prop*0.25);
+        var bitoffset = 6 - ((prop % 4) * 2);
+        return (obj.__data[dindex] & (3 << bitoffset)) >> bitoffset;
+      },
+
+      set: function(obj, prop, value){
+        if (!Number.isInt(prop))
+          throw new TypeError("Expected integer index.");
+        if (!Number.isInt(value))
+          throw new TypeError("Color index expected to be integer.");
+        if (prop < 0 || prop >= 64)
+          throw new RangeError("Index out of bounds.");
+        if (value < 0 || value >= 4)
+          throw new RangeError("Color index out of bounds.");
+        var dindex = Math.floor(index*0.25);
+        var bitoffset = (index % 4);
+        obj.__data[dindex] = (obj.__data[dindex] & BitMask(bitoffset)) ^ (ci << ((3 - bitoffset)*2));
+      }
+    });
+  }
+
   get dataArray(){
     var d = [];
     for (var x = 0; x < 8; x++){
