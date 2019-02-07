@@ -43,7 +43,6 @@ export default class NESTile{
   get pixels(){
     return new Proxy(this, {
       get: function(obj, prop){
-        console.log(prop);
         if (!Utils.isInt(prop))
           throw new TypeError("Expected integer index.");
         if (prop < 0 || prop >= 64)
@@ -105,6 +104,16 @@ export default class NESTile{
       throw new TypeError("Expected NESPalette instance or null.");
     }
     this.__palette = p;
+  }
+
+  get paletteIndex(){return this.__paletteIndex;}
+  set paletteIndex(pi){
+    if (!Utils.isInt(pi))
+      throw new TypeError("Palette index expected to be an integer.");
+    if (pi < 0 || pi >= 4){
+      throw new RangeError("Palette index out of bounds.");
+    }
+    this.__paletteIndex = pi;
   }
 
   setPixelIndex(x, y, ci){
@@ -184,13 +193,18 @@ export default class NESTile{
     if (tile.base64 === b64){
       return 0;
     }
-    if (tile.clone().flip(1).base64 === b64){
+    var tc = tile.clone().flip(1); // Flip horizontal.
+    if (tc.base64 === b64){
       return 1;
     }
-    if (tile.clone().flip(2).base64 === b64){
+
+    tc.flip(3); // Flip horizontal AND verticle. Net effect is the same as tile.clone().flip(2) ... Flip Verticle
+    if (tc.base64 === b64){
       return 2;
     }
-    if (tile.clone().flip(3).base64 === b64){
+
+    tc.flip(1); // Flip horizontal again. Net effect is the same as tile.clone().flip(3) ... flip H & V
+    if (tc.base64 === b64){
       return 3;
     }
     return -1;
