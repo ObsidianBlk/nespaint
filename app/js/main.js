@@ -88,9 +88,9 @@ function initialize(DOC){
   var TileA = new NESTile();
   var TileB = new NESTile();
   TileB.setPixelIndex(0,0,2);
-  //var TileC = TileB.clone().flip(1);
-  var TileC = TileB.clone();
-  TileC.flip(1);
+  var TileC = TileB.clone().flip(1);
+  //var TileC = TileB.clone();
+  //TileC.flip(1);
 
   for (var i=0; i < 64; i++){
     console.log(TileC.pixels[i]);
@@ -99,6 +99,10 @@ function initialize(DOC){
   console.log("TileA does NOT match TileB: ", TileA.isEq(TileB) == -1);
   console.log("TileA does NOT match TileC: ", TileA.isEq(TileC) == -1);
   console.log("TileB DOES match TileC with Flag 1: ", TileB.isEq(TileC) == 1);
+
+  console.log(TileC);
+  console.log(TileC.dataArray);
+  console.log(TileC.pixels[7]);
 }
 
 

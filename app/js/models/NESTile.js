@@ -1,3 +1,4 @@
+import Utils from "/app/js/common/Utils.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
 function BitMask(offset){
@@ -42,7 +43,8 @@ export default class NESTile{
   get pixels(){
     return new Proxy(this, {
       get: function(obj, prop){
-        if (!Number.isInt(prop))
+        console.log(prop);
+        if (!Utils.isInt(prop))
           throw new TypeError("Expected integer index.");
         if (prop < 0 || prop >= 64)
           throw new RangeError("Index out of bounds.");
@@ -52,9 +54,9 @@ export default class NESTile{
       },
 
       set: function(obj, prop, value){
-        if (!Number.isInt(prop))
+        if (!Utils.isInt(prop))
           throw new TypeError("Expected integer index.");
-        if (!Number.isInt(value))
+        if (!Utils.isInt(value))
           throw new TypeError("Color index expected to be integer.");
         if (prop < 0 || prop >= 64)
           throw new RangeError("Index out of bounds.");
@@ -69,8 +71,8 @@ export default class NESTile{
 
   get dataArray(){
     var d = [];
-    for (var x = 0; x < 8; x++){
-      for (var y = 0; y < 8; y++){
+    for (var y = 0; y < 8; y++){
+      for (var x = 0; x < 8; x++){
         d.push(this.getPixelIndex(x, y));
       }
     }
