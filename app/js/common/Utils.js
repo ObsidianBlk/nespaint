@@ -1,4 +1,12 @@
 const utils = {
+  isInt:function(v){
+    if (isNaN(v)){
+      return false;
+    }
+    var x = parseFloat(v);
+    return (x | 0) === x;
+  },
+
   isElement:function(el){
     // Code based on...
     // https://stackoverflow.com/questions/384286/javascript-isdom-how-do-you-check-if-a-javascript-object-is-a-dom-object
