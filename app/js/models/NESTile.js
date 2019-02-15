@@ -84,6 +84,10 @@ export default class NESTile{
     return d;
   }
 
+  get chr(){
+    return new Uint8Array(this.__data);
+  }
+
   get base64(){
     var b = ""
     for (var i = 0; i < this.__data.length; i++) {
@@ -160,6 +164,12 @@ export default class NESTile{
     var t = new NESTile();
     t.base64 = this.base64;
     return t;
+  }
+
+  copy(t){
+    if (!(t instanceof NESTile))
+      throw new TypeError("Expected NESTile object.");
+    this.__data.set(t.__data);
   }
 
   isEq(tile){
