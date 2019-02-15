@@ -84,19 +84,21 @@ export default class NESTile{
     for (var i = 0; i < this.__data.length; i++) {
       b += String.fromCharCode(this.__data[i]);
     }
+    b += String.fromCharCode(this.__paletteIndex);
     return window.btoa(b);
   }
   set base64(s){
     var b =  window.atob(s);
     var len = b.length;
-    if (b.length !== 16){
+    if (b.length !== 17){
       throw new Error("Base64 string contains invalid byte count.");
     }
-    var bytes = new Uint8Array(b.length);
-    for (var i=0; i < b.length; i++){
+    var bytes = new Uint8Array(b.length-1);
+    for (var i=0; i < b.length-1; i++){
       bytes[i] = b.charCodeAt(i);
     }
     this.__data = bytes;
+    this.__paletteIndex = b.charCodeAt(b.length-1);
   }
 
 
