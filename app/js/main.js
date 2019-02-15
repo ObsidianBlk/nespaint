@@ -107,6 +107,13 @@ function initialize(DOC){
   console.log(TileC.pixels[7]);
 
   var bnk = new NESBank();
+  bnk.lp[1] = TileB;
+  bnk.lp[0] = TileC;
+  bnk.rp[16] = TileD;
+  console.log(bnk.chr);
+  console.log("Bank color at coordinates (8,0): ", bnk.getColor(8,0));
+  console.log("Bank color at coordinates (7,0): ", bnk.getColor(7,0));
+  console.log("Bank color at coordinates (135, 15): ", bnk.getColor(135,15));
 }
 
 
