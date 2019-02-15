@@ -35,7 +35,6 @@ function GetDataArrayColor(arr, x, y){
 
 export default class NESTile{
   constructor(){
-    this.__palette = null;
     this.__paletteIndex = 0;
     this.__data = new Uint8Array(16);
   }
@@ -43,6 +42,8 @@ export default class NESTile{
   get pixels(){
     return new Proxy(this, {
       get: function(obj, prop){
+        if (prop === "length")
+          return 64;
         if (!Utils.isInt(prop))
           throw new TypeError("Expected integer index.");
         if (prop < 0 || prop >= 64)
@@ -98,13 +99,6 @@ export default class NESTile{
     this.__data = bytes;
   }
 
-  get palette(){return this.__palette;}
-  set palette(p){
-    if (p !== null && !(p instanceof NESPalette)){
-      throw new TypeError("Expected NESPalette instance or null.");
-    }
-    this.__palette = p;
-  }
 
   get paletteIndex(){return this.__paletteIndex;}
   set paletteIndex(pi){
@@ -132,27 +126,6 @@ export default class NESTile{
       throw new ValueError("Coordinates out of bounds.");
     }
     return GetDataArrayColor(this.__data, x, y);
-  }
-
-  getPixel(x, y){
-    var ci = 0;
-    try {
-      ci = this.getPixelIndex(x, y);
-    } catch (e) {
-      throw e;
-    }
-    if (this.__palette !== null){
-      return this.__palette.get_palette_color(this.__paletteIndex, ci);
-    }
-    switch(ci){
-      case 1:
-        return "#555555";
-      case 2:
-        return "#AAAAAA";
-      case 3:
-        return "#FFFFFF";
-    }
-    return 0;
   }
 
   flip(flag){
