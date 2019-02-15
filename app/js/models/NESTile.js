@@ -161,15 +161,14 @@ export default class NESTile{
 
 
   clone(){
-    var t = new NESTile();
-    t.base64 = this.base64;
-    return t;
+    return (new NESTile()).copy(this);
   }
 
   copy(t){
     if (!(t instanceof NESTile))
       throw new TypeError("Expected NESTile object.");
     this.__data.set(t.__data);
+    return this;
   }
 
   isEq(tile){
