@@ -1,36 +1,27 @@
 import Utils from "/app/js/common/Utils.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
-function BitMask(offset){
+
+function BitMask(offset, inv){
   switch(offset){
     case 0:
-      return 63;  // Mask '00111111'
+      return parseInt((inv === true) ? '01111111' : '10000000', 2);
     case 1:
-      return 207; // Mask '11001111'
+      return parseInt((inv === true) ? '10111111' : '01000000', 2);
     case 2:
-      return 243; // Mask '11110011'
+      return parseInt((inv === true) ? '11011111' : '00100000', 2);
+    case 3:
+      return parseInt((inv === true) ? '11101111' : '00010000', 2);
+    case 4:
+      return parseInt((inv === true) ? '11110111' : '00001000', 2);
+    case 5:
+      return parseInt((inv === true) ? '11111011' : '00000100', 2);
+    case 6:
+      return parseInt((inv === true) ? '11111101' : '00000010', 2);
   }
-  return 252; // Mask '11111100'
+  return parseInt((inv === true) ? '11111110' : '00000001', 2);
 }
 
-function SetDataArrayColor(arr, x, y, ci){
-  var index = (y*8)+x;
-  var dindex = Math.floor(index*0.25);
-  var bitoffset = (index % 4);
-  arr[dindex] = (arr[dindex] & BitMask(bitoffset)) ^ (ci << ((3 - bitoffset)*2));
-  //if (dindex === 1){
-  //  console.log("index: ", dindex, " | value: ", arr[dindex], " | (x,y): (", x, ",", y, ") | Bit Offset: ", bitoffset, "Color: ", ci);
-  //}
-}
-
-
-function GetDataArrayColor(arr, x, y){
-  var index = (y*8)+x;
-  var dindex = Math.floor(index*0.25);
-  var bitoffset = 6 - ((index % 4) * 2);
-  return (arr[dindex] & (3 << bitoffset)) >> bitoffset;
-
-}
 
 
 export default class NESTile{
@@ -48,23 +39,37 @@ export default class NESTile{
           throw new TypeError("Expected integer index.");
         if (prop < 0 || prop >= 64)
           throw new RangeError("Index out of bounds.");
-        var dindex = Math.floor(prop*0.25);
-        var bitoffset = 6 - ((prop % 4) * 2);
-        return (obj.__data[dindex] & (3 << bitoffset)) >> bitoffset;
+        var dindex = Math.floor(prop*0.125);
+        var bitoffset = 7 - (prop%8);
+        var v = (obj.__data[dindex] & (1 << bitoffset)) >> bitoffset;
+        v += 2*((obj.__data[8+dindex] & (1 << bitoffset)) >> bitoffset);
+        return v;
       },
+
 
       set: function(obj, prop, value){
         if (!Utils.isInt(prop))
           throw new TypeError("Expected integer index.");
+        prop = parseInt(prop);
         if (!Utils.isInt(value))
           throw new TypeError("Color index expected to be integer.");
         if (prop < 0 || prop >= 64)
           throw new RangeError("Index out of bounds.");
         if (value < 0 || value >= 4)
           throw new RangeError("Color index out of bounds.");
-        var dindex = Math.floor(index*0.25);
-        var bitoffset = (index % 4);
-        obj.__data[dindex] = (obj.__data[dindex] & BitMask(bitoffset)) ^ (ci << ((3 - bitoffset)*2));
+        var dindex = Math.floor(prop*0.125);
+        var bitoffset = (prop % 8);
+        if (value == 1 || value == 3){
+          obj.__data[dindex] |= BitMask(bitoffset);
+        } else {
+          obj.__data[dindex] &= BitMask(bitoffset, true);
+        }
+        if (value == 2 || value == 3){
+          obj.__data[8+dindex] |= BitMask(bitoffset);
+        } else {
+          obj.__data[8+dindex] &= BitMask(bitoffset, true);
+        }
+        return true;
       }
     });
   }
@@ -119,7 +124,7 @@ export default class NESTile{
     if (ci < 0 || ci >= 4){
       throw new ValueError("Color index out of bounds.");
     }
-    SetDataArrayColor(this.__data, x, y, ci);
+    this.pixels[(y*8)+x] = ci;
     return this;
   }
 
@@ -127,28 +132,25 @@ export default class NESTile{
     if (x < 0 || x >= 8 || y < 0 || y >= 8){
       throw new ValueError("Coordinates out of bounds.");
     }
-    return GetDataArrayColor(this.__data, x, y);
+    return this.pixels[(8*y) + x];
   }
 
   flip(flag){
     if (flag >= 1 && flag <= 3){
+      var oldData = this.__data;
       var newData = new Uint8Array(16);
       for (var x = 0; x < 8; x++){
         for (var y = 0; y < 8; y++){
-          var ci = GetDataArrayColor(this.__data, x, y);
-          SetDataArrayColor(
-              newData,
-              (flag == 1 || flag == 3) ? 7 - x: x,
-              (flag == 2 || flag == 3) ? 7 - y: y,
+          this.__data = oldData;
+          var ci = this.getPixelIndex(x, y);
+          this.__data = newData;
+          this.setPixelIndex(
+              (flag == 1 || flag == 3) ? 7 - x : x,
+              (flag == 2 || flag == 3) ? 7 - y : y,
               ci
           );
-          //console.log(newData);
-          //newData[r[0]] = 2;
-          //newData[r[0]] = r[1];
         }
       }
-      //console.log(newData);
-      this.__data = newData;
     }
     return this;
   }
