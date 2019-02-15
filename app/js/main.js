@@ -6,7 +6,7 @@ import CTRLPalettes from "/app/js/ctrls/CTRLPalettes.js";
 import CTRLPainter from "/app/js/ctrls/CTRLPainter.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 import NESTile from "/app/js/models/NESTile.js";
-
+import NESBank from "/app/js/models/NESBank.js";
 
 function on_palette_changed(e){
   if (e.type == "ALL"){
@@ -105,6 +105,8 @@ function initialize(DOC){
   console.log(TileC);
   console.log(TileC.dataArray);
   console.log(TileC.pixels[7]);
+
+  var bnk = new NESBank();
 }
 
 
