@@ -1,5 +1,6 @@
 
 import Utils from "/app/js/common/Utils.js";
+import ISurface from "/app/js/ifaces/ISurface.js";
 import NESTile from "/app/js/models/NESTile.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
@@ -24,17 +25,11 @@ function LRIdx2TileIdxCo(index){
   return res;
 }
 
-export default class NESBank {
+export default class NESBank extends ISurface{
   constructor(){
+    super();
     this.__LP = []; // Left Patterns (Sprites)
-    this.__RP = []; // Right Patterns (Backgrounds)
-    this.__default_pi = [
-      "#080808",
-      "#343434",
-      "#a2a2a2",
-      "#efefef",
-      "#666666" // Out of bounds color.
-    ];
+    this.__RP = []; // Right Patterns (Backgrounds) 
 
     for (var i=0; i < 256; i++){
       this.__LP.push(new NESTile());
@@ -73,6 +68,10 @@ export default class NESBank {
       this.__palette = p;
     }
   }
+
+  get width(){return 256;}
+  get height(){return 128;}
+  get length(){return this.width * this.height;}
 
   get coloridx(){
     return new Proxy(this, {
