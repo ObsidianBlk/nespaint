@@ -131,7 +131,7 @@ class CTRLPalettes{
             }
             this.classList.add(CLASS_BTN_ACTIVE);
             self.__activePaletteEl = this;
-            //self.emit("active_palette_color", i);
+            GlobalEvents.emit("active_palette_color", i.pi, i.ci);
           }
         }
       }
