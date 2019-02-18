@@ -26,7 +26,7 @@ export default class ISurface{
         if (prop < 0)
           throw new RangeError("Index is out of bounds.");
         return obj.__default_pi[4];
-      }
+      },
 
       set: function(obj, prop, value){
         if (!Utils.isInt(prop))
