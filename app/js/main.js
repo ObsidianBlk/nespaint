@@ -8,7 +8,7 @@ import NESPalette from "/app/js/models/NESPalette.js";
 import NESTile from "/app/js/models/NESTile.js";
 import NESBank from "/app/js/models/NESBank.js";
 
-function on_palette_changed(e){
+/*function on_palette_changed(e){
   if (e.type == "ALL"){
     console.log("ALL");
   } else if (e.type == "TILE"){
@@ -32,7 +32,7 @@ function handle_mouseevent(e){
 
 function handle_mouseclickevent(e){
   console.log("MOUSE CLICK ON BUTTON: ", e.button);
-}
+}*/
 
 function TitlePainter(pal){
   var elist = document.querySelectorAll(".color-NES-random");
@@ -50,14 +50,15 @@ function TitlePainter(pal){
 function initialize(DOC){
   TitlePainter(NESPalette.SystemColor);
   EmitterElements.initialize();
-  //EventWindow.enable_emitter_attributes();
-  GlobalEvents.listen("emitted-event", handle_emitted);
+  //GlobalEvents.listen("emitted-event", handle_emitted);
 
   //var nespainter = new NESPainter(DOC.getElementById("painter"));
+  
+  CTRLPainter.initialize();
 
   var palette = new NESPalette();
   // TODO: This is just test code. I should remove this.
-  palette.listen("palettes_changed", on_palette_changed);
+  //palette.listen("palettes_changed", on_palette_changed);
   // TODO: At least define a more useful set of palettes. As it is, these are just random.
   palette.set_palette([
     44,
@@ -73,7 +74,7 @@ function initialize(DOC){
   console.log(palette.to_asm());
   GlobalEvents.emit("set_app_palette", palette);
 
-  var input = new Input();
+  /*var input = new Input();
   input.preventDefaults = true;
   input.mouseTargetElement = document.getElementById("painter");
   input.listen("keydown", handle_keyevent);
@@ -83,8 +84,9 @@ function initialize(DOC){
   input.listen("mousemove", handle_mouseevent);
   input.listen("mousedown", handle_mouseevent);
   input.listen("mouseup", handle_mouseevent);
-  input.listen("mouseclick", handle_mouseclickevent);
+  input.listen("mouseclick", handle_mouseclickevent);*/
 
+  // TODO: Drop all of this below test code... or put it in a dedicated test app.
   var TileA = new NESTile();
   var TileB = new NESTile();
   TileB.setPixelIndex(0,0,2);
