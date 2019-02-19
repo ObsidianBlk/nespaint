@@ -83,7 +83,7 @@ export default class NESBank extends ISurface{
           throw new TypeError("Expected integer index.");
         prop = parseInt(prop);
         if (prop < 0 || prop >= len)
-          return this.__default_pi[4];
+          return NESPalette.Default[4];
         
         var res = LRIdx2TileIdxCo(prop);
         var list = (res.lid === 0) ? obj.__LP : obj.__RP; 
@@ -190,7 +190,7 @@ export default class NESBank extends ISurface{
     if (this.__palette !== null){
       return this.__palette.get_palette_color(pi, ci);
     }
-    return this.__default_pi[ci];
+    return NESPalette.Default[ci];
   }
 
   getColorIndex(x, y){
@@ -201,7 +201,7 @@ export default class NESBank extends ISurface{
     var list = (res.lid === 0) ? this.__LP : this.__RP; 
     return {
       pi: list[res.index].paletteIndex,
-      ci: list[res.index].getPixelIndex(res.x, res.y);
+      ci: list[res.index].getPixelIndex(res.x, res.y)
     };
   }
 

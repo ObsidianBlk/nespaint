@@ -233,3 +233,13 @@ NESPalette.SystemColor = [
   "#000000",
   "#000000"
 ];
+
+NESPalette.Default = [
+  "#080808",
+  "#343434",
+  "#a2a2a2",
+  "#efefef",
+  "#666666" // Out of bounds color.
+];
+
+

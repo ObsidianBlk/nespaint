@@ -2,15 +2,7 @@ import Utils from "/app/js/common/Utils.js"
 
 
 export default class ISurface{
-  constructor(){
-    this.__default_pi = [
-      "#080808",
-      "#343434",
-      "#a2a2a2",
-      "#efefef",
-      "#666666" // Out of bounds color.
-    ];
-  }
+  constructor(){}
 
   get width(){return 0;}
   get height(){return 0;}
@@ -25,7 +17,7 @@ export default class ISurface{
           throw new TypeError("Expected integer index.");
         if (prop < 0)
           throw new RangeError("Index is out of bounds.");
-        return obj.__default_pi[4];
+        return this.getColor(-1,-1);
       },
 
       set: function(obj, prop, value){
