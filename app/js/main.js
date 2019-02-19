@@ -116,6 +116,8 @@ function initialize(DOC){
   console.log("Bank color at coordinates (8,0): ", bnk.getColor(8,0));
   console.log("Bank color at coordinates (7,0): ", bnk.getColor(7,0));
   console.log("Bank color at coordinates (135, 15): ", bnk.getColor(135,15));
+
+  GlobalEvents.emit("change_surface", bnk);
 }
 
 

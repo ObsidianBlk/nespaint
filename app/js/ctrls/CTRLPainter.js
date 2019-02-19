@@ -3,9 +3,10 @@ import GlobalEvents from "/app/js/common/EventCaller.js";
 
 import Input from "/app/js/ui/Input.js";
 
-import NESTile from "/app/js/models/NESTile.js";
-import NESBank from "/app/js/models/NESBank.js";
-
+import NESPalette from "/app/js/models/NESPalette.js";
+//import NESTile from "/app/js/models/NESTile.js";
+//import NESBank from "/app/js/models/NESBank.js";
+import ISurface from "/app/js/ifaces/ISurface.js";
 
 const EL_CANVAS_ID = "painter";
 
@@ -24,6 +25,7 @@ var HANDLE_Resize = Utils.debounce(function(e){
     var h = canvas.clientHeight;
     canvas.width = w;
     canvas.height = h;
+    GlobalEvents.emit("resize", w, h);
   }
 }, 250);
 window.addEventListener("resize", HANDLE_Resize);
@@ -58,9 +60,17 @@ class CTRLPainter {
     this.__brushColor = 0;
     this.__brushPalette = 0;
 
+    this.__gridEnabled = false;
+    this.__gridSize = 1;
+
     this.__surface = null;
 
     var self = this;
+
+    var handle_resize = (function(w,h){
+      this.render();
+    }).bind(this);
+    GlobalEvents.listen("resize", handle_resize);
 
     var handle_change_surface = (function(surf){
       if (!(surf instanceof ISurface)){
@@ -68,7 +78,7 @@ class CTRLPainter {
         return;
       }
       this.__surface = surf;
-      // TODO: Call a rerender
+      this.render();
     }).bind(this);
     GlobalEvents.listen("change_surface", handle_change_surface);
 
@@ -82,7 +92,7 @@ class CTRLPainter {
   get onePaletteMode(){return this.__onePaletteMode;}
   set onePaletteMode(e){
     this.__onePaletteMode = (e === true);
-    // TODO: Call a rerender.
+    this.render();
   }
 
   get scale(){
@@ -95,6 +105,11 @@ class CTRLPainter {
     this.__scale = Math.max(0.1, Math.min(100.0, s));
   }
 
+  get showGrid(){return this.__gridEnabled;}
+  set showGrid(e){
+    this.__gridEnabled = (e === true);
+  }
+
   initialize(){
     if (canvas === null){
       canvas = document.getElementById(EL_CANVAS_ID);
@@ -103,6 +118,7 @@ class CTRLPainter {
       context = canvas.getContext("2d");
       if (!context)
         throw new Error("Failed to obtain canvas context.");
+      context.imageSmoothingEnabled = false;
       input.mouseTargetElement = canvas;
     }
   }
@@ -113,6 +129,56 @@ class CTRLPainter {
 
   scale_down(amount=1){
     this.scale = this.scale - (amount*0.1);
+  }
+
+  render(){
+    if (context === null || this.__surface === null)
+      return;
+
+    // Get the contexts initial fillStyle. Don't want the render operation to override it.
+    var fillStyle = context.fillStyle;
+
+    var ie = this.__surface.width - this.__offset[0];
+    var je = this.__surface.height - this.__offset[1];
+    var scalemult = 1.0/this.__scale;
+
+    // Clearing the context surface...
+    context.fillStyle = NESPalette.Default[4];
+    context.fillRect(
+      0,0,
+      Math.floor(canvas.clientWidth),
+      Math.floor(canvas.clientHeight)
+    );
+
+    for (var j = -this.__offset[1]; j < je; j++){
+      var y = Math.floor(j*scalemult);
+      for (var i = -this.__offset[0]; i < ie; i++){
+        var x = Math.floor(i*scalemult);
+        
+        var color = "#666666";
+        if (this.__onePaletteMode){
+          var pinfo = this.__surface.getColorIndex(x, y);
+          if (pinfo.ci >= 0)
+            color = NESPalette.Default[pinfo.ci];
+        } else {
+          color = this.__surface.getColor(x, y);
+        }
+
+        context.fillStyle = color;
+        context.fillRect(
+          i + this.__offset[0],
+          j + this.__offset[1],
+          1, 1
+        );
+      }
+    }
+
+    if (this.__gridEnabled && this.__scale > 0.5){
+      // TODO: render the grid!
+    }
+
+    // Return to the context's initial fillStyle.
+    context.fillStyle = fillStyle;
   }
 }
 
