@@ -95,7 +95,6 @@ var KEYBYCODE = {
   145:"scrolllock",
 };
 
-
 var KEYBYNAME = (function(){
   var keys = Object.keys(KEYBYCODE);
   var o = {};
@@ -208,10 +207,30 @@ function CodeToKeyName(code){
   return (code in Object.keys(KEYBYCODE)) ? KEYBYCODE[code] : "" + code;
 }
 
-function CodesToEventName(codes){
+function CodesToEventName(codes, mouse){
   var ename = "";
+  mouse = (mouse === true);
   for (var i=0; i < codes.length; i++){
-    ename += ((ename !== "") ? "+" : "") + CodeToKeyName(codes[i]);
+    if (mouse){
+      switch(codes[i]){
+        case 0:
+          ename += ((ename !== "") ? "+" : "") + "mouseleft";
+          break;
+        case 1:
+          ename += ((ename !== "") ? "+" : "") + "mouseright";
+          break;
+        case 2:
+          ename += ((ename !== "") ? "+" : "") + "mousemiddle";
+          break;
+        case 8000:
+          ename += ((ename !== "") ? "+" : "") + "mousemove";
+          break;
+        default:
+          ename += ((ename !== "") ? "+" : "") + "mousebtn" + codes[i].toString();
+      }
+    } else {
+      ename += ((ename !== "") ? "+" : "") + CodeToKeyName(codes[i]);
+    }
   }
   return ename;
 }
@@ -222,13 +241,35 @@ function KeymapEventName(){
 
 
 function ReorderEventName(ename){
-  // This function takes a keyboard event name and reorders it into key-code order.
+  // This function takes a keyboard and mouse event name and reorders it into key-code order.
   // This way users can write the event any way they want, but should still result in proper
   // event being called.
   var elist = ename.split("+");
+  // TODO: Need to test for duplicate event names for both keyboard and mouse event names.
   var ecodes = [];
+  var mcodes = [];
   for (var i=0; i < elist.length; i++){
     var key = elist[i].trim().toLowerCase();
+
+    // Check for mouse events first. These are hardcoded for now.
+    if (key === "mouseleft"){
+      mcodes.push(0);
+    } else if (key === "mouseright"){
+      mcodes.push(1);
+    } else if (key === "mousemiddle"){
+      mcodes.push(2);
+    } else if (key.startsWith("mousebtn")){
+      var sub = key.substring(8);
+      if (!Number.isNaN(sub)){
+        mcodes.push(parseInt(sub));
+      } else {
+        return ""; // This event name does not include valid mouse button code.
+      }
+    } else if (key === "mousemove"){
+      mcodes.push(8000);
+    }
+
+    // Now handle keyboard event names.
     if (!(key in Object.keys(KEYBYNAME))){
       if (!Number.isNaN(key))
         ecodes.push(parseInt(key));
@@ -240,7 +281,8 @@ function ReorderEventName(ename){
   }
   if (ecodes.length > 0){
     ecodes.sort(function(a, b){return a-b;});
-    return CodesToEventName(ecodes);
+    mcodes.sort(function(a, b){return a-b;});
+    return CodesToEventName(ecodes) + CodesToEventName(mcodes);
   }
   return "";
 }
@@ -264,6 +306,38 @@ export default class Input{
 
     this.__keyboardEnabled = false;
     this.__mouseEnabled = false;
+
+
+    var buttonID = (function(e){
+      var btn = e.button;
+      if ((this.__ieMouseMode && btn === 1) || (!this.__ieMouseMode && btn === 0)){
+        btn = 0;
+      } else if ((this.__ieMouseMode && e.button === 4) || (!this.__ieMouseMode && e.button === 1)){
+        btn = 1;
+      }
+      return btn;
+    }).bind(this);
+
+    var addMouseButton = (function(btn){
+      if (this.__mouseButtons.findIndex(b=>b[0]===btn) < 0){
+        this.__mouseButtons.push([btn, Math.floor(Date.now())]);
+        return true;
+      }
+      return false;
+    }).bind(this);
+
+    var removeMouseButton = (function(btn){
+      var idx = this.__mouseButtons.findIndex(b=>b[0]===btn);
+      var diff = -1;
+      if (idx >= 0){
+        diff = Math.floor(Date.now()) - this.__mouseButtons[idx][1];
+        this.__mouseButtons.splice(idx, 1);
+      }
+      return diff;
+    }).bind(this);
+
+    // ---------------------------------------------------------------------
+    // Handling keyboard events.
 
     this.enableKeyboardInput = (function(){
       var handle_keydown = (function(e){
@@ -318,6 +392,43 @@ export default class Input{
       }).bind(this);
     }).apply(this);
 
+
+    // ---------------------------------------------------------------------------------------
+    // Handling mouse events.
+
+    var MouseButtonsEventName = (function(){
+      var e = "";
+      for (var i=0; i < this.__mouseButtons.length; i++){
+        e += (e !== "") ? "+" : "";
+        switch (this.__mouseButtons[i]){
+          case 0:
+            e += "mouseleft";
+            break;
+          case 1:
+            e += "mouseright";
+            break;
+          case 2:
+            e += "mousemiddle";
+            break;
+          default:
+            e += "mousebtn" + this.__mouseButtons[i].toString();
+        }
+      }
+      return e;
+    }).bind(this);
+
+
+    // This function will only return an event name if keyboard 
+    var MouseEventName = (function(addon){
+      var ename = KeymapEventName();
+      var mname = MouseButtonsEventName();
+      if (mname !== "")
+        ename += ((ename !== "") ? "+" : "") + mname;
+      if (typeof(addon) === "string")
+        ename += ((ename !== "") ? "+" : "") + addon;
+      return ename;
+    }).bind(this);
+
     this.enableMouseInput = (function(){
       var mousePosition = (function(e){
         var pos = {
@@ -336,35 +447,7 @@ export default class Input{
         pos.x = Math.floor(pos.x);
         pos.y = Math.floor(pos.y);
         return pos;
-      }).bind(this);
-
-      var buttonID = (function(e){
-        var btn = e.button;
-        if ((this.__ieMouseMode && btn === 1) || (!this.__ieMouseMode && btn === 0)){
-          btn = 0;
-        } else if ((this.__ieMouseMode && e.button === 4) || (!this.__ieMouseMode && e.button === 1)){
-          btn = 1;
-        }
-        return btn;
-      }).bind(this);
-
-      var addMouseButton = (function(btn){
-        if (this.__mouseButtons.findIndex(b=>b[0]===btn) < 0){
-          this.__mouseButtons.push([btn, Math.floor(Date.now())]);
-          return true;
-        }
-        return false;
-      }).bind(this);
-
-      var removeMouseButton = (function(btn){
-        var idx = this.__mouseButtons.findIndex(b=>b[0]===btn);
-        var diff = -1;
-        if (idx >= 0){
-          diff = Math.floor(Date.now()) - this.__mouseButtons[idx][1];
-          this.__mouseButtons.splice(idx, 1);
-        }
-        return diff;
-      }).bind(this);
+      }).bind(this); 
 
       var handle_mousemove = (function(e){ 
         var pos = mousePosition(e);
@@ -374,10 +457,11 @@ export default class Input{
             if (e.stopPropagation)
               e.stopPropagation();
             e.cancelBubble = true;
-          }
+          }  
           this.__mousePosition = pos;
           this.__mouseLastAction = "mousemove";
-          this.__emitter.emit("mousemove", {
+          var ename = MouseEventName();
+          var data = {
             source: this,
             lastX: pos.lastX,
             lastY: pos.lastY,
@@ -385,7 +469,10 @@ export default class Input{
             y: pos.y,
             button: this.__mouseLastButton,
             action: "mousemove"
-          });
+          };
+          if (ename !== "" && ename !== "mousemove")
+            this.__emitter.emit(ename, data);
+          this.__emitter.emit("mousemove", data);
         }
         return false;
       }).bind(this);
@@ -401,10 +488,8 @@ export default class Input{
             e.cancelBubble = true;
           }
           if (addMouseButton(button)){
-            this.__mousePosition = pos;
-            this.__mouseLastButton = button;
-            this.__mouseLastAction = "mousedown";
-            this.__emitter.emit("mousedown", {
+            var ename = MouseEventName();
+            var data = {
               source: this,
               lastX: pos.lastX,
               lastY: pos.lastY,
@@ -412,7 +497,13 @@ export default class Input{
               y: pos.y,
               button: button,
               action: "mousedown"
-            });
+            };
+            this.__mousePosition = pos;
+            this.__mouseLastButton = button;
+            this.__mouseLastAction = "mousedown";
+            if (ename !== "")
+              this.__emitter.emit(ename, data);
+            this.__emitter.emit("mousedown", data);
           }
         }
         return false;
