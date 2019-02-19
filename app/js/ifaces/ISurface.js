@@ -49,6 +49,10 @@ export default class ISurface{
     return this.__default_pi[4];
   }
 
+  getColorIndex(x, y){
+    return 0;
+  }
+
   setColorIndex(x, y, ci, pi){
     return this;
   }

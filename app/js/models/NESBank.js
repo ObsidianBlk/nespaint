@@ -193,6 +193,15 @@ export default class NESBank extends ISurface{
     return this.__default_pi[ci];
   }
 
+  getColorIndex(x, y){
+    var res = LRIdx2TileIdxCo((y*256)+x);
+    var list = (res.lid === 0) ? this.__LP : this.__RP; 
+    return {
+      pi: list[res.index].paletteIndex,
+      ci: list[res.index].getPixelIndex(res.x, res.y);
+    };
+  }
+
   setColorIndex(x, y, ci, pi){
     if (x < 0 || x >= 256 || y < 0 || y > 128)
       throw new RangeError("Coordinates out of bounds.");
