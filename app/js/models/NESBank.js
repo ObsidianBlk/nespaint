@@ -195,7 +195,7 @@ export default class NESBank extends ISurface{
 
   getColorIndex(x, y){
     if (x < 0 || x >= 256 || y < 0 || y >= 128)
-      return {pi: -1, ci:this.__default_pi[4]};
+      return {pi: -1, ci:-1};
 
     var res = LRIdx2TileIdxCo((y*256)+x);
     var list = (res.lid === 0) ? this.__LP : this.__RP; 
