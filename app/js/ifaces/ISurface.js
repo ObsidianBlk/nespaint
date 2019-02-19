@@ -50,7 +50,7 @@ export default class ISurface{
   }
 
   getColorIndex(x, y){
-    return 0;
+    return {pi:-1, ci:-1};
   }
 
   setColorIndex(x, y, ci, pi){
