@@ -225,6 +225,8 @@ function CodesToEventName(codes, mouse){
         case 8000:
           ename += ((ename !== "") ? "+" : "") + "mousemove";
           break;
+        case 8001:
+          ename += ((ename !== "") ? "+" : "") + "wheel";
         default:
           ename += ((ename !== "") ? "+" : "") + "mousebtn" + codes[i].toString();
       }
@@ -267,6 +269,8 @@ function ReorderEventName(ename){
       }
     } else if (key === "mousemove"){
       mcodes.push(8000);
+    } else if (key === "wheel"){
+      mcodes.push(8001);
     }
 
     // Now handle keyboard event names.
@@ -475,6 +479,7 @@ export default class Input{
             x: pos.x,
             y: pos.y,
             button: this.__mouseLastButton,
+            delta: 0,
             action: "mousemove"
           };
           if (ename !== "" && ename !== "mousemove")
@@ -503,6 +508,7 @@ export default class Input{
               x: pos.x,
               y: pos.y,
               button: button,
+              delta: 0,
               action: "mousedown"
             };
             this.__mousePosition = pos;
@@ -540,6 +546,7 @@ export default class Input{
               x: pos.x,
               y: pos.y,
               button: button,
+              delta: 0,
               action: "mouseup"
             }
             this.__emitter.emit("mouseup", data);
@@ -552,9 +559,25 @@ export default class Input{
       }).bind(this);
 
       var handle_mousewheel = (function(e){
-        if (this.__preventDefaults)
-          e.preventDefault();
-        // TODO: Finish me!
+        var pos = mousePosition(e);
+        if (pos.inbounds === true){
+          if (this.__preventDefaults)
+            e.preventDefault();
+          var ename = MouseEventName("wheel");
+          var data = {
+            source: this,
+            lastX: pos.lastX,
+            lastY: pos.lastY,
+            x: pos.x,
+            y: pos.y,
+            button: this.__mouseLastButton,
+            delta: Math.sign(e.deltaY),
+            action: "wheel"
+          };
+          if (ename !== "wheel")
+            this.__emitter.emit(ename, data);
+          this.__emitter.emit("wheel", data);
+        }
       }).bind(this);
 
       // This event is purely for preventing Default behaviors on mouse events we're not using.
@@ -577,7 +600,8 @@ export default class Input{
           window.addEventListener("mousemove", handle_mousemove);
           window.addEventListener("mousedown", handle_mousedown);
           window.addEventListener("mouseup", handle_mouseup);
-          window.addEventListener("mousewheel", handle_mousewheel);
+          window.addEventListener("mousewheel", handle_mousewheel); // For older browsers?
+          window.addEventListener("wheel", handle_mousewheel);
           window.addEventListener("click", handle_mouseprevdef);
           window.addEventListener("dblclick", handle_mouseprevdef);
           window.addEventListener("contextmenu", handle_mouseprevdef);
@@ -586,7 +610,8 @@ export default class Input{
           window.removeEventListener("mousemove", handle_mousemove);
           window.removeEventListener("mousedown", handle_mousedown);
           window.removeEventListener("mouseup", handle_mouseup);
-          window.removeEventListener("mousewheel", handle_mousewheel);
+          window.removeEventListener("mousewheel", handle_mousewheel); // For older browsers?
+          window.removeEventListener("wheel", handle_mousewheel);
           window.removeEventListener("click", handle_mouseprevdef);
           window.removeEventListener("dblclick", handle_mouseprevdef);
           window.removeEventListener("contextmenu", handle_mouseprevdef);
@@ -679,7 +704,7 @@ export default class Input{
   }
 
   listen(ename, func, owner=null, once=false){
-    if ((["keyup", "keydown", "keypress", "mousemove", "mousedown", "mouseup", "mouseclick"]).indexOf(ename) >= 0){
+    if ((["keyup", "keydown", "keypress", "mousemove", "mousedown", "mouseup", "mouseclick", "wheel"]).indexOf(ename) >= 0){
       this.__emitter.listen(ename, func, owner, once);
     } else {
       ename = ReorderEventName(ename);
@@ -692,7 +717,7 @@ export default class Input{
   }
 
   unlisten(ename, func, owner=null){
-    if ((["keyup", "keydown", "keypress", "mousemove", "mousedown", "mouseup", "mouseclick"]).indexOf(ename) >= 0){
+    if ((["keyup", "keydown", "keypress", "mousemove", "mousedown", "mouseup", "mouseclick", "wheel"]).indexOf(ename) >= 0){
       this.__emitter.unlisten(ename, func, owner);
     } else {
       ename = ReorderEventName(ename);
