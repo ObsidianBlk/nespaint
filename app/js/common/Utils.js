@@ -24,15 +24,39 @@ const utils = {
       }
   },
 
-  debounce:function(func, delay){
+  debounce:function(func, delay, scope){
     var timeout = null;
     return function(){
-      var context = this;
+      //var context = this;
+      var context = scope || this;
       var args = arguments;
       clearTimeout(timeout);
       timeout = setTimeout(function(){
         func.apply(context, args);
       }, delay);
+    };
+  },
+
+  throttle:function(func, threshold, scope){
+    threshold || (threshold = 250);
+    var lst = 0;
+    var timer;
+
+    return function(){
+      var context = scope || this;
+      var args = arguments;
+
+      var now = Date.now();
+      if (now < lst + threshold){
+        clearTimeout(timer);
+        timer = setTimeout(function(){
+          lst = now;
+          func.apply(context, args);
+        }, threshold);
+      } else {
+        lst = now;
+        func.apply(context, args);
+      }
     };
   }
 };
