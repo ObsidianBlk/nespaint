@@ -18,14 +18,21 @@ const EL_CANVAS_ID = "painter";
 var canvas = null;
 var context = null;
 
+function ResizeCanvasImg(w, h){
+  if (canvas !== null){
+    canvas.width = w;
+    canvas.height = h;
+  }
+};
+
 // Handling window resize events...
 var HANDLE_Resize = Utils.debounce(function(e){
   if (canvas !== null){
-    var w = canvas.clientWidth;
-    var h = canvas.clientHeight;
-    canvas.width = w;
-    canvas.height = h;
-    GlobalEvents.emit("resize", w, h);
+    ResizeCanvasImg(
+      canvas.clientWidth,
+      canvas.clientHeight
+    );
+    GlobalEvents.emit("resize", canvas.clientWidth, canvas.clientHeight);
   }
 }, 250);
 window.addEventListener("resize", HANDLE_Resize);
@@ -78,6 +85,7 @@ class CTRLPainter {
         return;
       }
       this.__surface = surf;
+      this.centerSurface();
       this.render();
     }).bind(this);
     GlobalEvents.listen("change_surface", handle_change_surface);
@@ -119,16 +127,31 @@ class CTRLPainter {
       if (!context)
         throw new Error("Failed to obtain canvas context.");
       context.imageSmoothingEnabled = false;
+      ResizeCanvasImg(canvas.clientWidth, canvas.clientHeight); // A forced "resize".
       input.mouseTargetElement = canvas;
+
+      this.centerSurface();
     }
+    return this;
   }
 
   scale_up(amount=1){
     this.scale = this.scale + (amount*0.1);
+    return this;
   }
 
   scale_down(amount=1){
     this.scale = this.scale - (amount*0.1);
+    return this;
+  }
+
+  centerSurface(){
+    if (canvas === null || this.__surface === null)
+      return;
+
+    this.__offset[0] = Math.floor((canvas.clientWidth - this.__surface.width) * 0.5);
+    this.__offset[1] = Math.floor((canvas.clientHeight - this.__surface.height) * 0.5);
+    return this;
   }
 
   render(){
@@ -138,8 +161,8 @@ class CTRLPainter {
     // Get the contexts initial fillStyle. Don't want the render operation to override it.
     var fillStyle = context.fillStyle;
 
-    var ie = this.__surface.width - this.__offset[0];
-    var je = this.__surface.height - this.__offset[1];
+    var ie = this.__offset[0] + this.__surface.width;
+    var je = this.__offset[1] + this.__surface.height;
     var scalemult = 1.0/this.__scale;
 
     // Clearing the context surface...
@@ -150,26 +173,27 @@ class CTRLPainter {
       Math.floor(canvas.clientHeight)
     );
 
-    for (var j = -this.__offset[1]; j < je; j++){
-      var y = Math.floor(j*scalemult);
-      for (var i = -this.__offset[0]; i < ie; i++){
-        var x = Math.floor(i*scalemult);
+    for (var j = 0; j < this.__surface.height; j++){
+      var y = Math.floor((j*scalemult) + this.__offset[1]);
+      for (var i = 0; i < this.__surface.width; i++){
+        var x = Math.floor((i*scalemult) + this.__offset[0]);
         
-        var color = "#666666";
-        if (this.__onePaletteMode){
-          var pinfo = this.__surface.getColorIndex(x, y);
-          if (pinfo.ci >= 0)
-            color = NESPalette.Default[pinfo.ci];
-        } else {
-          color = this.__surface.getColor(x, y);
-        }
+        if (x >= 0 && x < canvas.clientWidth && y >= 0 && y < canvas.clientHeight){
+          var color = "#666666";
+          if (this.__onePaletteMode){
+            var pinfo = this.__surface.getColorIndex(i, j);
+            if (pinfo.ci >= 0)
+              color = NESPalette.Default[pinfo.ci];
+          } else {
+            color = this.__surface.getColor(i, j);
+          }
 
-        context.fillStyle = color;
-        context.fillRect(
-          i + this.__offset[0],
-          j + this.__offset[1],
-          1, 1
-        );
+          context.fillStyle = color;
+          context.fillRect(
+            x,y,
+            1, 1
+          );
+        }
       }
     }
 
@@ -179,6 +203,8 @@ class CTRLPainter {
 
     // Return to the context's initial fillStyle.
     context.fillStyle = fillStyle;
+
+    return this;
   }
 }
 
