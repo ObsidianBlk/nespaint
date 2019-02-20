@@ -40,6 +40,8 @@ window.addEventListener("resize", HANDLE_Resize);
 
 // Setting-up Input controls.
 var input = new Input();
+input.enableKeyboardInput(true);
+input.enableMouseInput(true);
 input.preventDefaults = true;
 
 // Mouse handling...
@@ -95,7 +97,17 @@ class CTRLPainter {
       this.__brushColor = ci;
     }).bind(this);
     GlobalEvents.listen("active_palette_color", handle_color_change);
+
+    var handle_offset = (function(e){
+      this.__offset[0] += e.x - e.lastX;
+      this.__offset[1] += e.y - e.lastY;
+      this.render();
+    }).bind(this);
+    input.listen("shift+mouseleft+mousemove", handle_offset);
   }
+
+
+
 
   get onePaletteMode(){return this.__onePaletteMode;}
   set onePaletteMode(e){
@@ -117,6 +129,9 @@ class CTRLPainter {
   set showGrid(e){
     this.__gridEnabled = (e === true);
   }
+
+
+
 
   initialize(){
     if (canvas === null){
