@@ -17,6 +17,52 @@ const EL_CANVAS_ID = "painter";
 
 var canvas = null;
 var context = null;
+var ctximg = null;
+
+function OpenCanvasPixels(){
+  if (context !== null){
+    if (ctximg === null){
+      ctximg = context.getImageData(0,0,Math.floor(canvas.clientWidth),Math.floor(canvas.clientHeight));
+    }
+    return (ctximg !== null)
+  }
+  return false;
+}
+
+function PutCanvasPixel(i,j,size,color){
+  if (ctximg === null)
+    return;
+
+  size = Math.ceil(size);
+  if (size <= 0){return;}
+
+  var cw = Math.floor(canvas.clientWidth);
+  var ch = Math.floor(canvas.clientHeight);
+
+  var r = parseInt(color.substring(1, 3), 16);
+  var g = parseInt(color.substring(3, 5), 16);
+  var b = parseInt(color.substring(5, 7), 16);
+  
+  var idat = ctximg.data;
+  for (var y=j; y < j+size; y++){
+    for (var x=i; x < i+size; x++){
+      if (x >= 0 && x < cw && y >= 0 && y < ch){
+        var index = (y*cw*4) + (x*4);
+        idat[index] = r;
+        idat[index+1] = g;
+        idat[index+2] = b;
+      }
+    }
+  }
+
+}
+
+function CloseCanvasPixels(){
+  if (ctximg !== null){
+    context.putImageData(ctximg, 0, 0);
+    ctximg = null;
+  }
+}
 
 function ResizeCanvasImg(w, h){
   if (canvas !== null){
@@ -76,6 +122,10 @@ class CTRLPainter {
 
     var self = this;
 
+    var RenderD = Utils.throttle((function(){
+      this.render();
+    }).bind(this), 20);
+
     var handle_resize = (function(w,h){
       this.render();
     }).bind(this);
@@ -88,7 +138,7 @@ class CTRLPainter {
       }
       this.__surface = surf;
       this.center_surface();
-      this.render();
+      RenderD();
     }).bind(this);
     GlobalEvents.listen("change_surface", handle_change_surface);
 
@@ -101,7 +151,7 @@ class CTRLPainter {
     var handle_offset = (function(e){
       this.__offset[0] += e.x - e.lastX;
       this.__offset[1] += e.y - e.lastY;
-      this.render();
+      RenderD();
     }).bind(this);
     input.listen("shift+mouseleft+mousemove", handle_offset);
 
@@ -112,7 +162,7 @@ class CTRLPainter {
         this.scale_up();
       }
       if (e.delta !== 0)
-        this.render();
+        RenderD();
     }).bind(this);
     input.listen("wheel", handle_scale);
   }
@@ -197,13 +247,14 @@ class CTRLPainter {
       Math.floor(canvas.clientHeight)
     );
 
+    OpenCanvasPixels();
     for (var j = 0; j < this.__surface.height; j++){
       var y = Math.floor((j*scalemult) + this.__offset[1]);
       for (var i = 0; i < this.__surface.width; i++){
         var x = Math.floor((i*scalemult) + this.__offset[0]);
         
         if (x >= 0 && x < canvas.clientWidth && y >= 0 && y < canvas.clientHeight){
-          var color = "#666666";
+          var color = NESPalette.Default[4];
           if (this.__onePaletteMode){
             var pinfo = this.__surface.getColorIndex(i, j);
             if (pinfo.ci >= 0)
@@ -212,14 +263,16 @@ class CTRLPainter {
             color = this.__surface.getColor(i, j);
           }
 
-          context.fillStyle = color;
-          context.fillRect(
-            x,y,
-            1, 1
-          );
+          PutCanvasPixel(x,y, scalemult, color);
+          //context.fillStyle = color;
+          //context.fillRect(
+          //  x,y,
+          //  Math.ceil(scalemult), Math.ceil(scalemult)
+          //); 
         }
       }
     }
+    CloseCanvasPixels();
 
     if (this.__gridEnabled && this.__scale > 0.5){
       // TODO: render the grid!
