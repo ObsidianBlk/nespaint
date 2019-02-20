@@ -260,7 +260,7 @@ function ReorderEventName(ename){
       mcodes.push(2);
     } else if (key.startsWith("mousebtn")){
       var sub = key.substring(8);
-      if (!Number.isNaN(sub)){
+      if (!isNaN(sub)){
         mcodes.push(parseInt(sub));
       } else {
         return ""; // This event name does not include valid mouse button code.
@@ -270,8 +270,8 @@ function ReorderEventName(ename){
     }
 
     // Now handle keyboard event names.
-    if (!(key in Object.keys(KEYBYNAME))){
-      if (!Number.isNaN(key))
+    else if (!(key in Object.keys(KEYBYNAME))){
+      if (!isNaN(key))
         ecodes.push(parseInt(key));
       else
         return ""; // This event name does not include valid key name!
@@ -279,10 +279,17 @@ function ReorderEventName(ename){
       ecodes.push(KEYBYNAME[key]);
     }
   }
-  if (ecodes.length > 0){
-    ecodes.sort(function(a, b){return a-b;});
-    mcodes.sort(function(a, b){return a-b;});
-    return CodesToEventName(ecodes) + CodesToEventName(mcodes);
+  if (ecodes.length > 0 || mcodes.length > 0){
+    var rename = "";
+    if (ecodes.length > 0){
+      ecodes.sort(function(a, b){return a-b;});
+      rename = CodesToEventName(ecodes);
+    }
+    if (mcodes.length > 0){
+      mcodes.sort(function(a, b){return a-b;});
+      rename += ((rename !== "") ? "+" : "") + CodesToEventName(mcodes, true);
+    }
+    return rename;
   }
   return "";
 }
@@ -400,7 +407,7 @@ export default class Input{
       var e = "";
       for (var i=0; i < this.__mouseButtons.length; i++){
         e += (e !== "") ? "+" : "";
-        switch (this.__mouseButtons[i]){
+        switch (this.__mouseButtons[i][0]){
           case 0:
             e += "mouseleft";
             break;
@@ -411,7 +418,7 @@ export default class Input{
             e += "mousemiddle";
             break;
           default:
-            e += "mousebtn" + this.__mouseButtons[i].toString();
+            e += "mousebtn" + this.__mouseButtons[i][0].toString();
         }
       }
       return e;
@@ -460,7 +467,7 @@ export default class Input{
           }  
           this.__mousePosition = pos;
           this.__mouseLastAction = "mousemove";
-          var ename = MouseEventName();
+          var ename = MouseEventName("mousemove");
           var data = {
             source: this,
             lastX: pos.lastX,
