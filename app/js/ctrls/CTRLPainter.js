@@ -85,7 +85,7 @@ class CTRLPainter {
         return;
       }
       this.__surface = surf;
-      this.centerSurface();
+      this.center_surface();
       this.render();
     }).bind(this);
     GlobalEvents.listen("change_surface", handle_change_surface);
@@ -130,7 +130,7 @@ class CTRLPainter {
       ResizeCanvasImg(canvas.clientWidth, canvas.clientHeight); // A forced "resize".
       input.mouseTargetElement = canvas;
 
-      this.centerSurface();
+      this.center_surface();
     }
     return this;
   }
@@ -145,7 +145,7 @@ class CTRLPainter {
     return this;
   }
 
-  centerSurface(){
+  center_surface(){
     if (canvas === null || this.__surface === null)
       return;
 
@@ -161,8 +161,6 @@ class CTRLPainter {
     // Get the contexts initial fillStyle. Don't want the render operation to override it.
     var fillStyle = context.fillStyle;
 
-    var ie = this.__offset[0] + this.__surface.width;
-    var je = this.__offset[1] + this.__surface.height;
     var scalemult = 1.0/this.__scale;
 
     // Clearing the context surface...
