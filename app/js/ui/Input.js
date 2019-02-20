@@ -576,6 +576,10 @@ export default class Input{
           };
           if (ename !== "wheel")
             this.__emitter.emit(ename, data);
+          if (data.delta < 0)
+            this.__emitter.emit("wheeldown", data);
+          if (data.delta > 0)
+            this.__emitter.emit("wheelup", data);
           this.__emitter.emit("wheel", data);
         }
       }).bind(this);
@@ -704,7 +708,18 @@ export default class Input{
   }
 
   listen(ename, func, owner=null, once=false){
-    if ((["keyup", "keydown", "keypress", "mousemove", "mousedown", "mouseup", "mouseclick", "wheel"]).indexOf(ename) >= 0){
+    if (([
+      "keyup",
+      "keydown",
+      "keypress",
+      "mousemove",
+      "mousedown",
+      "mouseup",
+      "mouseclick",
+      "wheel",
+      "wheelup",
+      "wheeldown"
+    ]).indexOf(ename) >= 0){
       this.__emitter.listen(ename, func, owner, once);
     } else {
       ename = ReorderEventName(ename);
@@ -717,7 +732,18 @@ export default class Input{
   }
 
   unlisten(ename, func, owner=null){
-    if ((["keyup", "keydown", "keypress", "mousemove", "mousedown", "mouseup", "mouseclick", "wheel"]).indexOf(ename) >= 0){
+    if (([
+      "keyup",
+      "keydown",
+      "keypress",
+      "mousemove",
+      "mousedown",
+      "mouseup",
+      "mouseclick",
+      "wheel",
+      "wheelup",
+      "wheeldown"
+    ]).indexOf(ename) >= 0){
       this.__emitter.unlisten(ename, func, owner);
     } else {
       ename = ReorderEventName(ename);
