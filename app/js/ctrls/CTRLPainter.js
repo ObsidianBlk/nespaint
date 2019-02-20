@@ -104,6 +104,17 @@ class CTRLPainter {
       this.render();
     }).bind(this);
     input.listen("shift+mouseleft+mousemove", handle_offset);
+
+    var handle_scale = (function(e){
+      if (e.delta < 0){
+        this.scale_down();
+      } else if (e.delta > 0){
+        this.scale_up();
+      }
+      if (e.delta !== 0)
+        this.render();
+    }).bind(this);
+    input.listen("wheel", handle_scale);
   }
 
 
