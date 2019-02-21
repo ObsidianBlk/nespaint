@@ -114,6 +114,8 @@ class CTRLPainter {
     this.__onePaletteMode = true; // If true, ALL tiles will be drawing using the same palette.
 
     this.__brushSize = 1;
+    this.__brushLastPos = [0.0, 0.0];
+    this.__brushPos = [0.0, 0.0];
     this.__brushColor = 0;
     this.__brushPalette = 0;
 
@@ -122,14 +124,42 @@ class CTRLPainter {
 
     this.__surface = null;
 
-    var self = this;
+    // var self = this;
 
     var RenderD = Utils.throttle((function(){
       this.render();
     }).bind(this), 20);
 
+    var LineToSurface = (function(x0, y0, x1, y1, ci, pi){
+      var dx = x1 - x0;
+      var dy = y1 - y0;
+
+      if (dx == 0){
+        // Verticle line
+        var x = x0;
+        var s = Math.min(y0, y1);
+        var e = Math.max(y0, y1);
+        for (var y = s; y <= e; y++){
+          this.__surface.setColorIndex(x, y, ci, pi);
+        }
+      } else {
+        var slope = Math.abs(dy/dx);
+        var err = 0.0;
+        var y = y0;
+        var surf = this.__surface;
+        Utils.range(x0, x1, 1).forEach(function(x){
+          surf.setColorIndex(Math.floor(x), Math.floor(y), ci, pi);
+          err += slope;
+          if (err > 0.5){
+            y += Math.sign(dy);
+            err -= 1.0;
+          }
+        });
+      }
+    }).bind(this);
+
     var handle_resize = (function(w,h){
-      this.render();
+      RenderD();
     }).bind(this);
     GlobalEvents.listen("resize", handle_resize);
 
@@ -149,6 +179,38 @@ class CTRLPainter {
       this.__brushColor = ci;
     }).bind(this);
     GlobalEvents.listen("active_palette_color", handle_color_change);
+
+    var handle_mousemove = (function(e){
+      this.__brushLastPos[0] = this.__brushPos[0];
+      this.__brushLastPos[1] = this.__brushPos[1];
+      this.__brushPos[0] = e.x;
+      this.__brushPos[1] = e.y;
+      var x = Math.floor((this.__brushPos[0] - this.__offset[0]) * (1.0 / this.__scale));
+      var y = Math.floor((this.__brushPos[1] - this.__offset[1]) * (1.0 / this.__scale));
+      if (x >= 0 && x < this.__surface.width && y >= 0 && y < this.__surface.height){
+        RenderD();
+      }
+    }).bind(this);
+    input.listen("mousemove", handle_mousemove);
+    input.listen("mouseleft+mousemove", handle_mousemove);
+
+    var handle_draw = (function(e){
+      if (e.isCombo || e.button == 0){
+        if (this.__surface !== null){ 
+          var x = Math.floor((this.__brushPos[0] - this.__offset[0]) * (1.0 / this.__scale));
+          var y = Math.floor((this.__brushPos[1] - this.__offset[1]) * (1.0 / this.__scale));
+          var sx = (e.isCombo) ? Math.floor((this.__brushLastPos[0] - this.__offset[0]) * (1.0 / this.__scale)) : x;
+          var sy = (e.isCombo) ? Math.floor((this.__brushLastPos[1] - this.__offset[1]) * (1.0 / this.__scale)) : y;
+          if (x >= 0 && x < this.__surface.width && y >= 0 && y < this.__surface.height){
+            LineToSurface(sx, sy, x, y, this.__brushColor, this.__brushPalette);
+            //this.__surface.setColorIndex(x, y, this.__brushColor, this.__brushPalette);
+            RenderD();
+          }
+        }
+      }
+    }).bind(this);
+    input.listen("mouseclick", handle_draw);
+    input.listen("mouseleft+mousemove", handle_draw);
 
     var handle_offset = (function(e){
       this.__offset[0] += e.x - e.lastX;
@@ -268,6 +330,26 @@ class CTRLPainter {
     }
     CloseCanvasPixels();
 
+    // Draw the mouse position... if mouse is currently in bounds.
+    if (input.isMouseInBounds()){
+      context.fillStyle = "#AA9900";
+      var x = Math.floor((this.__brushPos[0] - this.__offset[0]) * (1.0/this.__scale));
+      var y = Math.floor((this.__brushPos[1] - this.__offset[1]) * (1.0/this.__scale));
+      if (x >= 0 && x < this.__surface.width && y >= 0 && y < this.__surface.height){
+        context.beginPath();
+        context.rect(
+          this.__offset[0] + (x*this.__scale),
+          this.__offset[1] + (y*this.__scale),
+          Math.ceil(this.__scale),
+          Math.ceil(this.__scale)
+        );
+        context.fill();
+        context.closePath();
+      }
+    }
+
+
+    // Draw grid.
     if (this.__gridEnabled && this.__scale > 0.5){
       context.strokeStyle = "#00FF00";
 
