@@ -474,6 +474,7 @@ export default class Input{
           var ename = MouseEventName("mousemove");
           var data = {
             source: this,
+            isCombo: (ename.indexOf("+") >= 0),
             lastX: pos.lastX,
             lastY: pos.lastY,
             x: pos.x,
@@ -503,6 +504,7 @@ export default class Input{
             var ename = MouseEventName();
             var data = {
               source: this,
+              isCombo: (ename.indexOf("+") >= 0),
               lastX: pos.lastX,
               lastY: pos.lastY,
               x: pos.x,
@@ -541,6 +543,7 @@ export default class Input{
             this.__mouseLastAction = "mouseup";
             var data = {
               source: this,
+              isCombo: false,
               lastX: pos.lastX,
               lastY: pos.lastY,
               x: pos.x,
@@ -566,6 +569,7 @@ export default class Input{
           var ename = MouseEventName("wheel");
           var data = {
             source: this,
+            isCombo: (ename.indexOf("+") >= 0),
             lastX: pos.lastX,
             lastY: pos.lastY,
             x: pos.x,
