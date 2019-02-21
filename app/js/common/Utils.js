@@ -24,6 +24,24 @@ const utils = {
       }
   },
 
+  range:function(a, b, step){
+    var arr = [];
+    if (!isNaN(a) && !isNaN(b)){
+      if (a == b || step < 0){
+        arr.push(a);
+      } else {
+        if (a < b){
+          for (var i=a; i <= b; i+=step)
+            arr.push(i);
+        } else {
+          for (var i=a; i >= b; i-=step)
+            arr.push(i);
+        }
+      }
+    }
+    return arr;
+  },
+
   debounce:function(func, delay, scope){
     var timeout = null;
     return function(){
