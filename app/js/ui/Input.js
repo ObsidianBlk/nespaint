@@ -485,9 +485,8 @@ export default class Input{
             delta: 0,
             action: "mousemove"
           };
-          if (ename !== "" && ename !== "mousemove")
+          if (ename !== "")
             this.__emitter.emit(ename, data);
-          this.__emitter.emit("mousemove", data);
         }
         return false;
       }).bind(this);
