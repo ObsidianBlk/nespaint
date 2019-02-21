@@ -314,6 +314,7 @@ export default class Input{
     this.__mouseLastButton = -1;
     this.__mouseLastAction = "";
     this.__mouseButtons = [];
+    this.__mouseInBounds = false;
 
     this.__keyboardEnabled = false;
     this.__mouseEnabled = false;
@@ -457,6 +458,7 @@ export default class Input{
         }
         pos.x = Math.floor(pos.x);
         pos.y = Math.floor(pos.y);
+        this.__mouseInBounds = pos.inbounds;
         return pos;
       }).bind(this); 
 
@@ -709,6 +711,11 @@ export default class Input{
       }
     }
     return false;
+  }
+
+  isMouseInBounds(){return this.__mouseInBounds;}
+  lastMousePosition(){
+    return [this.__mousePosition.x, this.__mousePosition.y];
   }
 
   listen(ename, func, owner=null, once=false){
