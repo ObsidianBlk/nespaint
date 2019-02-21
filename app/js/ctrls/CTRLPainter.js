@@ -33,6 +33,8 @@ function PutCanvasPixel(i,j,size,color){
   if (ctximg === null)
     return;
 
+  i = Math.round(i);
+  j = Math.round(j);
   size = Math.ceil(size);
   if (size <= 0){return;}
 
@@ -115,7 +117,7 @@ class CTRLPainter {
     this.__brushColor = 0;
     this.__brushPalette = 0;
 
-    this.__gridEnabled = false;
+    this.__gridEnabled = true; //false;
     this.__gridSize = 1;
 
     this.__surface = null;
@@ -234,10 +236,7 @@ class CTRLPainter {
     if (context === null || this.__surface === null)
       return;
 
-    // Get the contexts initial fillStyle. Don't want the render operation to override it.
-    var fillStyle = context.fillStyle;
-
-    var scalemult = 1.0/this.__scale;
+    context.save();
 
     // Clearing the context surface...
     context.fillStyle = NESPalette.Default[4];
@@ -249,9 +248,9 @@ class CTRLPainter {
 
     OpenCanvasPixels();
     for (var j = 0; j < this.__surface.height; j++){
-      var y = Math.floor((j*scalemult) + this.__offset[1]);
+      var y = (j*this.__scale) + this.__offset[1];
       for (var i = 0; i < this.__surface.width; i++){
-        var x = Math.floor((i*scalemult) + this.__offset[0]);
+        var x = (i*this.__scale) + this.__offset[0];
         
         if (x >= 0 && x < canvas.clientWidth && y >= 0 && y < canvas.clientHeight){
           var color = NESPalette.Default[4];
@@ -263,23 +262,42 @@ class CTRLPainter {
             color = this.__surface.getColor(i, j);
           }
 
-          PutCanvasPixel(x,y, scalemult, color);
-          //context.fillStyle = color;
-          //context.fillRect(
-          //  x,y,
-          //  Math.ceil(scalemult), Math.ceil(scalemult)
-          //); 
+          PutCanvasPixel(x,y, this.__scale, color);
         }
       }
     }
     CloseCanvasPixels();
 
     if (this.__gridEnabled && this.__scale > 0.5){
-      // TODO: render the grid!
+      context.strokeStyle = "#00FF00";
+
+      var w = this.__surface.width * this.__scale;
+      var h = this.__surface.height * this.__scale;
+
+      var length = Math.max(this.__surface.width, this.__surface.height);
+      for (var i=0; i < length; i += 8){
+        var x = (i*this.__scale) + this.__offset[0];
+        var y = (i*this.__scale) + this.__offset[1];
+
+        if (i < this.__surface.width){
+          context.beginPath();
+          context.moveTo(x, this.__offset[1]);
+          context.lineTo(x, this.__offset[1] + h);
+          context.stroke();
+          context.closePath();
+        }
+
+        if (i < this.__surface.height){
+          context.beginPath();
+          context.moveTo(this.__offset[0], y);
+          context.lineTo(this.__offset[0] + w, y);
+          context.stroke();
+          context.closePath();
+        }
+      }
     }
 
-    // Return to the context's initial fillStyle.
-    context.fillStyle = fillStyle;
+    context.restore();
 
     return this;
   }
