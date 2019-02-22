@@ -5,17 +5,21 @@ import NESTile from "/app/js/models/NESTile.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
 
-function LRIdx2TileIdxCo(index){
+function LRIdx2TileIdxCo(index, lid){
+  lid || (lid = 2);
   var res = {
     lid: 0,
     index: 0,
     x: 0,
     y: 0
   };
-  var x = Math.floor(index % 256);
-  var y = Math.floor(index / 256);
+  var w = (lid == 2) ? 256 : 128;
+  var x = Math.floor(index % w);
+  var y = Math.floor(index / w);
   if (x < 128){
     res.index = (Math.floor(y/8) * 16) + Math.floor(x / 8);
+    if (lid !== 2)
+      res.lid = lid;
   } else {
     res.index = (Math.floor(y/8) * 16) + Math.floor((x - 128) / 8);
     res.lid = 1;
@@ -30,6 +34,7 @@ export default class NESBank extends ISurface{
     super();
     this.__LP = []; // Left Patterns (Sprites)
     this.__RP = []; // Right Patterns (Backgrounds) 
+    this.__AccessMode = 2; // 0 = Sprites only | 1 = BG only | 2 = Sprites and BG
 
     for (var i=0; i < 256; i++){
       this.__LP.push(new NESTile());
@@ -37,6 +42,20 @@ export default class NESBank extends ISurface{
     }
 
     this.__palette = null;
+  }
+
+  get access_mode(){return this.__AccessMode;}
+  set access_mode(m){
+    if (!Utils.isInt(m))
+      throw new TypeError("Access mode expected to be integer.");
+    switch(m){
+      case NESBank.ACCESSMODE_SPRITE:
+        this.__AccessMode = NESBank.ACCESSMODE_SPRITE; break;
+      case NESBank.ACCESSMODE_BACKGROUND:
+        this.__AccessMode = NESBank.ACCESSMODE_BACKGROUND; break;
+      case NESBank.ACCESSMODE_FULL:
+        this.__AccessMode = NESBank.ACCESSMODE_FULL; break;
+    }
   }
 
   get json(){
@@ -69,14 +88,14 @@ export default class NESBank extends ISurface{
     }
   }
 
-  get width(){return 256;}
+  get width(){return (this.__AccessMode == NESBank.ACCESSMODE_FULL) ? 256 : 128;}
   get height(){return 128;}
   get length(){return this.width * this.height;}
 
   get coloridx(){
     return new Proxy(this, {
       get:function(obj, prop){
-        var len = (obj.__LP.length * 8) + (obj.__RP.length * 8);
+        var len = obj.length * 8;
         if (prop === "length")
           return len;
         if (!Utils.isInt(prop))
@@ -85,7 +104,7 @@ export default class NESBank extends ISurface{
         if (prop < 0 || prop >= len)
           return NESPalette.Default[4];
         
-        var res = LRIdx2TileIdxCo(prop);
+        var res = LRIdx2TileIdxCo(prop, this.__AccessMode);
         var list = (res.lid === 0) ? obj.__LP : obj.__RP; 
         return list[res.index].getPixelIndex(res.x, res.y);
       },
@@ -102,7 +121,7 @@ export default class NESBank extends ISurface{
         if (value < 0 || value >= 4)
           throw new RangeError("Color index out of bounds.");
         
-        var res = LRIdx2TileIdxCo(prop);
+        var res = LRIdx2TileIdxCo(prop, this.__AccessMode);
         var list = (res.lid === 0) ? obj.__LP : obj.__RP;
         list[res.index].setPixelIndex(res.x, res.y, value);
         return true;
@@ -179,10 +198,10 @@ export default class NESBank extends ISurface{
   }
 
   getColor(x,y){
-    if (x < 0 || x >= 256 || y < 0 || y >= 128)
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height)
       return this.__default_pi[4]; 
 
-    var res = LRIdx2TileIdxCo((y*256)+x);
+    var res = LRIdx2TileIdxCo((y*this.width)+x, this.__AccessMode);
     var list = (res.lid === 0) ? this.__LP : this.__RP;
     var pi = list[res.index].paletteIndex;
     var ci = list[res.index].getPixelIndex(res.x, res.y);
@@ -194,10 +213,10 @@ export default class NESBank extends ISurface{
   }
 
   getColorIndex(x, y){
-    if (x < 0 || x >= 256 || y < 0 || y >= 128)
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height)
       return {pi: -1, ci:-1};
 
-    var res = LRIdx2TileIdxCo((y*256)+x);
+    var res = LRIdx2TileIdxCo((y*this.width)+x, this.__AccessMode);
     var list = (res.lid === 0) ? this.__LP : this.__RP; 
     return {
       pi: list[res.index].paletteIndex,
@@ -206,7 +225,7 @@ export default class NESBank extends ISurface{
   }
 
   setColorIndex(x, y, ci, pi){
-    if (x < 0 || x >= 256 || y < 0 || y > 128)
+    if (x < 0 || x >= this.width || y < 0 || y > this.height)
       throw new RangeError("Coordinates out of bounds.");
     if (!Utils.isInt(pi))
       pi = -1;
@@ -214,10 +233,10 @@ export default class NESBank extends ISurface{
       ci = 0;
 
     if (pi < 0){
-      this.coloridx[(y*256)+x] = ci;
+      this.coloridx[(y*this.width)+x] = ci;
     } else {
 
-      var res = LRIdx2TileIdxCo((y*256)+x);
+      var res = LRIdx2TileIdxCo((y*this.width)+x, this.__AccessMode);
       var list = (res.lid === 0) ? this.__LP : this.__RP;
 
       list[res.index].paletteIndex = pi;
@@ -228,5 +247,9 @@ export default class NESBank extends ISurface{
 }
 
 
+
+NESBank.ACCESSMODE_SPRITE = 0;
+NESBank.ACCESSMODE_BACKGROUND = 1;
+NESBank.ACCESSMODE_FULL = 2;
 
 
