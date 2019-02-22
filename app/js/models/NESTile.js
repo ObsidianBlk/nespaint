@@ -30,6 +30,9 @@ export default class NESTile{
     this.__data = new Uint8Array(16);
   }
 
+  get width(){return 8;}
+  get height(){return 8;}
+
   get pixels(){
     return new Proxy(this, {
       get: function(obj, prop){
