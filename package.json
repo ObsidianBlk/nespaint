@@ -1,0 +1,23 @@
+{
+  "name": "nespaint",
+  "version": "0.1.0",
+  "description": "Painting program focused on sprite, tile, and attribute table creation for NES games.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.obsidianblk.me:ObsidianBlk/nespaint.git"
+  },
+  "keywords": [
+    "Nintendo",
+    "NES",
+    "Paint",
+    "Graphics",
+    "Development",
+    "Tool"
+  ],
+  "author": "Bryan \"ObsidianBlk\" Miller",
+  "license": "ISC"
+}
