@@ -19,5 +19,9 @@
     "Tool"
   ],
   "author": "Bryan \"ObsidianBlk\" Miller",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.4"
+  }
 }
