@@ -1,0 +1,21 @@
+<%- include('head.html'); %>
+
+<%- include('modal.html'); %>
+<%- include('header.html'); %>
+
+    <div class="content-wrapper">
+      <div class="pure-g">
+
+      <%- include('tools.html', {
+        toolbtns:[
+          {emitargs:'{"id":"Welcome"}', faicon:"fa-brush"},
+          {emitargs:'{"id":"Welcome"}', faicon:"fa-eraser"},
+          {emitargs:'{"id":"Welcome"}', faicon:"fa-eye-dropper"}
+        ] 
+      }); %>      
+
+      <%- include('surface.html'); %>
+
+      </div>
+    </div>
+<%- include('tail.html'); %>
