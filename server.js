@@ -33,7 +33,7 @@ app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use("/app", express.static(path.join(__dirname, "/app")));
 app.get('/', function(req, res){
-  res.render('index.html', {version:version});
+  res.render('index.html', {version:version, author:package.author});
 });
 
 app.listen(port, () => {
