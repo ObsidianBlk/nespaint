@@ -1,0 +1,20 @@
+            <div class="pure-u-1-2">
+              <div class="simple-padding">
+                NES System Palette
+              </div>
+              <div class="NES-palette simple-padding">
+                <% nesidxrows.forEach((nesidxgroups) => { %>
+                <div class="pure-g">
+                  <% nesidxgroups.forEach((nesidxset) => { %>
+                  <div class="pure-u-1-4"> 
+                    <div class="pure-g">
+                      <% nesidxset.forEach((nesidx) => { %>
+                      <div class="pure-u-1-4"><button class="pure-button" nesidx="<%= nesidx %>"><%= nesidx %></button></div>
+                      <% }); %>
+                    </div>
+                  </div>
+                  <% }); %>
+                </div>
+                <% }); %>
+              </div>
+            </div>

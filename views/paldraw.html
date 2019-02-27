@@ -1,0 +1,22 @@
+            <div class="pure-u-1-2">
+              <div class-"simple-padding">
+                Drawing Palettes
+              </div>
+              <div class="pure-g">
+                <% for(var i=0; i < numpalettes; i++){ %>
+                <div class="pure-u-1-2">
+                  <div class="simple-padding">
+                    Palette <%= i+1 %>
+                  </div>
+                  <div class="simple-padding">
+                    <div class="pure-button-group" role="group">
+                      <button class="pure-button" cidx="0" pidx="<%= i %>">0</button>
+                      <button class="pure-button" cidx="1" pidx="<%= i %>">1</button>
+                      <button class="pure-button" cidx="2" pidx="<%= i %>">2</button>
+                      <button class="pure-button" cidx="3" pidx="<%= i %>">3</button>
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+              </div>
+            </div>
