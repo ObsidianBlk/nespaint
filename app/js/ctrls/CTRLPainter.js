@@ -132,28 +132,36 @@ class CTRLPainter {
 
     var LineToSurface = (function(x0, y0, x1, y1, ci, pi){
       var dx = x1 - x0;
-      var dy = y1 - y0;
+      var ix = Math.sign(dx);
+      dx = 2 * Math.abs(dx);
 
-      if (dx == 0){
-        // Verticle line
-        var x = x0;
-        var s = Math.min(y0, y1);
-        var e = Math.max(y0, y1);
-        for (var y = s; y <= e; y++){
-          this.__surface.setColorIndex(x, y, ci, pi);
-        }
-      } else {
-        var slope = Math.abs(dy/dx);
-        var err = 0.0;
+      var dy = y1 - y0;
+      var iy = Math.sign(dy);
+      dy = 2 * Math.abs(dy);
+
+      if (dx > dy){
+        var err = dy - (dx/2);
         var y = y0;
-        var surf = this.__surface;
-        Utils.range(x0, x1, 1).forEach(function(x){
-          surf.setColorIndex(Math.floor(x), Math.floor(y), ci, pi);
-          err += slope;
-          if (err > 0.5){
-            y += Math.sign(dy);
-            err -= 1.0;
+
+        Utils.range(x0, x1, 1).forEach((x) => {
+          this.__surface.setColorIndex(x, y, ci, pi);
+          if (err > 0 || (err == 0 && ix > 0)){
+            err -= dx;
+            y += iy;
           }
+          err += dy;
+        });
+      } else {
+        var err = dx - (dy/2);
+        var x = x0;
+
+        Utils.range(y0, y1, 1).forEach((y) => {
+          this.__surface.setColorIndex(x, y, ci, pi);
+          if (err > 0 || (err == 0 && iy > 0)){
+            err -= dy;
+            x += ix;
+          }
+          err += dx;
         });
       }
     }).bind(this);
@@ -196,14 +204,15 @@ class CTRLPainter {
 
     var handle_draw = (function(e){
       if (e.isCombo || e.button == 0){
-        if (this.__surface !== null){ 
+        if (this.__surface !== null){
+          //console.log(this.__brushPos);
+          //console.log(this.__brushLastPos);
           var x = Math.floor((this.__brushPos[0] - this.__offset[0]) * (1.0 / this.__scale));
           var y = Math.floor((this.__brushPos[1] - this.__offset[1]) * (1.0 / this.__scale));
           var sx = (e.isCombo) ? Math.floor((this.__brushLastPos[0] - this.__offset[0]) * (1.0 / this.__scale)) : x;
           var sy = (e.isCombo) ? Math.floor((this.__brushLastPos[1] - this.__offset[1]) * (1.0 / this.__scale)) : y;
           if (x >= 0 && x < this.__surface.width && y >= 0 && y < this.__surface.height){
             LineToSurface(sx, sy, x, y, this.__brushColor, this.__brushPalette);
-            //this.__surface.setColorIndex(x, y, this.__brushColor, this.__brushPalette);
             RenderD();
           }
         }
