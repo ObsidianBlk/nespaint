@@ -1,0 +1,15 @@
+          <div class="pure-g">
+            <div class="pure-u-1-3 simple-padding">
+              <label for="painter_scale">Scale : </label><input id="painter_scale" type="number" min="0.5" max="1000" step="0.1" value ="1"/>
+            </div>
+
+            <div class="pure-u-1-3 simple-padding">
+              <button emit="painter-togglegrid" emit-args='{"show":true}' class="pure-button">
+                <i class="fa fa-th"></i>
+              </button>
+              <button emit="painter-colormode" emit-args='{"onePaletteMode":false}' class="pure-button">
+                <i class="fa fa-palette"></i>
+              </button>
+            </div>
+          </div>
+
