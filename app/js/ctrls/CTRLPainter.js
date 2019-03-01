@@ -119,10 +119,11 @@ class CTRLPainter {
     this.__brushColor = 0;
     this.__brushPalette = 0;
 
-    this.__gridEnabled = true; //false;
+    this.__gridEnabled = false;
     this.__gridSize = 1;
 
     this.__surface = null;
+    this.__palette = null;
 
     // var self = this;
 
@@ -171,12 +172,27 @@ class CTRLPainter {
     }).bind(this);
     GlobalEvents.listen("resize", handle_resize);
 
+    var handle_setapppalette = (function(pal){
+      this.__palette = pal;
+      if (this.__surface !== null){
+        this.__surface.palette = pal;
+        if (this.__onePaletteMode === false)
+          RenderD();
+      }
+    }).bind(this);
+    GlobalEvents.listen("set_app_palette", handle_setapppalette);
+
     var handle_change_surface = (function(surf){
       if (!(surf instanceof ISurface)){
         console.log("WARNING: Attempted to set painter to non-surface instance.");
         return;
       }
       this.__surface = surf;
+      if (this.__palette === null && this.__surface.palette !== null){
+        this.__palette = this.__surface.palette;
+      } else if (this.__palette !== null && this.__surface.palette !== this.__palette){
+        this.__surface.palette = this.__palette;
+      }
       this.center_surface();
       RenderD();
     }).bind(this);
@@ -238,6 +254,35 @@ class CTRLPainter {
         RenderD();
     }).bind(this);
     input.listen("wheel", handle_scale);
+
+    var handle_togglegrid = (function(target, args){
+      if (args.show){
+        target.classList.add("pure-button-active");
+        target.setAttribute("emit-args", JSON.stringify({show:false}));
+        this.__gridEnabled = true;
+      } else {
+        target.classList.remove("pure-button-active");
+        target.setAttribute("emit-args", JSON.stringify({show:true}));
+        this.__gridEnabled = false;
+      }
+      RenderD();
+    }).bind(this);
+    GlobalEvents.listen("painter-togglegrid", handle_togglegrid);
+
+
+    var handle_colormode = (function(target, args){
+      if (args.onePaletteMode){
+        target.classList.remove("pure-button-active");
+        target.setAttribute("emit-args", JSON.stringify({onePaletteMode:false}));
+        this.__onePaletteMode = true;
+      } else {
+        target.classList.add("pure-button-active");
+        target.setAttribute("emit-args", JSON.stringify({onePaletteMode:true}));
+        this.__onePaletteMode = false;
+      }
+      RenderD();
+    }).bind(this);
+    GlobalEvents.listen("painter-colormode", handle_colormode);
   }
 
 
