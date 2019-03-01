@@ -6,7 +6,9 @@ import NESPalette from "/app/js/models/NESPalette.js";
 
 
 function LRIdx2TileIdxCo(index, lid){
-  lid || (lid = 2);
+  if (isNaN(lid) || lid < 0 || lid > 2){
+    lid = 2;
+  }
   var res = {
     lid: 0,
     index: 0,
