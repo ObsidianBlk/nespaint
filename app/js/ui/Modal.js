@@ -11,14 +11,14 @@ class Modal{
       }
     }).bind(this));
 
-    GlobalEvents.listen("modal-open", (function(event){
+    GlobalEvents.listen("modal-open", (function(target, event){
       if (event.hasOwnProperty("id") && typeof(event.id) === 'string'){
         var force = (event.hasOwnProperty("force")) ? event.force === true : false;
         this.open_modal_id(event.id, force);
       }
     }).bind(this));
 
-    GlobalEvents.listen("modal-close", (function(event){
+    GlobalEvents.listen("modal-close", (function(target, event){
       this.close_modal();
     }).bind(this));
   }

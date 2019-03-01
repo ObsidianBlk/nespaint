@@ -3,7 +3,7 @@ import GlobalEvents from "/app/js/common/EventCaller.js";
 
 function handle_emitter(event){
   if (this.hasAttribute("emit")){
-    var args = [this.getAttribute("emit")];
+    var args = [this.getAttribute("emit"), this];
     if (this.hasAttribute("emit-args")){
       try {
         var j = JSON.parse(this.getAttribute("emit-args"));
@@ -13,7 +13,8 @@ function handle_emitter(event){
           args.push(j);
         }
       } catch (e) {
-        console.log("Failed to emit '" + args[0] + "'. Attribute 'emit-args' contains malformed JSON.");
+        console.log("Failed to emit '" + args[0] +"': " + e.toString());
+        //console.log("Failed to emit '" + args[0] + "'. Attribute 'emit-args' contains malformed JSON.");
       }
     }
     GlobalEvents.emit.apply(GlobalEvents, args);
