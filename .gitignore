@@ -1,3 +1,4 @@
 node_modules/*
+app/css/nespaint.css
 *.swp
 doc/*

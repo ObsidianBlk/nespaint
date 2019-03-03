@@ -21,7 +21,9 @@
   "author": "Bryan \"ObsidianBlk\" Miller",
   "license": "ISC",
   "dependencies": {
+    "chokidar": "^2.1.2",
     "ejs": "^2.6.1",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "sass": "^1.17.2"
   }
 }
