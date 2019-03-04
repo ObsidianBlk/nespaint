@@ -28,6 +28,8 @@ var sslCertPath = process.env.SSLCERTPATH || null;
 var sslCaPath = process.env.SSLCAPATH || null;
 
 
+var css_output = "" // Used to hold dynamic css.
+
 // -------------------------------------------------------
 // Simple helper function
 function debounce(func, delay, scope){
@@ -47,12 +49,8 @@ var generateCSS = debounce(function(src, dst, cb){
     if (err){
       cb("Failed to generate css - " + err.toString());
     } else {
-      fs.writeFile(path.join(CSS_PATH, "nespaint.css"), res.css.toString(), (err) => {
-        if (err)
-          cb("Failed to write file '" + path.join(CSS_PATH, "nespaint.css") + "' - " + err.toString());
-        else
-          cb();
-      });
+      css_output = res.css.toString();
+      cb();
     }
   });
 }, 1000);
@@ -87,6 +85,10 @@ app.set('views', path.join(__dirname, "/views"));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use("/app", express.static(path.join(__dirname, "/app")));
+app.use("/app/css/nespaint.css", function(req, res){
+  res.set("Content-Type", "text/css");
+  res.send(new Buffer.from(css_output));
+});
 app.get('/', function(req, res){
   res.render('index.html', {version:version, author:package.author});
 });
@@ -96,20 +98,10 @@ app.get('/', function(req, res){
 // ----------------------------------------------------
 // Watching for any needed file updates (to minimize the need to restart the server.
 watcher.on('ready', () => {
-  // console.log("Watching path " + SASS_PATH);
   var dst = path.join(CSS_PATH, "nespaint.css");
   fs.access(dst, fs.constants.F_OK, (err) => {
     // Only try generating a new CSS if one doesn't already exists, or FORCECSSREGEN is true
     if (err || forceCSSRegen){
-      if (!fs.existsSync(CSS_PATH)){
-        try {
-          fs.mkdirSync(CSS_PATH);
-        } catch (e) {
-          conosle.log("ERROR: " + e.toString());
-          exit();
-        }
-      }
-
       generateCSS(path.join(SASS_PATH, "nespaint.scss"), path.join(CSS_PATH, "nespaint.css"), (err) => {
         if (err){
           console.log("ERROR: " + err);
@@ -124,7 +116,6 @@ watcher.on('ready', () => {
   });
 });
 watcher.on('change', (fpath) => {
-  // console.log("File " + fpath + " changed!");
   generateCSS(path.join(SASS_PATH, "nespaint.scss"), path.join(CSS_PATH, "nespaint.css"), (err) => {
     if (err)
       console.log("WARNING: " + err);
