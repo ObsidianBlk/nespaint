@@ -8,31 +8,6 @@ import NESPalette from "/app/js/models/NESPalette.js";
 import NESTile from "/app/js/models/NESTile.js";
 import NESBank from "/app/js/models/NESBank.js";
 
-/*function on_palette_changed(e){
-  if (e.type == "ALL"){
-    console.log("ALL");
-  } else if (e.type == "TILE"){
-    console.log("TILE Palette:", e.pindex, " | Color:", e.cindex);
-  } else if (e.type == "SPRITE"){
-    console.log("SPRITE Palette:", e.pindex, " | Color:", e.cindex);
-  }
-}
-
-function handle_emitted(){
-  console.log("EMITTED EVENT!");
-}
-
-function handle_keyevent(e){
-  console.log(e);
-}
-
-function handle_mouseevent(e){
-  console.log(e);
-}
-
-function handle_mouseclickevent(e){
-  console.log("MOUSE CLICK ON BUTTON: ", e.button);
-}*/
 
 function TitlePainter(pal){
   var elist = document.querySelectorAll(".color-NES-random");
@@ -57,8 +32,6 @@ function initialize(DOC){
   CTRLPainter.initialize();
 
   var palette = new NESPalette();
-  // TODO: This is just test code. I should remove this.
-  //palette.listen("palettes_changed", on_palette_changed);
   // TODO: At least define a more useful set of palettes. As it is, these are just random.
   palette.set_palette([
     44,
@@ -73,19 +46,7 @@ function initialize(DOC){
   ]);
   console.log(palette.to_asm());
   GlobalEvents.emit("set_app_palette", palette);
-
-  /*var input = new Input();
-  input.preventDefaults = true;
-  input.mouseTargetElement = document.getElementById("painter");
-  input.listen("keydown", handle_keyevent);
-  input.listen("keyup", handle_keyevent);
-  input.listen("keypress", handle_keyevent);
-
-  input.listen("mousemove", handle_mouseevent);
-  input.listen("mousedown", handle_mouseevent);
-  input.listen("mouseup", handle_mouseevent);
-  input.listen("mouseclick", handle_mouseclickevent);*/
-
+ 
   // TODO: Drop all of this below test code... or put it in a dedicated test app.
   var TileA = new NESTile();
   var TileB = new NESTile();
