@@ -1,4 +1,5 @@
 import Utils from "/app/js/common/Utils.js";
+import {EventCaller} from "/app/js/common/EventCaller.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
 
@@ -23,9 +24,13 @@ function BitMask(offset, inv){
 }
 
 
+var BLOCK_CHANGE_EMIT = false; // This will block the "data_changed" event when class is processing
+                               // lots of changes.
 
-export default class NESTile{
+
+export default class NESTile extends EventCaller{
   constructor(){
+    super();
     this.__paletteIndex = 0;
     this.__data = new Uint8Array(16);
   }
@@ -72,6 +77,8 @@ export default class NESTile{
         } else {
           obj.__data[8+dindex] &= BitMask(bitoffset, true);
         }
+        if (!BLOCK_CHANGE_EMIT)
+          obj.emit("data_changed");
         return true;
       }
     });
@@ -89,6 +96,15 @@ export default class NESTile{
 
   get chr(){
     return new Uint8Array(this.__data);
+  }
+
+  set chr(buff){
+    if (!(buff instanceof Uint8Array))
+      throw new TypeError("Expected Uint8Array buffer");
+    if (buff.length !== 16)
+      throw new RangeError("Buffer contains invalid byte length.");
+    this.__data = new Uint8Array(buff);
+    this.emit("data_changed");
   }
 
   get base64(){
@@ -111,6 +127,7 @@ export default class NESTile{
     }
     this.__data = bytes;
     this.__paletteIndex = b.charCodeAt(b.length-1);
+    this.emit("data_changed");
   }
 
 
@@ -122,6 +139,7 @@ export default class NESTile{
       throw new RangeError("Palette index out of bounds.");
     }
     this.__paletteIndex = pi;
+    this.emit("data_changed");
   }
 
   setPixelIndex(x, y, ci){
@@ -146,6 +164,7 @@ export default class NESTile{
     if (flag >= 1 && flag <= 3){
       var oldData = this.__data;
       var newData = new Uint8Array(16);
+      BLOCK_CHANGE_EMIT = true;
       for (var x = 0; x < 8; x++){
         for (var y = 0; y < 8; y++){
           this.__data = oldData;
@@ -158,6 +177,8 @@ export default class NESTile{
           );
         }
       }
+      BLOCK_CHANGE_EMIT = false;
+      this.emit("data_changed");
     }
     return this;
   }
@@ -171,6 +192,7 @@ export default class NESTile{
     if (!(t instanceof NESTile))
       throw new TypeError("Expected NESTile object.");
     this.__data.set(t.__data);
+    this.emit("data_changed");
     return this;
   }
 

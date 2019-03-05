@@ -38,9 +38,18 @@ export default class NESBank extends ISurface{
     this.__RP = []; // Right Patterns (Backgrounds) 
     this.__AccessMode = 2; // 0 = Sprites only | 1 = BG only | 2 = Sprites and BG
 
+    var handle_datachanged = function(side){
+      if ((side == 0 && (this.__AccessMode == 0 || this.__AccessMode == 2)) ||
+        (side == 1 && (this.__AccessMode == 1 || this.__AccessMode == 2))){
+        this.emit("data_changed");
+      }
+    }
+
     for (var i=0; i < 256; i++){
       this.__LP.push(new NESTile());
+      this.__LP[i].listen("data_changed", handle_datachanged.bind(this, 0));
       this.__RP.push(new NESTile());
+      this.__RP[i].listen("data_changed", handle_datachanged.bind(this, 1));
     }
 
     this.__palette = null;
@@ -79,6 +88,22 @@ export default class NESBank extends ISurface{
       offset += 16;
     });
     return buff;
+  }
+
+  set chr(buff){
+    if (!(buff instanceof Uint8Array))
+      throw new TypeError("Expected Uint8Array buffer.");
+    if (buff.length !== 8192)
+      throw new RangeError("Data buffer has invalid byte length.");
+    var offset = 0;
+    this.__LP.forEach((i) => {
+      i.chr = buff.slice(offset, offset+15);
+      offset += 16;
+    });
+    this.__RP.forEach((i) => {
+      i.chr = buff.slice(offset, offset+15);
+      offset += 16;
+    });
   }
 
   get palette(){return this.__palette;}

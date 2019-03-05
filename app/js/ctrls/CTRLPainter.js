@@ -4,8 +4,6 @@ import GlobalEvents from "/app/js/common/EventCaller.js";
 import Input from "/app/js/ui/Input.js";
 
 import NESPalette from "/app/js/models/NESPalette.js";
-//import NESTile from "/app/js/models/NESTile.js";
-//import NESBank from "/app/js/models/NESBank.js";
 import ISurface from "/app/js/ifaces/ISurface.js";
 
 const EL_CANVAS_ID = "painter";
@@ -182,18 +180,28 @@ class CTRLPainter {
     }).bind(this);
     GlobalEvents.listen("set_app_palette", handle_setapppalette);
 
+    var handle_surface_data_changed = (function(){
+      RenderD();
+    }).bind(this);
+
     var handle_change_surface = (function(surf){
       if (!(surf instanceof ISurface)){
         console.log("WARNING: Attempted to set painter to non-surface instance.");
         return;
       }
-      this.__surface = surf;
-      if (this.__palette === null && this.__surface.palette !== null){
-        this.__palette = this.__surface.palette;
-      } else if (this.__palette !== null && this.__surface.palette !== this.__palette){
-        this.__surface.palette = this.__palette;
+      if (surf !== this.__surface){
+        if (this.__surface !== null){
+          this.__surface.unlisten("data_changed", handle_surface_data_changed);
+        }
+        this.__surface = surf;
+        this.__surface.listen("data_changed", handle_surface_data_changed);
+        if (this.__palette === null && this.__surface.palette !== null){
+          this.__palette = this.__surface.palette;
+        } else if (this.__palette !== null && this.__surface.palette !== this.__palette){
+          this.__surface.palette = this.__palette;
+        }
+        this.center_surface();
       }
-      this.center_surface();
       RenderD();
     }).bind(this);
     GlobalEvents.listen("change_surface", handle_change_surface);
@@ -229,7 +237,7 @@ class CTRLPainter {
           var sy = (e.isCombo) ? Math.floor((this.__brushLastPos[1] - this.__offset[1]) * (1.0 / this.__scale)) : y;
           if (x >= 0 && x < this.__surface.width && y >= 0 && y < this.__surface.height){
             LineToSurface(sx, sy, x, y, this.__brushColor, this.__brushPalette);
-            RenderD();
+            //RenderD();
           }
         }
       }

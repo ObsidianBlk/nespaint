@@ -1,8 +1,10 @@
 import Utils from "/app/js/common/Utils.js"
+import {EventCaller} from "/app/js/common/EventCaller.js"
 
-
-export default class ISurface{
-  constructor(){}
+export default class ISurface extends EventCaller{
+  constructor(){
+    super();
+  }
 
   get width(){return 0;}
   get height(){return 0;}
