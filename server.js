@@ -12,7 +12,7 @@ const https = require("https");
 
 const sass = require("sass");
 const SASS_PATH = path.join(__dirname, "sass");
-const CSS_PATH = path.join(__dirname, "app/css");
+const SASS_FILE = "style.scss";
 
 const watcher = require("chokidar").watch(SASS_PATH, {ignored: /[\/\\]\./, persistent: true});
 
@@ -27,8 +27,7 @@ var sslKeyPath = process.env.SSLKEYPATH || null;
 var sslCertPath = process.env.SSLCERTPATH || null;
 var sslCaPath = process.env.SSLCAPATH || null;
 
-
-var css_output = "" // Used to hold dynamic css.
+var css_output = ""; // Used to hold dynamic css.
 
 // -------------------------------------------------------
 // Simple helper function
@@ -44,7 +43,7 @@ function debounce(func, delay, scope){
   };
 }
 
-var generateCSS = debounce(function(src, dst, cb){
+var generateCSS = debounce(function(src, cb){
   sass.render({file: src}, (err, res)=>{
     if (err){
       cb("Failed to generate css - " + err.toString());
@@ -98,25 +97,17 @@ app.get('/', function(req, res){
 // ----------------------------------------------------
 // Watching for any needed file updates (to minimize the need to restart the server.
 watcher.on('ready', () => {
-  var dst = path.join(CSS_PATH, "nespaint.css");
-  fs.access(dst, fs.constants.F_OK, (err) => {
-    // Only try generating a new CSS if one doesn't already exists, or FORCECSSREGEN is true
-    if (err || forceCSSRegen){
-      generateCSS(path.join(SASS_PATH, "nespaint.scss"), path.join(CSS_PATH, "nespaint.css"), (err) => {
-        if (err){
-          console.log("ERROR: " + err);
-          exit();
-        } else {
-          startServer();
-        }
-      });
-    } else {
-      startServer();
-    }
-  });
+    generateCSS(path.join(SASS_PATH, SASS_FILE), (err) => {
+      if (err){
+        console.log("ERROR: " + err);
+        exit();
+      } else {
+        startServer();
+      }
+    }); 
 });
 watcher.on('change', (fpath) => {
-  generateCSS(path.join(SASS_PATH, "nespaint.scss"), path.join(CSS_PATH, "nespaint.css"), (err) => {
+  generateCSS(path.join(SASS_PATH, SASS_FILE), (err) => {
     if (err)
       console.log("WARNING: " + err);
   });

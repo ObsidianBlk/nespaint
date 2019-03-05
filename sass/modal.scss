@@ -1,49 +1,3 @@
-
-body{
-  background-color:#303030;
-  font-family: 'Roboto', sans-serif;
-}
-
-.pure-menu{
-  background-color:#6200EE;
-  color:#FFF;
-}
-
-#painter{
-  background-color:#212121;
-  width:100%;
-  height:100%;
-}
-
-.content-wrapper{
-  width:100%;
-  height:100%;
-  overflow:hidden;
-}
-
-.simple-padding{
-  padding-top: 4px;
-  padding-left: 8px;
-  padding-right: 8px;
-}
-
-.text-align-right{
-  text-align: right;
-}
-
-div.NES-palette{
-  font-size:0.55em;
-}
-
-.NES-palette button{
-  width:2rem;
-}
-
-span.color-NES-06{
-  background-color:#000;
-  color:#A80020;
-}
-
 /* NOTE: Modal styles were borrowed from
  * https://www.w3schools.com/howto/howto_css_modals.asp
  * and modified.
@@ -74,6 +28,3 @@ span.color-NES-06{
   border: 1px solid #888;
   width: 80%; /* Could be more or less, depending on screen size */
 }
-
-
-
