@@ -34,7 +34,7 @@ function initialize(DOC){
   var palette = new NESPalette();
   // TODO: At least define a more useful set of palettes. As it is, these are just random.
   palette.set_palette([
-    44,
+    "01",
     11,12,13,
     54,23,43,
     23,18,11,
