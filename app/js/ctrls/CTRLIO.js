@@ -4,4 +4,13 @@ import NESBank from "/app/js/models/NESBank.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
 
+class CTRLIO{
+  constructor(){}
+}
+
+
+const instance = new CTRLIO();
+export default instance;
+
+
 

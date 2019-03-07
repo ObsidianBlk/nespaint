@@ -4,6 +4,7 @@ import Input from "/app/js/ui/Input.js";
 import Modal from "/app/js/ui/Modal.js";
 import CTRLPalettes from "/app/js/ctrls/CTRLPalettes.js";
 import CTRLPainter from "/app/js/ctrls/CTRLPainter.js";
+import CTRLPalettesStore from "/app/js/ctrls/CTRLPalettesStore.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 import NESTile from "/app/js/models/NESTile.js";
 import NESBank from "/app/js/models/NESBank.js";
@@ -30,22 +31,11 @@ function initialize(DOC){
   //var nespainter = new NESPainter(DOC.getElementById("painter"));
   
   CTRLPainter.initialize();
+  CTRLPalettesStore.initialize();
 
-  var palette = new NESPalette();
-  // TODO: At least define a more useful set of palettes. As it is, these are just random.
-  palette.set_palette([
-    "01",
-    11,12,13,
-    54,23,43,
-    23,18,11,
-    4,8,60,
-    63,0,11,
-    0,15,14,
-    9,0,32,
-    5,10,20
-  ]);
-  console.log(palette.to_asm());
-  GlobalEvents.emit("set_app_palette", palette);
+  
+  //console.log(palette.to_asm());
+  //GlobalEvents.emit("set_app_palette", palette);
  
   // TODO: Drop all of this below test code... or put it in a dedicated test app.
   var TileA = new NESTile();
