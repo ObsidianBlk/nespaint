@@ -22,6 +22,26 @@ export default class NESPalette extends EventCaller{
     ];
   }
 
+  get json(){
+    return JSON.stringify(([this.__BGColor]).concat(this.__palette));
+  }
+
+  set json(j){
+    try{
+      var d = JSON.parse(j);
+    } catch (e) {
+      throw e;
+    }
+
+    if (!(d instanceof Array) || d.length !== 25)
+      throw new TypeError("Invalid JSON or value range.");
+    try {
+      this.set_palette(d);
+    } catch (e) {
+      throw e;
+    }
+  }
+
   /**
    *  Sets one or all of the eight color palettes to the values given. By default, function
    *  assumes the given array is for all eight palettes (or 25 total color indexes, 3 per palette
