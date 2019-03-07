@@ -1,0 +1,23 @@
+
+.tabnav {
+  background-color: $tabnav-bg;
+  color: $tabnav-text;
+  
+  li {
+    display: inline; 
+  }
+  a {
+    padding: 0 10px;
+    text-decoration: none;
+  }
+
+  div.tab-content {
+    background-color: $tabnav-content-bg;
+    color: $tabnav-content-text;
+  }
+}
+
+.tab-selected {
+  background-color: $tabnav-content-bg;
+  color: $tabnav-content-text;
+}
