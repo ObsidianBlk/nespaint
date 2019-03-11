@@ -1,23 +1,35 @@
 
-.tabnav {
-  background-color: $tabnav-bg;
+.tabnav { 
   color: $tabnav-text;
+  padding: 0;
   
-  li {
-    display: inline; 
+  ul {
+    margin: 0;
+    padding: 0;
   }
-  a {
-    padding: 0 10px;
-    text-decoration: none;
+
+  li {
+    background-color: $tabnav-bg; 
+    display: inline;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+
+    &.tab-selected {
+      background-color: $tabnav-content-bg;
+      color: $tabnav-content-text;
+    }
+  }
+
+  a {  
+    padding: 0 10px; 
+    text-decoration: none; 
   }
 
   div.tab-content {
     background-color: $tabnav-content-bg;
     color: $tabnav-content-text;
+    padding: 1.25em 0.75em 0.5em 0.75em
   }
 }
 
-.tab-selected {
-  background-color: $tabnav-content-bg;
-  color: $tabnav-content-text;
-}
+

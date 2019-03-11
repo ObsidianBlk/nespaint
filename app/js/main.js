@@ -2,6 +2,7 @@ import GlobalEvents from "/app/js/common/EventCaller.js";
 import EmitterElements from "/app/js/ui/Emitters.js";
 import Input from "/app/js/ui/Input.js";
 import Modal from "/app/js/ui/Modal.js";
+import Tabs from "/app/js/ui/Tabs.js";
 import CTRLPalettes from "/app/js/ctrls/CTRLPalettes.js";
 import CTRLPainter from "/app/js/ctrls/CTRLPainter.js";
 import CTRLPalettesStore from "/app/js/ctrls/CTRLPalettesStore.js";
@@ -26,6 +27,7 @@ function TitlePainter(pal){
 function initialize(DOC){
   TitlePainter(NESPalette.SystemColor);
   EmitterElements.initialize();
+  Tabs.initialize();
   //GlobalEvents.listen("emitted-event", handle_emitted);
 
   //var nespainter = new NESPainter(DOC.getElementById("painter"));
