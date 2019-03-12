@@ -13,3 +13,6 @@ $tabnav-bg: #878787;
 $tabnav-text: #000;
 $tabnav-content-bg: #EFEFEF;
 $tabnav-content-text: #000;
+
+$list-item-bg: $menu-bg-color;
+$list-item-selected-bg: lighten($menu-bg-color, 25%);

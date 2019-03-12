@@ -1,0 +1,17 @@
+
+.list-container{
+  width: 100%;
+  height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+
+.list-item-container{
+  background-color: $list-item-bg;
+  border-radius: 8px;
+
+  .item-selected{
+    background-color: $list-item-selected-bg;
+  }
+}

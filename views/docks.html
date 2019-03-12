@@ -6,7 +6,11 @@
             </ul>
             <% tabs.forEach(function(item){ %>
             <div class="tab-content" fortabs="<%= tabsetname %>" tabid="<%= item.id %>">
-              <div class="list-container"></div>
+              <div class="list-container">
+              <% if(item.hasOwnProperty("tmpl")){ %>
+                <%- include(item.tmpl) %>
+              <% } %>
+              </div>
             </div>
             <% }); %>
           </div>
