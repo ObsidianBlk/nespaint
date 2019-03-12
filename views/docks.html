@@ -1,16 +1,12 @@
           <div class="tabnav">
-            <ul tabs="assetlists">
-              <li class="tab-selected" tabid="palettes"><a href="#">Palettes</a></li>
-              <li tabid="banks"><a href="#">Banks</a></li>
-              <li tabid="attrtables"><a href="#">Attib. Tables</a></li>
+            <ul tabs="<%= tabsetname %>">
+              <% tabs.forEach(function(item){ %>
+              <li tabid="<%= item.id %>"><a href="#"><%= item.name %></a></li>
+              <% }); %>
             </ul>
-            <div class="tab-content" fortabs="assetlists" tabid="palettes">
-              Palettes Content!
+            <% tabs.forEach(function(item){ %>
+            <div class="tab-content" fortabs="<%= tabsetname %>" tabid="<%= item.id %>">
+              <div class="list-container"></div>
             </div>
-            <div class="tab-content" fortabs="assetlists" tabid="banks">
-              Bank Content!
-            </div>
-            <div class="tab-content" fortabs="assetlists" tabid="attrtables">
-              Attribute Table Content!
-            </div>
+            <% }); %>
           </div>

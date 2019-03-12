@@ -19,7 +19,14 @@
       </div>
 
       <div class="pure-u-6-24 simple-padding">
-      <%- include('docks.html'); %>
+      <%- include('docks.html', {
+        tabsetname:"assetlists",
+        tabs:[
+          {name:"Palettes", id:"palettes", selected:true},
+          {name:"Banks", id:"banks", selected:false},
+          {name:"Attrib. Tables", id:"attrtbls", selected:false}
+        ]  
+      }); %>
       </div>
     </div>
 

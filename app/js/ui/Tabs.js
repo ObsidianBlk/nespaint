@@ -20,15 +20,14 @@ function SelectTab(tabname, tabid, el){
 
 function GenTABListener(tabname, tabid, lil){
   return function(e){
-    // TODO: FIX ME!!
-    var sel = lil.querySelector("li.tab-selected");
-    if (sel){
-      var oldtabid = sel.getAttribute("tabid");
-      UnselectTab(tabname, oldtabid, sel);
-    }
-    sel = lil.querySelector("li[tabid='" + tabid + "']");
-    if (sel){
-      SelectTab(tabname, tabid, sel);
+    for (let i=0; i < lil.length; i++){
+      if (lil[i].classList.contains("tab-selected")){
+        if (lil[i].getAttribute("tabid") !== tabid){
+          UnselectTab(tabname, lil[i].getAttribute("tabid"), lil[i]);
+        } else {break; /* The same tab is being selected. */}
+      } else if (lil[i].getAttribute("tabid") === tabid){
+        SelectTab(tabname, tabid, lil[i]);
+      }
     }
   }
 }
