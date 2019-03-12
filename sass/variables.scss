@@ -1,18 +1,31 @@
 
 $sys-font: 'Roboto', sans-serif;
 
-$main-bg-color: #303030;
-$main-text-color: #EFEFEF;
 
-$menu-bg-color: #6200EE;
-$menu-text-color: #FFFFFF;
+//$color-dark: #38302E;
+//$color-mid: #393D3F;
+//$color-light: #6F6866;
+//$color-bright: #FDFDFF;
+//$color-highlight: #C6C5B9;
 
-$canvas-bg-color: #212121;
+$color-dark: #2E3233;
+$color-mid: #999A95;
+$color-light: #CECECC;
+$color-bright: #A63B31;
+$color-highlight: #C51015;
 
-$tabnav-bg: #878787;
-$tabnav-text: #000;
-$tabnav-content-bg: #EFEFEF;
-$tabnav-content-text: #000;
+$main-bg-color: $color-dark;
+$main-text-color: $color-bright;
+
+$menu-bg-color: $color-highlight;
+$menu-text-color: $color-mid;
+
+$canvas-bg-color: $color-mid;
+
+$tabnav-bg: $color-mid;
+$tabnav-text: $color-bright;
+$tabnav-content-bg: $color-light;
+$tabnav-content-text: $color-mid;
 
 $list-item-bg: $menu-bg-color;
 $list-item-selected-bg: lighten($menu-bg-color, 25%);
