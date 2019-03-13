@@ -1,0 +1,512 @@
+$NES-COLOR-00: #7C7C7C;
+.nes-color-bg-00{
+  background-color: $NES-COLOR-00;
+}
+.nes-color-text-00{
+  color: $NES-COLOR-00;
+}
+
+$NES-COLOR-01: #0000FC;
+.nes-color-bg-01{
+  background-color: $NES-COLOR-01;
+}
+.nes-color-text-01{
+  color: $NES-COLOR-01;
+}
+
+$NES-COLOR-02: #0000BC;
+.nes-color-bg-02{
+  background-color: $NES-COLOR-02;
+}
+.nes-color-text-02{
+  color: $NES-COLOR-02;
+}
+
+$NES-COLOR-03: #4428BC;
+.nes-color-bg-03{
+  background-color: $NES-COLOR-03;
+}
+.nes-color-text-03{
+  color: $NES-COLOR-03;
+}
+
+$NES-COLOR-04: #940084;
+.nes-color-bg-04{
+  background-color: $NES-COLOR-04;
+}
+.nes-color-text-04{
+  color: $NES-COLOR-04;
+}
+
+$NES-COLOR-05: #A80020;
+.nes-color-bg-05{
+  background-color: $NES-COLOR-05;
+}
+.nes-color-text-05{
+  color: $NES-COLOR-05;
+}
+
+$NES-COLOR-06: #A81000;
+.nes-color-bg-06{
+  background-color: $NES-COLOR-06;
+}
+.nes-color-text-06{
+  color: $NES-COLOR-06;
+}
+
+$NES-COLOR-07: #881400;
+.nes-color-bg-07{
+  background-color: $NES-COLOR-07;
+}
+.nes-color-text-07{
+  color: $NES-COLOR-07;
+}
+
+$NES-COLOR-08: #503000;
+.nes-color-bg-08{
+  background-color: $NES-COLOR-08;
+}
+.nes-color-text-08{
+  color: $NES-COLOR-08;
+}
+
+$NES-COLOR-09: #007800;
+.nes-color-bg-09{
+  background-color: $NES-COLOR-09;
+}
+.nes-color-text-09{
+  color: $NES-COLOR-09;
+}
+
+$NES-COLOR-0A: #006800;
+.nes-color-bg-0A{
+  background-color: $NES-COLOR-0A;
+}
+.nes-color-text-0A{
+  color: $NES-COLOR-0A;
+}
+
+$NES-COLOR-0B: #005800;
+.nes-color-bg-0B{
+  background-color: $NES-COLOR-0B;
+}
+.nes-color-text-0B{
+  color: $NES-COLOR-0B;
+}
+
+$NES-COLOR-0C: #004058;
+.nes-color-bg-0C{
+  background-color: $NES-COLOR-0C;
+}
+.nes-color-text-0C{
+  color: $NES-COLOR-0C;
+}
+
+$NES-COLOR-0D: #000000;
+.nes-color-bg-0D{
+  background-color: $NES-COLOR-0D;
+}
+.nes-color-text-0D{
+  color: $NES-COLOR-0D;
+}
+
+$NES-COLOR-0E: #000000;
+.nes-color-bg-0E{
+  background-color: $NES-COLOR-0E;
+}
+.nes-color-text-0E{
+  color: $NES-COLOR-0E;
+}
+
+$NES-COLOR-0F: #000000;
+.nes-color-bg-0F{
+  background-color: $NES-COLOR-0F;
+}
+.nes-color-text-0F{
+  color: $NES-COLOR-0F;
+}
+
+$NES-COLOR-10: #BCBCBC;
+.nes-color-bg-10{
+  background-color: $NES-COLOR-10;
+}
+.nes-color-text-10{
+  color: $NES-COLOR-10;
+}
+
+$NES-COLOR-11: #0078F8;
+.nes-color-bg-11{
+  background-color: $NES-COLOR-11;
+}
+.nes-color-text-11{
+  color: $NES-COLOR-11;
+}
+
+$NES-COLOR-12: #0058F8;
+.nes-color-bg-12{
+  background-color: $NES-COLOR-12;
+}
+.nes-color-text-12{
+  color: $NES-COLOR-12;
+}
+
+$NES-COLOR-13: #6844FC;
+.nes-color-bg-13{
+  background-color: $NES-COLOR-13;
+}
+.nes-color-text-13{
+  color: $NES-COLOR-13;
+}
+
+$NES-COLOR-14: #D800CC;
+.nes-color-bg-14{
+  background-color: $NES-COLOR-14;
+}
+.nes-color-text-14{
+  color: $NES-COLOR-14;
+}
+
+$NES-COLOR-15: #E40058;
+.nes-color-bg-15{
+  background-color: $NES-COLOR-15;
+}
+.nes-color-text-15{
+  color: $NES-COLOR-15;
+}
+
+$NES-COLOR-16: #F83800;
+.nes-color-bg-16{
+  background-color: $NES-COLOR-16;
+}
+.nes-color-text-16{
+  color: $NES-COLOR-16;
+}
+
+$NES-COLOR-17: #E45C10;
+.nes-color-bg-17{
+  background-color: $NES-COLOR-17;
+}
+.nes-color-text-17{
+  color: $NES-COLOR-17;
+}
+
+$NES-COLOR-18: #AC7C00;
+.nes-color-bg-18{
+  background-color: $NES-COLOR-18;
+}
+.nes-color-text-18{
+  color: $NES-COLOR-18;
+}
+
+$NES-COLOR-19: #00B800;
+.nes-color-bg-19{
+  background-color: $NES-COLOR-19;
+}
+.nes-color-text-19{
+  color: $NES-COLOR-19;
+}
+
+$NES-COLOR-1A: #00A800;
+.nes-color-bg-1A{
+  background-color: $NES-COLOR-1A;
+}
+.nes-color-text-1A{
+  color: $NES-COLOR-1A;
+}
+
+$NES-COLOR-1B: #00A844;
+.nes-color-bg-1B{
+  background-color: $NES-COLOR-1B;
+}
+.nes-color-text-1B{
+  color: $NES-COLOR-1B;
+}
+
+$NES-COLOR-1C: #008888;
+.nes-color-bg-1C{
+  background-color: $NES-COLOR-1C;
+}
+.nes-color-text-1C{
+  color: $NES-COLOR-1C;
+}
+
+$NES-COLOR-1D: #000000;
+.nes-color-bg-1D{
+  background-color: $NES-COLOR-1D;
+}
+.nes-color-text-1D{
+  color: $NES-COLOR-1D;
+}
+
+$NES-COLOR-1E: #000000;
+.nes-color-bg-1E{
+  background-color: $NES-COLOR-1E;
+}
+.nes-color-text-1E{
+  color: $NES-COLOR-1E;
+}
+
+$NES-COLOR-1F: #000000;
+.nes-color-bg-1F{
+  background-color: $NES-COLOR-1F;
+}
+.nes-color-text-1F{
+  color: $NES-COLOR-1F;
+}
+
+$NES-COLOR-20: #F8F8F8;
+.nes-color-bg-20{
+  background-color: $NES-COLOR-20;
+}
+.nes-color-text-20{
+  color: $NES-COLOR-20;
+}
+
+$NES-COLOR-21: #3CBCFC;
+.nes-color-bg-21{
+  background-color: $NES-COLOR-21;
+}
+.nes-color-text-21{
+  color: $NES-COLOR-21;
+}
+
+$NES-COLOR-22: #6888FC;
+.nes-color-bg-22{
+  background-color: $NES-COLOR-22;
+}
+.nes-color-text-22{
+  color: $NES-COLOR-22;
+}
+
+$NES-COLOR-23: #9878F8;
+.nes-color-bg-23{
+  background-color: $NES-COLOR-23;
+}
+.nes-color-text-23{
+  color: $NES-COLOR-23;
+}
+
+$NES-COLOR-24: #F878F8;
+.nes-color-bg-24{
+  background-color: $NES-COLOR-24;
+}
+.nes-color-text-24{
+  color: $NES-COLOR-24;
+}
+
+$NES-COLOR-25: #F85898;
+.nes-color-bg-25{
+  background-color: $NES-COLOR-25;
+}
+.nes-color-text-25{
+  color: $NES-COLOR-25;
+}
+
+$NES-COLOR-26: #F87858;
+.nes-color-bg-26{
+  background-color: $NES-COLOR-26;
+}
+.nes-color-text-26{
+  color: $NES-COLOR-26;
+}
+
+$NES-COLOR-27: #FCA044;
+.nes-color-bg-27{
+  background-color: $NES-COLOR-27;
+}
+.nes-color-text-27{
+  color: $NES-COLOR-27;
+}
+
+$NES-COLOR-28: #F8B800;
+.nes-color-bg-28{
+  background-color: $NES-COLOR-28;
+}
+.nes-color-text-28{
+  color: $NES-COLOR-28;
+}
+
+$NES-COLOR-29: #B8F818;
+.nes-color-bg-29{
+  background-color: $NES-COLOR-29;
+}
+.nes-color-text-29{
+  color: $NES-COLOR-29;
+}
+
+$NES-COLOR-2A: #58D854;
+.nes-color-bg-2A{
+  background-color: $NES-COLOR-2A;
+}
+.nes-color-text-2A{
+  color: $NES-COLOR-2A;
+}
+
+$NES-COLOR-2B: #58F898;
+.nes-color-bg-02B{
+  background-color: $NES-COLOR-2B;
+}
+.nes-color-text-2B{
+  color: $NES-COLOR-2B;
+}
+
+$NES-COLOR-2C: #00E8D8;
+.nes-color-bg-2C{
+  background-color: $NES-COLOR-2C;
+}
+.nes-color-text-2C{
+  color: $NES-COLOR-2C;
+}
+
+$NES-COLOR-2D: #787878;
+.nes-color-bg-2D{
+  background-color: $NES-COLOR-2D;
+}
+.nes-color-text-2D{
+  color: $NES-COLOR-2D;
+}
+
+$NES-COLOR-2E: #000000;
+.nes-color-bg-2E{
+  background-color: $NES-COLOR-2E;
+}
+.nes-color-text-2E{
+  color: $NES-COLOR-2E;
+}
+
+$NES-COLOR-2F: #000000;
+.nes-color-bg-2F{
+  background-color: $NES-COLOR-2F;
+}
+.nes-color-text-2F{
+  color: $NES-COLOR-2F;
+}
+
+$NES-COLOR-30: #FCFCFC;
+.nes-color-bg-30{
+  background-color: $NES-COLOR-30;
+}
+.nes-color-text-30{
+  color: $NES-COLOR-30;
+}
+
+$NES-COLOR-31: #A4E4FC;
+.nes-color-bg-31{
+  background-color: $NES-COLOR-31;
+}
+.nes-color-text-31{
+  color: $NES-COLOR-31;
+}
+
+$NES-COLOR-32: #B8B8F8;
+.nes-color-bg-32{
+  background-color: $NES-COLOR-32;
+}
+.nes-color-text-32{
+  color: $NES-COLOR-32;
+}
+
+$NES-COLOR-33: #D8B8F8;
+.nes-color-bg-33{
+  background-color: $NES-COLOR-33;
+}
+.nes-color-text-33{
+  color: $NES-COLOR-33;
+}
+
+$NES-COLOR-34: #F8B8F8;
+.nes-color-bg-34{
+  background-color: $NES-COLOR-34;
+}
+.nes-color-text-34{
+  color: $NES-COLOR-34;
+}
+
+$NES-COLOR-35: #F8A4C0;
+.nes-color-bg-35{
+  background-color: $NES-COLOR-35;
+}
+.nes-color-text-35{
+  color: $NES-COLOR-35;
+}
+
+$NES-COLOR-36: #F0D0B0;
+.nes-color-bg-36{
+  background-color: $NES-COLOR-36;
+}
+.nes-color-text-36{
+  color: $NES-COLOR-36;
+}
+
+$NES-COLOR-37: #FCE0A8;
+.nes-color-bg-37{
+  background-color: $NES-COLOR-37;
+}
+.nes-color-text-37{
+  color: $NES-COLOR-37;
+}
+
+$NES-COLOR-38: #F8D878;
+.nes-color-bg-38{
+  background-color: $NES-COLOR-38;
+}
+.nes-color-text-38{
+  color: $NES-COLOR-38;
+}
+
+$NES-COLOR-39: #D8F878;
+.nes-color-bg-39{
+  background-color: $NES-COLOR-39;
+}
+.nes-color-text-39{
+  color: $NES-COLOR-39;
+}
+
+$NES-COLOR-3A: #B8F8B8;
+.nes-color-bg-3A{
+  background-color: $NES-COLOR-3A;
+}
+.nes-color-text-3A{
+  color: $NES-COLOR-3A;
+}
+
+$NES-COLOR-3B: #B8F8D8;
+.nes-color-bg-3B{
+  background-color: $NES-COLOR-3B;
+}
+.nes-color-text-3B{
+  color: $NES-COLOR-3B;
+}
+
+$NES-COLOR-3C: #00FCFC;
+.nes-color-bg-3C{
+  background-color: $NES-COLOR-3C;
+}
+.nes-color-text-3C{
+  color: $NES-COLOR-3C;
+}
+
+$NES-COLOR-3D: #F8D8F8;
+.nes-color-bg-3D{
+  background-color: $NES-COLOR-3D;
+}
+.nes-color-text-3D{
+  color: $NES-COLOR-3D;
+}
+
+$NES-COLOR-3E: #000000;
+.nes-color-bg-3E{
+  background-color: $NES-COLOR-3E;
+}
+.nes-color-text-3E{
+  color: $NES-COLOR-3E;
+}
+
+$NES-COLOR-3F: #000000;
+.nes-color-bg-3F{
+  background-color: $NES-COLOR-3F;
+}
+.nes-color-text-3F{
+  color: $NES-COLOR-3F;
+}
+
