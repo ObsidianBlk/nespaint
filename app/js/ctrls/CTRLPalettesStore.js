@@ -5,10 +5,11 @@ import NESPalette from "/app/js/models/NESPalette.js";
 
 const PLI_TEMPLATE = ".palette-list-item-template";
 const PLI_TITLE = ".title";
-const PLI_BG_COLOR = ".pal-bg-color";
-const PLI_FG_BASE = ".pal-fg-";
-const PLI_BG_BASE = ".pal-bg-";
 const PLI_SELECTED = ".item-selected";
+
+const PLI_BG_COLOR = "pal-bg-color";
+const PLI_FG_BASE = "pal-fg-";
+const PLI_BG_BASE = "pal-bg-";
 const PLI_COLOR_BASE = "nes-color-bg-";
 
 var Palettes = [];
@@ -35,12 +36,21 @@ function HANDLE_PaletteClick(e){
   }
 }
 
+function SetElPaletteName(el, pname){
+  el.setAttribute("palname", pname);
+  var sel = el.querySelectorAll(PLI_TITLE);
+  if (sel.length === 1){
+    sel = sel[0];
+    sel.innerHTML = pname;
+  }
+}
+
 function SetElToColor(el, mode, pi, ci, hex){
   var cel = null;
   if (ci === 0){
-    cel = el.querySelectorAll(PLI_BG_COLOR);
+    cel = el.querySelectorAll("." + PLI_BG_COLOR);
   } else {
-    cel = el.querySelectorAll(((mode == 0) ? PLI_FG_BASE : PLI_BG_BASE) + pi + "-" + ci);
+    cel = el.querySelectorAll("." + ((mode == 0) ? PLI_FG_BASE : PLI_BG_BASE) + pi + "-" + ci);
   }
   if (cel !== null && cel.length === 1){
     cel = cel[0];
@@ -51,12 +61,17 @@ function SetElToColor(el, mode, pi, ci, hex){
         break;
       }
     }
-    cel.classList.add("." + PLI_COLOR_BASE + hex);
+    cel.classList.add(PLI_COLOR_BASE + hex.toUpperCase());
   }
 }
 
 
 function ColorElementToPalette(el, palette){
+  SetElToColor(
+    el, 0,
+    0, 0,
+    palette.get_palette_syscolor_index(0,0,true)
+  );
   for (let p=0; p < 8; p++){
     for (let c=1; c < 4; c++){
       SetElToColor(
@@ -71,7 +86,15 @@ function ColorElementToPalette(el, palette){
 function ConnectElementToPalette(el, palette){
   palette.listen("palettes_changed", (e) => {
     if (e.type == "ALL"){
-      ColorElementToPalette(el, palette);
+      if (e.hasOwnProperty("cindex")){ 
+        SetElToColor(
+          el, 0,
+          0, 0,
+          palette.get_palette_syscolor_index(0,0,true)
+        );
+      } else {
+        ColorElementToPalette(el, palette);
+      }
     } else if (e.type == "SPRITE"){
       SetElToColor(
         el, 0,
@@ -95,9 +118,9 @@ function CreatePaletteDOMEntry(pname, palette){
     var el = oel[0].cloneNode(true);
     el.classList.remove(PLI_TEMPLATE);
     el.classList.remove("hidden");
-    el.setAttribute("palname", pname);
     ConnectElementToPalette(el, palette);
     ColorElementToPalette(el, palette);
+    SetElPaletteName(el, pname);
     el.addEventListener("click", HANDLE_PaletteClick);
     oel[0].parentNode.appendChild(el);
     return el;
@@ -229,7 +252,7 @@ class CTRLPalettesStore{
     if (i < 0)
       throw new ValueError("Failed to find palette named '" + oldname +"'. Cannot rename.");
     Palettes[i][0] = newname;
-    Palettes[i][2].setAttribute("palname", newname);
+    SetElPaletteName(Palettes[i][2], newname);
     return this;
   }
 
