@@ -217,10 +217,12 @@ class CTRLPainter {
       this.__brushLastPos[1] = this.__brushPos[1];
       this.__brushPos[0] = e.x;
       this.__brushPos[1] = e.y;
-      var x = Math.floor((this.__brushPos[0] - this.__offset[0]) * (1.0 / this.__scale));
-      var y = Math.floor((this.__brushPos[1] - this.__offset[1]) * (1.0 / this.__scale));
-      if (x >= 0 && x < this.__surface.width && y >= 0 && y < this.__surface.height){
-        RenderD();
+      if (this.__surface !== null){
+        var x = Math.floor((this.__brushPos[0] - this.__offset[0]) * (1.0 / this.__scale));
+        var y = Math.floor((this.__brushPos[1] - this.__offset[1]) * (1.0 / this.__scale));
+        if (x >= 0 && x < this.__surface.width && y >= 0 && y < this.__surface.height){
+          RenderD();
+        }
       }
     }).bind(this);
     input.listen("mousemove", handle_mousemove);
