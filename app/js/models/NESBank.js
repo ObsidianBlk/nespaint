@@ -106,6 +106,24 @@ export default class NESBank extends ISurface{
     });
   }
 
+  get base64(){
+    var b = "";
+    var data = this.chr;
+    for (var i = 0; i < data.length; i++) {
+      b += String.fromCharCode(data[i]);
+    }
+    return window.btoa(b);
+  }
+
+  set base64(s){
+    var b =  window.atob(s);
+    var len = b.length;
+    if (b.length !== 8192){
+      throw new Error("Base64 string contains invalid byte count.");
+    }
+    this.chr = b; 
+  }
+
   get palette(){return this.__palette;}
   set palette(p){
     if (p !== null && !(p instanceof NESPalette))
