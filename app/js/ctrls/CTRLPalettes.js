@@ -152,6 +152,14 @@ class CTRLPalettes{
       }
     }
     GlobalEvents.listen("set_app_palette", handle_set_app_palette);
+
+    var handle_palettemode = (function(mode){
+      if (mode === 0 || mode ===1){
+        this.__mode = mode;
+        SetColorPaletteEls(this.__mode, this.__NESPalette);
+      }
+    }).bind(this);
+    GlobalEvents.listen("set_palette_mode", handle_palettemode);
   }
 
   get palette(){
