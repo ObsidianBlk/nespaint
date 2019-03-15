@@ -38,12 +38,12 @@ export default class NESBank extends ISurface{
     this.__RP = []; // Right Patterns (Backgrounds) 
     this.__AccessMode = 2; // 0 = Sprites only | 1 = BG only | 2 = Sprites and BG
 
-    var handle_datachanged = function(side){
+    var handle_datachanged = Utils.debounce((function(side){
       if ((side == 0 && (this.__AccessMode == 0 || this.__AccessMode == 2)) ||
         (side == 1 && (this.__AccessMode == 1 || this.__AccessMode == 2))){
         this.emit("data_changed");
       }
-    }
+    }).bind(this), 250);
 
     for (var i=0; i < 256; i++){
       this.__LP.push(new NESTile());
