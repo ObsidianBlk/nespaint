@@ -61,11 +61,17 @@ export default class NESBank extends ISurface{
       throw new TypeError("Access mode expected to be integer.");
     switch(m){
       case NESBank.ACCESSMODE_SPRITE:
-        this.__AccessMode = NESBank.ACCESSMODE_SPRITE; break;
+        this.__AccessMode = NESBank.ACCESSMODE_SPRITE;
+        this.emit("data_changed");
+        break;
       case NESBank.ACCESSMODE_BACKGROUND:
-        this.__AccessMode = NESBank.ACCESSMODE_BACKGROUND; break;
+        this.__AccessMode = NESBank.ACCESSMODE_BACKGROUND;
+        this.emit("data_changed");
+        break;
       case NESBank.ACCESSMODE_FULL:
-        this.__AccessMode = NESBank.ACCESSMODE_FULL; break;
+        this.__AccessMode = NESBank.ACCESSMODE_FULL;
+        this.emit("data_changed");
+        break;
     }
   }
 
