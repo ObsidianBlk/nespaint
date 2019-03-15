@@ -39,12 +39,12 @@ function HANDLE_ModeChanged(){
   if (val !== LastVal){
     LastVal = val;
     if (val === "all"){
-      SURF.access_mode = 2;
+      SURF.access_mode = NESBank.ACCESSMODE_FULL;
     } else if (val === "sprites"){
-      SURF.access_mode = 1;
+      SURF.access_mode = NESBank.ACCESSMODE_SPRITE;
       GlobalEvents.emit("set_palette_mode", 1);
     } else if (val === "tiles"){
-      SURF.access_mode = 0;
+      SURF.access_mode = NESBank.ACCESSMODE_BACKGROUND;
       GlobalEvents.emit("set_palette_mode", 0);
     }
   }

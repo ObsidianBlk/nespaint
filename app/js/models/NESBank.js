@@ -254,7 +254,7 @@ export default class NESBank extends ISurface{
 
     var res = LRIdx2TileIdxCo((y*this.width)+x, this.__AccessMode);
     var list = (res.lid === 0) ? this.__LP : this.__RP;
-    var pi = list[res.index].paletteIndex;
+    var pi = list[res.index].paletteIndex + ((res.lid === 0) ? 4 : 0);
     var ci = list[res.index].getPixelIndex(res.x, res.y);
 
     if (this.__palette !== null){
