@@ -7,6 +7,7 @@ import CTRLPalettes from "/app/js/ctrls/CTRLPalettes.js";
 import CTRLPainter from "/app/js/ctrls/CTRLPainter.js";
 import CTRLPalettesStore from "/app/js/ctrls/CTRLPalettesStore.js";
 import CTRLBanksStore from "/app/js/ctrls/CTRLBanksStore.js";
+import CTRLBankTools from "/app/js/ctrls/CTRLBankTools.js";
 
 import NESPalette from "/app/js/models/NESPalette.js";
 
@@ -31,8 +32,10 @@ function initialize(DOC){
   
   // Controllers explicitly interface model data to view.
   CTRLPainter.initialize();
+  CTRLBankTools.initialize();
+
   CTRLPalettesStore.initialize();
-  CTRLBanksStore.initialize();  
+  CTRLBanksStore.initialize();
 }
 
 
