@@ -8,6 +8,7 @@ import CTRLPainter from "/app/js/ctrls/CTRLPainter.js";
 import CTRLPalettesStore from "/app/js/ctrls/CTRLPalettesStore.js";
 import CTRLBanksStore from "/app/js/ctrls/CTRLBanksStore.js";
 import CTRLBankTools from "/app/js/ctrls/CTRLBankTools.js";
+import CTRLIO from "/app/js/ctrls/CTRLIO.js";
 
 import NESPalette from "/app/js/models/NESPalette.js";
 
@@ -36,6 +37,8 @@ function initialize(DOC){
 
   CTRLPalettesStore.initialize();
   CTRLBanksStore.initialize();
+
+  CTRLIO.initialize();
 }
 
 
