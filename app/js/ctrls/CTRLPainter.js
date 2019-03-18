@@ -170,8 +170,15 @@ class CTRLPainter {
     }).bind(this);
     GlobalEvents.listen("resize", handle_resize);
 
+    var handle_palinfochanged = (function(pdat){
+      RenderD();
+    }).bind(this);
+
     var handle_setapppalette = (function(pal){
+      if (this.__palette !== null)
+        this.__palette.unlisten("palettes_changed", handle_palinfochanged);
       this.__palette = pal;
+      this.__palette.listen("palettes_changed", handle_palinfochanged);
       if (this.__surface !== null){
         this.__surface.palette = pal;
         if (this.__onePaletteMode === false)
