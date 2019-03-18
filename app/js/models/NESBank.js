@@ -35,8 +35,10 @@ export default class NESBank extends ISurface{
   constructor(){
     super();
     this.__LP = []; // Left Patterns (Sprites)
-    this.__RP = []; // Right Patterns (Backgrounds) 
-    this.__AccessMode = 2; // 0 = Sprites only | 1 = BG only | 2 = Sprites and BG
+    this.__RP = []; // Right Patterns (Backgrounds)
+    this.__View = []; 
+    this.__AccessMode = NESBank.ACCESSMODE_8K;
+    this.__AccessOffset = 0;
 
     var handle_datachanged = Utils.debounce((function(side){
       if ((side == 0 && (this.__AccessMode == 0 || this.__AccessMode == 2)) ||
@@ -299,8 +301,7 @@ export default class NESBank extends ISurface{
 
 
 
-NESBank.ACCESSMODE_SPRITE = 0;
-NESBank.ACCESSMODE_BACKGROUND = 1;
-NESBank.ACCESSMODE_FULL = 2;
-
-
+NESBank.ACCESSMODE_8K = 0;
+NESBank.ACCESSMODE_1K = 1;
+NESBank.ACCESSMODE_2K = 2;
+NESBank.ACCESSMODE_4K = 3;
