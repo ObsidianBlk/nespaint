@@ -203,6 +203,18 @@ export default class NESBank extends ISurface{
       this.emit("data_changed");
   }
 
+  get access_offset_length(){
+    switch(this.__AccessMode){
+      case NESBank.ACCESSMODE_4K:
+        return 2;
+      case NESBank.ACCESSMODE_2K:
+        return 4;
+      case NESBank.ACCESSMODE_1K:
+        return 8;
+    }
+    return 0;
+  }
+
   get json(){
     JSON.stringify({
       LP: this.__LP.map(x=>x.base64),
