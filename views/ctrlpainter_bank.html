@@ -1,14 +1,16 @@
 <div class="painter-bank-controls hidden">
-  <label for="painter-bank-view-all" class="pure-radio">
-    <input id="painter-bank-view-all" type="radio" name="pbv" value="all" checked>
-    Full
+  <label for="mode-select">
+    Bank Size:
+    <select id="mode-select" class="painter-bank-mode">
+      <option value="8K">8K</option>
+      <option value="4K">4K</option>
+      <option value="2K">2K</option>
+      <option value="1K">1K</option>
+    </select>
   </label>
-  <label for="painter-bank-view-sprites" class="pure-radio">
-    <input id="painter-bank-view-sprites" type="radio" name="pbv" value="sprites">
-    Sprites
-  </label>
-  <label for="painter-bank-view-tiles" class="pure-radio">
-    <input id="painter-bank-view-tiles" type="radio" name="pbv" value="tiles">
-    Tiles
+
+  <label for="offset-select" class="hidden">
+    Offset:
+    <input id="offset-select" class="input-u-1-6" type="number" min="0" max="7" step="1" value="0" /> 
   </label>
 </div>
