@@ -15,8 +15,8 @@ function CnvIdx(x, y, am, off){
 
   switch(am){
   case NESBank.ACCESSMODE_8K:
-    res.side = (x > 128) ? 1 : 0;
-    x -= (res.side === 1) ? 128, 0;
+    res.side = (x >= 128) ? 1 : 0;
+    x -= (res.side === 1) ? 128 : 0;
     res.tileidx = (Math.floor(y/8) * 16) + Math.floor(x / 8);
     break;
   case NESBank.ACCESSMODE_4K:
@@ -82,13 +82,13 @@ export default class NESBank extends ISurface{
       var sendEmit = false;
       switch(this.__AccessMode){
         case NESBank.ACCESSMODE_1K:
-          if (side === Math.floor(this.__AccessOffset / 4){
+          if (side === Math.floor(this.__AccessOffset / 4)){
             if (Math.floor(idx / 64) === Math.floor(this.__AccessOffset/4))
               sendEmit = true;
           }
           break;
         case NESBank.ACCESSMODE_2K:
-          if (side === Math.floor(this.__AccessOffset / 2){
+          if (side === Math.floor(this.__AccessOffset / 2)){
             if (Math.floor(idx / 128) === Math.floor(this.__AccessOffset/2))
               sendEmit = true;
           }
