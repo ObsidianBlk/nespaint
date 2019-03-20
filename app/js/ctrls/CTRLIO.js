@@ -4,6 +4,24 @@ import NESBank from "/app/js/models/NESBank.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
 
+var SURF = null;
+
+function LoadFile(file){
+  if (SURF !== null){
+    if (SURF instanceof NESBank){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        try {
+          SURF.chr = new Uint8Array(e.target.result);
+        } catch (e) {
+          console.log(e.toString());
+        }
+      }
+      reader.readAsArrayBuffer(file);
+    }
+  }
+}
+
 
 function HANDLE_DragOver(e){
   e.stopPropagation();
@@ -17,12 +35,22 @@ function HANDLE_FileDrop(e){
   var files = e.dataTransfer.files;
 
   for (let i=0; i < files.length; i++){
-    console.log(files[i]);
+    LoadFile(files[i]);
+  }
+}
+
+function HANDLE_SurfChange(surf){
+  if (surf instanceof NESBank){
+    SURF = surf;
+  } else {
+    SURF = null;
   }
 }
 
 class CTRLIO{
-  constructor(){}
+  constructor(){
+    GlobalEvents.listen("change_surface", HANDLE_SurfChange);
+  }
 
   initialize(){
     var e = document.querySelectorAll(".drop-zone");
