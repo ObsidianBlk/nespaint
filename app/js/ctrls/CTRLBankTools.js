@@ -7,23 +7,42 @@ var EL = null;
 var SURF = null;
 var LastVal = "all";
 
+function GetSubControls(){
+  var els = [];
+  if (EL !== null){
+    var ellab = EL.querySelectorAll(".painter-bank-offset");
+    var eloff = null;
+    if (ellab.length === 1){
+      els.push(ellab[0]);
+      eloff = els[0].querySelectorAll("#offset-select");
+      if (eloff.length === 1){
+        els.push(eloff[0]);
+      } else {
+        console.log("Ambiguous number of 'offset-select' elements.");
+      }
+    } else {
+      console.log("Ambiguous number of 'painter-bank-offset' elements.");
+    }
+  }
+  return (els.length == 2) ? els : null;
+}
+
 function OpenControls(){
   if (EL !== null && SURF !== null){
-    EL.classList.remove("hidden");
-    var e = EL.querySelectorAll("input[type='radio']:checked");
-    if (e.length > 0){
-      var val = e[0].getAttribute("value");
-      LastVal = val;
-      if (val === "tiles"){
-        SURF.access_mode = 0;
-        GlobalEvents.emit("set_palette_mode", 0);
-      } else if (val === "sprites"){
-        SURF.access_mode = 1;
-        GlobalEvents.emit("set_palette_mode", 1);
-      } else {
-        SURF.access_mode = 2;
-      }
+    var subel = GetSubControls();
+    switch(SURF.access_mode){
+      case NESBank.ACCESSMODE_8K:
+        subel[0].classList.add("hidden");
+        break;
+      case NESBank.ACCESSMODE_4K:
+      case NESBank.ACCESSMODE_2K:
+      case NESBank.ACCESSMODE_1K:
+        subel[0].classList.remove("hidden");
+        subel[1].setAttribute("max", SURF.access_offset_length - 1);
+        subel[1].setAttribute("value", SURF.access_offset);
+        break;
     }
+    EL.classList.remove("hidden"); 
   }
 }
 
@@ -34,35 +53,60 @@ function CloseControls(){
 }
 
 
-function HANDLE_ModeChanged(){
-  var val = this.getAttribute("value");
-  if (val !== LastVal){
-    LastVal = val;
-    if (val === "all"){
-      SURF.access_mode = NESBank.ACCESSMODE_FULL;
-    } else if (val === "sprites"){
-      SURF.access_mode = NESBank.ACCESSMODE_SPRITE;
-      GlobalEvents.emit("set_palette_mode", 1);
-    } else if (val === "tiles"){
-      SURF.access_mode = NESBank.ACCESSMODE_BACKGROUND;
-      GlobalEvents.emit("set_palette_mode", 0);
+function HANDLE_SurfChange(surf){
+  if (surf instanceof NESBank){
+    SURF = surf;
+    OpenControls();
+  } else {
+    SURF = null;
+    CloseControls();
+  }
+}
+
+
+function HANDLE_ModeChange(){
+  if (EL !== null && SURF !== null){
+    var val = this.options[this.selectedIndex].value; 
+    var subel = GetSubControls();
+    switch(val){
+      case "8K":
+        SURF.access_mode = NESBank.ACCESSMODE_8K;
+        subel[0].classList.add("hidden");
+        break;
+      case "4K":
+        SURF.access_mode = NESBank.ACCESSMODE_4K;
+        subel[0].classList.remove("hidden");
+        subel[1].setAttribute("value", SURF.access_offset);
+        subel[1].setAttribute("max", SURF.access_offset_length - 1);
+        break;
+      case "2K":
+        SURF.access_mode = NESBank.ACCESSMODE_2K;
+        subel[0].classList.remove("hidden");
+        subel[1].setAttribute("value", SURF.access_offset);
+        subel[1].setAttribute("max", SURF.access_offset_length - 1);
+        break;
+      case "1K":
+        SURF.access_mode = NESBank.ACCESSMODE_1K;
+        subel[0].classList.remove("hidden");
+        subel[1].setAttribute("value", SURF.access_offset);
+        subel[1].setAttribute("max", SURF.access_offset_length - 1);
+        break;
     }
+  }
+}
+
+
+function HANDLE_OffsetChange(){
+  if (EL !== null && SURF !== null){
+    var val = parseInt(this.value);
+    SURF.access_offset = val;
   }
 }
 
 
 class CTRLBankTools{
   constructor(){
-    var handle_surfchange = function(surf){
-      if (surf instanceof NESBank){
-        SURF = surf;
-        OpenControls();
-      } else {
-        SURF = null;
-        CloseControls();
-      }
-    };
-    GlobalEvents.listen("change_surface", handle_surfchange);
+    GlobalEvents.listen("change_surface", HANDLE_SurfChange);
   }
 
   initialize(){
@@ -73,10 +117,16 @@ class CTRLBankTools{
         return;
       }
       EL = EL[0];
-      var rel = EL.querySelectorAll("input[type='radio']");
-      for (let i=0; i < rel.length; i++){
-        rel[i].addEventListener("change", HANDLE_ModeChanged);
+      var elsel = EL.querySelectorAll(".painter-bank-mode");
+      if (elsel.length !== 1){
+        console.log("Ambiguous number of 'painter-bank-mode' elements.");
+        EL = null;
+        return;
       }
+      elsel = elsel[0];
+      elsel.addEventListener("change", HANDLE_ModeChange);
+      var subel = GetSubControls();
+      subel[1].addEventListener("change", HANDLE_OffsetChange);
       OpenControls();
     }
   }
