@@ -90,13 +90,6 @@ input.enableKeyboardInput(true);
 input.enableMouseInput(true);
 input.preventDefaults = true;
 
-// Mouse handling...
-/*input.listen("mousemove", handle_mouseevent);
-input.listen("mousedown", handle_mouseevent);
-input.listen("mouseup", handle_mouseevent);
-input.listen("mouseclick", handle_mouseclickevent);
-*/
-
 
 /* --------------------------------------------------------------------
  * CTRLPainter
@@ -207,6 +200,7 @@ class CTRLPainter {
         } else if (this.__palette !== null && this.__surface.palette !== this.__palette){
           this.__surface.palette = this.__palette;
         }
+        this.scale_to_fit();
         this.center_surface();
       }
       RenderD();
@@ -272,6 +266,25 @@ class CTRLPainter {
     }).bind(this);
     input.listen("wheel", handle_scale);
 
+
+    var elscale = document.querySelector("#painter_scale");
+    if (elscale){
+      var self = this;
+      elscale.addEventListener("change", function(e){
+        var val = Number(this.value);
+        self.scale = val; 
+        RenderD();
+      });
+      elscale.value = this.__scale;
+    }
+
+    var handle_fittocanvas = (function(){
+      this.scale_to_fit();
+      this.center_surface();
+      RenderD();
+    }).bind(this);
+    GlobalEvents.listen("painter-fit-to-canvas", handle_fittocanvas);
+
     var handle_togglegrid = (function(target, args){
       if (args.show){
         target.classList.add("pure-button-active");
@@ -319,6 +332,10 @@ class CTRLPainter {
     if (typeof(s) !== 'number')
       throw new TypeError("Expected number value.");
     this.__scale = Math.max(0.1, Math.min(100.0, s));
+    var elscale = document.querySelector("#painter_scale");
+    if (elscale){
+      elscale.value = this.__scale;
+    }
   }
 
   get showGrid(){return this.__gridEnabled;}
@@ -337,10 +354,11 @@ class CTRLPainter {
       context = canvas.getContext("2d");
       if (!context)
         throw new Error("Failed to obtain canvas context.");
-      context.imageSmoothingEnabled = false;
+      context.imageSmoothingEnabled = false; 
       ResizeCanvasImg(canvas.clientWidth, canvas.clientHeight); // A forced "resize".
       input.mouseTargetElement = canvas;
 
+      this.scale_to_fit();
       this.center_surface();
     }
     return this;
@@ -360,9 +378,22 @@ class CTRLPainter {
     if (canvas === null || this.__surface === null)
       return;
 
-    this.__offset[0] = Math.floor((canvas.clientWidth - this.__surface.width) * 0.5);
-    this.__offset[1] = Math.floor((canvas.clientHeight - this.__surface.height) * 0.5);
+    this.__offset[0] = Math.floor((canvas.clientWidth - (this.__surface.width * this.__scale)) * 0.5);
+    this.__offset[1] = Math.floor((canvas.clientHeight - (this.__surface.height * this.__scale)) * 0.5);
     return this;
+  }
+
+  scale_to_fit(){
+    if (canvas === null || this.__surface === null)
+      return;
+
+    var sw = canvas.clientWidth / this.__surface.width;
+    var sh = canvas.clientHeight / this.__surface.height;
+    var s = Math.min(sw, sh).toString();
+    var di = s.indexOf(".");
+    if (di >= 0)
+      s = s.slice(0, di+2);
+    this.scale = Number(s);
   }
 
   render(){
