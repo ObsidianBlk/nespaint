@@ -1,5 +1,5 @@
 import GlobalEvents from "/app/js/common/EventCaller.js";
-
+import Input from "/app/js/ui/Input.js";
 
 class Modal{
   constructor(){
@@ -20,6 +20,28 @@ class Modal{
 
     GlobalEvents.listen("modal-close", (function(target, event){
       this.close_modal();
+    }).bind(this));
+
+    GlobalEvents.listen("modal-submit", (function(target, event){
+      if (target !== this.__currentModalEl)
+        return;
+      if (!event.hasOwnProperty("subevent"))
+        return;
+      var ename = event.subevent;
+      var vals = {};
+      if (event.hasOwnProperty("ids")){
+        var ids = event.ids.split(",");
+        var cel = this.__currentModalEl;
+        ids.forEach((item) => {
+          var id = item.trim();
+          var el = cel.querySelector("[name='" + id + "']");
+          if (el && el.hasOwnProperty("value"))
+            vals[id] = el.value;
+        });
+      }
+      GlobalEvents.emit(ename, vals);
+      if (event.hasOwnProperty("closeoncomplete"))
+        this.close_modal();
     }).bind(this));
   }
 

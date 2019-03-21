@@ -6,6 +6,18 @@
             </ul>
             <% tabs.forEach(function(item){ %>
             <div class="tab-content" fortabs="<%= tabsetname %>" tabid="<%= item.id %>">
+              <div class="simple-padding">
+                <% if (item.hasOwnProperty("addevent")){ %>
+                <button class="pure-button" emit="modal-open" emit-args='{"id":"<%= item.addevent %>"}'>
+                  <i class="fa fa-plus-circle"></i>
+                </button>
+                <% } %>
+                <% if (item.hasOwnProperty("remevent")){ %>
+                <button class="pure-button" emit="<%= item.remevent %>">
+                  <i class="fa fa-trash-alt"></i>
+                </button>
+                <% } %>
+              </div>
               <div class="list-container">
               <% if(item.hasOwnProperty("tmpl")){ %>
                 <%- include(item.tmpl) %>

@@ -130,8 +130,16 @@ function CreatePaletteDOMEntry(pname, palette){
   return null;
 }
 
+
 class CTRLPalettesStore{
-  constructor(){}
+  constructor(){
+    GlobalEvents.listen("palstore-add", (function(e){
+      if (e.hasOwnProperty("palname")){
+        this.createPalette(e.palname);
+        this.activatePalette(e.palname);
+      }
+    }).bind(this));    
+  }
 
   get json(){
     var d = {

@@ -22,7 +22,7 @@
       <%- include('docks.html', {
         tabsetname:"assetlists",
         tabs:[
-          {name:"Palettes", id:"palettes", tmpl:"paletteListItem.html", selected:true},
+          {name:"Palettes", id:"palettes", tmpl:"paletteListItem.html", addevent:"PaletteAdd", remevent:"palstore-remove", elected:true},
           {name:"Banks", id:"banks", selected:false},
           {name:"Attrib. Tables", id:"attrtbls", selected:false}
         ]  
