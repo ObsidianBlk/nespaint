@@ -451,13 +451,11 @@ export default class Input{
           inbounds: true
         }
         if (this.__mouseTarget !== null){
-          if (this.__mouseTarget === document.activeElement){
-            var rect = this.__mouseTarget.getBoundingClientRect();
-            pos.x -= rect.left;
-            pos.y -= rect.top;
-            pos.inbounds = (pos.x >= 0 && pos.x < rect.width && pos.y >= 0 && pos.y < rect.height);
-          }
-          pos.inbounds = false;
+          var rect = this.__mouseTarget.getBoundingClientRect();
+          pos.x -= rect.left;
+          pos.y -= rect.top;
+          // TODO: Detect if element OVER __mouseTarget
+          pos.inbounds = (pos.x >= 0 && pos.x < rect.width && pos.y >= 0 && pos.y < rect.height);
         }
         pos.x = Math.floor(pos.x);
         pos.y = Math.floor(pos.y);
