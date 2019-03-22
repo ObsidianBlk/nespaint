@@ -3,9 +3,9 @@ import Utils from "/app/js/common/Utils.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
 
-const PLI_TEMPLATE = ".palette-list-item-template";
-const PLI_TITLE = ".title";
-const PLI_SELECTED = ".item-selected";
+const PLI_TEMPLATE = "palette-list-item-template";
+const PLI_TITLE = "title";
+const PLI_SELECTED = "list-item-selected";
 
 const PLI_BG_COLOR = "pal-bg-color";
 const PLI_FG_BASE = "pal-fg-";
@@ -22,15 +22,18 @@ function HANDLE_PaletteClick(e){
   if (!this.hasAttribute("palname")){return;}
   var pname = this.getAttribute("palname");
 
-  if (Palettes.length > 0 && Palettes[CurrentPaletteIndex][0] !== pname){
-    var oel = Palettes[CurrentPaletteIndex][2];
-    oel.classList.remove(PLI_SELECTED);
+  if (Palettes.length > 0){
+    if (Palettes[CurrentPaletteIndex][0] !== pname || !Palettes[CurrentPaletteIndex][2].classList.contains(PLI_SELECTED)){
+      var oel = Palettes[CurrentPaletteIndex][2];
+      oel.classList.remove(PLI_SELECTED);
 
-    for (let i=0; i < Palettes.length; i++){
-      if (Palettes[i][0] === pname){
-        Palettes[i][2].classList.add(PLI_SELECTED);
-        GlobalEvents.emit("set_app_palette", Palettes[i][1]);
-        break;
+      for (let i=0; i < Palettes.length; i++){
+        if (Palettes[i][0] === pname){
+          Palettes[i][2].classList.add(PLI_SELECTED);
+          CurrentPaletteIndex = i;
+          GlobalEvents.emit("set_app_palette", Palettes[i][1]);
+          break;
+        }
       }
     }
   }
@@ -38,7 +41,7 @@ function HANDLE_PaletteClick(e){
 
 function SetElPaletteName(el, pname){
   el.setAttribute("palname", pname);
-  var sel = el.querySelectorAll(PLI_TITLE);
+  var sel = el.querySelectorAll("." + PLI_TITLE);
   if (sel.length === 1){
     sel = sel[0];
     sel.innerHTML = pname;
@@ -113,7 +116,7 @@ function ConnectElementToPalette(el, palette){
 
 
 function CreatePaletteDOMEntry(pname, palette){
-  var oel = document.querySelectorAll(PLI_TEMPLATE);
+  var oel = document.querySelectorAll("." + PLI_TEMPLATE);
   if (oel.length == 1){
     var el = oel[0].cloneNode(true);
     el.classList.remove(PLI_TEMPLATE);
@@ -138,7 +141,11 @@ class CTRLPalettesStore{
         this.createPalette(e.palname);
         this.activatePalette(e.palname);
       }
-    }).bind(this));    
+    }).bind(this));
+
+    GlobalEvents.listen("palstore-remove", (function(e){
+      this.removePalette(Palettes[CurrentPaletteIndex][0]);
+    }).bind(this));
   }
 
   get json(){
@@ -234,7 +241,8 @@ class CTRLPalettesStore{
         Palettes.push([name, palette, el]);
 
         if (Palettes.length <= 1 && !BlockEmits){
-          GlobalEvents.emit("set_app_palette", palette);        
+          //GlobalEvents.emit("set_app_palette", palette);
+          el.click();        
         }
       }
     }
@@ -252,6 +260,12 @@ class CTRLPalettesStore{
         Palettes.splice(i, 1);
       }
     }
+
+    if (Palettes.length <= 0){
+      this.createPalette("Palette");
+    } else {
+      Palettes[CurrentPaletteIndex][2].click();
+    }
     return this;
   }
 
@@ -267,7 +281,6 @@ class CTRLPalettesStore{
   activatePalette(name){
     var i = this.paletteIndexFromName(name);
     if (i >= 0 && CurrentPaletteIndex !== i){
-      CurrentPaletteIndex = i;
       Palettes[CurrentPaletteIndex][2].click();
       //if (!BlockEmits){
       //  GlobalEvents.emit("set_app_palette", Palettes[CurrentPaletteIndex][1]);

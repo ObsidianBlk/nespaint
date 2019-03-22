@@ -2,6 +2,7 @@
 .list-container{
   width: 100%;
   height: 300px;
+  margin-top: 0.4em;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -10,10 +11,11 @@
 .list-item-container{
   background-color: $list-item-bg;
   border-radius: 8px;
+  margin-bottom: 0.4em;
+}
 
-  .item-selected{
-    background-color: $list-item-selected-bg;
-  }
+.list-item-selected{
+  background-color: $list-item-selected-bg;
 }
 
 .list-v-padding{
