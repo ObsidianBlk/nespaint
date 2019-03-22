@@ -87,7 +87,6 @@ window.addEventListener("resize", HANDLE_Resize);
 // Setting-up Input controls.
 var input = new Input();
 input.enableKeyboardInput(true);
-input.enableMouseInput(true);
 input.preventDefaults = true;
 
 
@@ -356,7 +355,8 @@ class CTRLPainter {
         throw new Error("Failed to obtain canvas context.");
       context.imageSmoothingEnabled = false; 
       ResizeCanvasImg(canvas.clientWidth, canvas.clientHeight); // A forced "resize".
-      input.mouseTargetElement = canvas;
+      input.enableMouseInput(true, canvas);
+      //input.mouseTargetElement = canvas;
 
       this.scale_to_fit();
       this.center_surface();

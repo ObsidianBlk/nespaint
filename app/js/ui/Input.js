@@ -602,29 +602,35 @@ export default class Input{
         return false;
       }).bind(this);
 
-      return (function(enable){
+      return (function(enable, target){
         enable = (enable !== false);
+        target = (Utils.isElement(target)) ? target : window;
+        if (enable === true && this.__mouseEnabled === true && this.__mouseTarget !== target){
+          this.enableMouseInput(false);
+        }
         // NOTE: There shouldn't be any harm if the user repeatedly enables or disables mouse.
         if (enable){
           this.__mouseEnabled = true;
-          window.addEventListener("mousemove", handle_mousemove);
-          window.addEventListener("mousedown", handle_mousedown);
-          window.addEventListener("mouseup", handle_mouseup);
-          window.addEventListener("mousewheel", handle_mousewheel); // For older browsers?
-          window.addEventListener("wheel", handle_mousewheel);
-          window.addEventListener("click", handle_mouseprevdef);
-          window.addEventListener("dblclick", handle_mouseprevdef);
-          window.addEventListener("contextmenu", handle_mouseprevdef);
+          this.__mouseTarget = target;
+          this.__mouseTarget.addEventListener("mousemove", handle_mousemove);
+          this.__mouseTarget.addEventListener("mousedown", handle_mousedown);
+          this.__mouseTarget.addEventListener("mouseup", handle_mouseup);
+          this.__mouseTarget.addEventListener("mousewheel", handle_mousewheel); // For older browsers?
+          this.__mouseTarget.addEventListener("wheel", handle_mousewheel);
+          this.__mouseTarget.addEventListener("click", handle_mouseprevdef);
+          this.__mouseTarget.addEventListener("dblclick", handle_mouseprevdef);
+          this.__mouseTarget.addEventListener("contextmenu", handle_mouseprevdef);
         } else {
           this.__mouseEnabled = false;
-          window.removeEventListener("mousemove", handle_mousemove);
-          window.removeEventListener("mousedown", handle_mousedown);
-          window.removeEventListener("mouseup", handle_mouseup);
-          window.removeEventListener("mousewheel", handle_mousewheel); // For older browsers?
-          window.removeEventListener("wheel", handle_mousewheel);
-          window.removeEventListener("click", handle_mouseprevdef);
-          window.removeEventListener("dblclick", handle_mouseprevdef);
-          window.removeEventListener("contextmenu", handle_mouseprevdef);
+          this.__mouseTarget.removeEventListener("mousemove", handle_mousemove);
+          this.__mouseTarget.removeEventListener("mousedown", handle_mousedown);
+          this.__mouseTarget.removeEventListener("mouseup", handle_mouseup);
+          this.__mouseTarget.removeEventListener("mousewheel", handle_mousewheel); // For older browsers?
+          this.__mouseTarget.removeEventListener("wheel", handle_mousewheel);
+          this.__mouseTarget.removeEventListener("click", handle_mouseprevdef);
+          this.__mouseTarget.removeEventListener("dblclick", handle_mouseprevdef);
+          this.__mouseTarget.removeEventListener("contextmenu", handle_mouseprevdef);
+          this.__mouseTarget = null;
         }
       }).bind(this);
     }).apply(this);
@@ -693,13 +699,13 @@ export default class Input{
   set ieMouseMode(m){this.__ieMouseMode = (m === true);}
 
   get mouseTargetElement(){return this.__mouseTarget;}
-  set mouseTargetElement(el){
-    if (el === null || Utils.isElement(el)){
-      this.__mouseTarget = el;
-    } else {
-      throw new TypeError("Expected Mouse Target Element to be null or an HTMLElement object.");
-    }
-  }
+  //set mouseTargetElement(el){
+  //  if (el === null || Utils.isElement(el)){
+  //    this.__mouseTarget = el;
+  //  } else {
+  //    throw new TypeError("Expected Mouse Target Element to be null or an HTMLElement object.");
+  //  }
+  //}
 
   isKeyDown(key){
     if (typeof(key) === 'string'){
