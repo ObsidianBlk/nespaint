@@ -23,8 +23,6 @@ class Modal{
     }).bind(this));
 
     GlobalEvents.listen("modal-submit", (function(target, event){
-      if (target !== this.__currentModalEl)
-        return;
       if (!event.hasOwnProperty("subevent"))
         return;
       var ename = event.subevent;
@@ -35,7 +33,7 @@ class Modal{
         ids.forEach((item) => {
           var id = item.trim();
           var el = cel.querySelector("[name='" + id + "']");
-          if (el && el.hasOwnProperty("value"))
+          if (el) // TODO: Check if el is an INPUT node and switch between the node types.
             vals[id] = el.value;
         });
       }
