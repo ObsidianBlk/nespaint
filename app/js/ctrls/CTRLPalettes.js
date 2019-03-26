@@ -7,7 +7,7 @@ const ATTRIB_PALIDX = "pidx";     // This is the palette index (0 - 3 (Tiles) 4 
 const ATTRIB_COLIDX = "cidx";  // This is the color index in the selected palette (0 - 3)
 
 const CLASS_BTN_ACTIVE = "pure-button-active";
-
+const SELECT_ID_PALETTEMODE = "palette-mode";
 
 var Active_Palette_Index = 0;
 var Active_Color_Index = 0;
@@ -102,7 +102,7 @@ class CTRLPalettes{
         if (idx >= 0 && idx < NESPalette.SystemColor.length){
           var i = GetPaletteIndexes(self.__activePaletteEl);
           if (self.__palette !== null && i !== null){
-            self.__NESPalette.set_palette_syscolor_index(i.pi, i.ci, idx);
+            self.__NESPalette.set_palette_syscolor_index(i.pi + ((self.__mode === 1) ? 4 : 0), i.ci, idx);
             SetPaletteElStyle(self.__activePaletteEl, NESPalette.SystemColor[idx]);
           }
         }
@@ -142,6 +142,23 @@ class CTRLPalettes{
         el.addEventListener("click", handle_palcolor_clicked);
       }
     });
+
+
+    // ------------------------------------------------------------------------------------
+    // Defining hooks for palette mode swapping
+    // ------------------------------------------------------------------------------------
+    var el = document.querySelector("#" + SELECT_ID_PALETTEMODE);
+    if (el){
+      el.addEventListener("change", function(event){
+        switch(this.value){
+          case "sprite":
+            self.__mode = 1; break;
+          case "tile":
+            self.__mode = 0; break;
+        }
+        SetColorPaletteEls(self.__mode, self.__NESPalette);
+      });
+    }
 
     // ------------------------------------------------------------------------------------
     // Setting some hooks to watch for some global events.
