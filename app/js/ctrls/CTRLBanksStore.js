@@ -4,9 +4,88 @@ import NESBank from "/app/js/models/NESBank.js";
 
 
 
+const BLI_TEMPLATE = "bank-list-item-template";
+const BLI_CANVAS = "bank-img";
+const BLI_TITLE = "title";
+const BLI_SELECTED = "list-item-selected";
+
+
 var Banks = {};
 var CurrentBank = "";
 
+
+function HANDLE_BankClick(e){
+  var name = this.getAttribute("bankname");
+  if (name !== CurrentBank){
+    if (CurrentBank !== "")
+      Banks[CurrentBank].el.classList.remove(BLI_SELECTED);
+    CurrentBank = name;
+    Banks[CurrentBank].el.classList.add(BLI_SELECTED);
+    GlobalEvents.emit("change_surface", Banks[CurrentBank].bank);
+  }
+}
+
+
+function SetElBankName(el, name){
+  el.setAttribute("bankname", name);
+  var sel = el.querySelector("." + BLI_TITLE);
+  if (sel){
+    sel.innerHTML = name;
+  }
+}
+
+
+var RenderBankToEl = Utils.throttle(function(el, bank){
+  var cnv = el.querySelector("." + BLI_CANVAS);
+  var ctx = cnv.getContext("2d");
+  var cw = Math.floor(cnv.clientWidth);
+  var ch = Math.floor(cnv.clientHeight);
+  if (cw <= 0 || ch <= 0){return;}
+  var ctximg = ctx.getImageData(0,0,cw,ch);
+
+  var idat = ctximg.data;
+  for (let y=0; y < ch; y++){
+    for (let x=0; x < cw; x++){
+      var index = (y*(cw*4)) + (x*4);
+      idat[index] = 0;
+      idat[index+1] = 0;
+      idat[index+2] = 0;
+      idat[index+3] = 255;
+    }
+  }
+
+  ctx.putImageData(ctximg, 0, 0);
+}, 500); // Only update twice a second.
+
+
+function HANDLE_BankDataChange(bank, e){
+  RenderBankToEl(this, bank);
+}
+
+function ConnectElementToBank(el, bank){
+  bank.listen("data_changed", HANDLE_BankDataChange.bind(el, bank));
+}
+
+
+function CreateBankDOMEntry(name, bank){
+  var baseel = document.querySelector("." + BLI_TEMPLATE);
+  if (!baseel){
+    console.log("WARNING: Failed to find bank list item template.");
+    return null;
+  }
+  var el = baseel.cloneNode(true);
+  el.classList.remove(BLI_TEMPLATE);
+  el.classList.remove("hidden");
+  el.setAttribute("bankname", name);
+  ConnectElementToBank(el, bank);
+  SetElBankName(el, name); 
+  el.addEventListener("click", HANDLE_BankClick);
+  baseel.parentNode.appendChild(el);
+  setTimeout(()=>{
+    RenderBankToEl(el, bank);
+  }, 500); // Make the render call in about a half second. Allow DOM time to catch up?
+  return el;
+}
 
 
 class CTRLBanksStore{
@@ -58,12 +137,15 @@ class CTRLBanksStore{
         }
       }
       if (bank !== null){
-        var el = null; // This will be the element associated with this Bank. For now, it's a place holder.
-        Banks[name] = {bank:bank, el:el};
-        //Banks.push([name, bank, el]);
+        var el = CreateBankDOMEntry(name, bank);
+        if (el){
+          Banks[name] = {bank:bank, el:el};
+          //Banks.push([name, bank, el]);
 
-        if (this.length <= 1){
-          GlobalEvents.emit("change_surface", bank);
+          if (this.length <= 1){
+            Banks[name].el.click();
+            //GlobalEvents.emit("change_surface", bank);
+          }
         }
       }
     }
@@ -81,7 +163,7 @@ class CTRLBanksStore{
           CurrentBank = "";
         }
       }
-      // TODO: Remove Banks[name].el from the DOM.
+      Banks[name].el.parentNode.removeChild(Banks[name].el);
       delete Banks[name];
       if (CurrentBank !== ""){
         // TODO: Activate new Bank.
@@ -94,24 +176,28 @@ class CTRLBanksStore{
     if ((name in Banks) && !(newname in Banks)){
       Banks[newname] = Banks[name];
       delete Banks[name];
-      // TODO: Change the name in Banks[newname].el
+      SetElBankName(Banks[newname].el, newname);
     }
     return this;
   }
 
   activateBank(name){
     if (CurrentBank !== name && (name in Banks)){
-      // TODO: Switch the active element object.
-      CurrentBank = name;
-      GlobalEvents.emit("change_surface", Banks[CurrentBank].bank);
+      Banks[name].el.click();
+      //CurrentBank = name;
+      //GlobalEvents.emit("change_surface", Banks[CurrentBank].bank);
     }
     return this;
   }
 
   clear(){
-    // TODO: Loop through all keys and remove the elements from the DOM.
+    Object.keys(Banks).forEach((item) => {
+      item.el.parentNode.removeChild(item.el);
+    });
     Banks = {};
-    CurrentBank = "";
+    if (CurrentBank !== "")
+      GlobalEvents.emit("change_surface", null);
+    CurrentBank = ""; 
   }
 }
 
