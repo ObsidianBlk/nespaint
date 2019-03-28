@@ -38,8 +38,8 @@ function SetElBankName(el, name){
 var RenderBankToEl = Utils.throttle(function(el, bank){
   var cnv = el.querySelector("." + BLI_CANVAS);
   var ctx = cnv.getContext("2d");
-  var cw = Math.floor(cnv.clientWidth);
-  var ch = Math.floor(cnv.clientHeight);
+  var cw = (cnv.clientWidth > 0) ? Math.floor(cnv.clientWidth) : Math.floor(cnv.width);
+  var ch = (cnv.clientHeight > 0) ? Math.floor(cnv.clientHeight) : Math.floor(cnv.height);
   if (cw <= 0 || ch <= 0){return;}
   var ctximg = ctx.getImageData(0,0,cw,ch);
 
