@@ -1,7 +1,7 @@
 import GlobalEvents from "/app/js/common/EventCaller.js";
 import Utils from "/app/js/common/Utils.js";
 import NESBank from "/app/js/models/NESBank.js";
-
+import NESPalette from "/app/js/models/NESPalette.js";
 
 
 const BLI_TEMPLATE = "bank-list-item-template";
@@ -41,20 +41,62 @@ var RenderBankToEl = Utils.throttle(function(el, bank){
   var cw = (cnv.clientWidth > 0) ? Math.floor(cnv.clientWidth) : Math.floor(cnv.width);
   var ch = (cnv.clientHeight > 0) ? Math.floor(cnv.clientHeight) : Math.floor(cnv.height);
   if (cw <= 0 || ch <= 0){return;}
+  
   var ctximg = ctx.getImageData(0,0,cw,ch);
-
   var idat = ctximg.data;
-  for (let y=0; y < ch; y++){
-    for (let x=0; x < cw; x++){
-      var index = (y*(cw*4)) + (x*4);
-      idat[index] = 0;
-      idat[index+1] = 0;
-      idat[index+2] = 0;
-      idat[index+3] = 255;
+
+  var PutPixel = (i,j,s,c) => {
+    i = Math.round(i);
+    j = Math.round(j);
+    s = Math.ceil(s);
+
+    var r = parseInt(c.substring(1, 3), 16);
+    var g = parseInt(c.substring(3, 5), 16);
+    var b = parseInt(c.substring(5, 7), 16);
+
+    for (var y=j; y < j+s; y++){
+      for (var x=i; x < i+s; x++){
+        if (x >= 0 && x < cw && y >= 0 && y < ch){
+          var index = (y*cw*4) + (x*4);
+          idat[index] = r;
+          idat[index+1] = g;
+          idat[index+2] = b;
+          idat[index+3] = 255;
+        }
+      }
     }
-  }
+  };
+
+  var pal = bank.palette;
+  if (pal === null){return;}
+
+  var scale = Math.min(
+    cw/bank.width,
+    ch/bank.height
+  );
+  var offX = Math.floor((cw - (bank.width*scale)) * 0.5);
+  var offY = Math.floor((ch - (bank.height*scale)) * 0.5);
+
+  ctx.save();
+  ctx.fillStyle = NESPalette.Default[4];
+  ctx.fillRect(0,0,cw,ch);
+ 
+  for (let j=0; j < bank.height; j++){
+    var y = (j*scale) + offY;
+    for (let i=0; i < bank.width; i++){
+      var x = (i*scale) + offX;
+
+      if (x >= 0 && x < cw && y >= 0 && y < ch){
+        var color = NESPalette.Default[4];
+        var pinfo = bank.getColorIndex(i, j);
+        var color = (pinfo.ci >= 0) ? NESPalette.Default[pinfo.ci] : NESPalette.Default[4];
+        PutPixel(x,y,scale,color);
+      }
+    }
+  } 
 
   ctx.putImageData(ctximg, 0, 0);
+  ctx.restore();
 }, 500); // Only update twice a second.
 
 
