@@ -2,6 +2,26 @@ import ISurface from "/app/js/ifaces/ISurface.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
 
+function clear(ctx, color, cw, ch){
+  if (typeof(cw) !== 'number'){
+    cw = (Math.floor(ctx.canvas.clientWidth) > 0) ? 
+      Math.floor(ctx.canvas.clientWidth) : 
+      Math.floor(ctx.canvas.width);
+  }
+
+  if (typeof(ch) !== 'number'){
+    ch = (Math.floor(ctx.canvas.clientHeight) > 0) ?
+      Math.floor(ctx.canvas.clientHeight) :
+      Math.floor(ctx.canvas.height);
+  }
+
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, cw, ch);
+  ctx.restore();
+}
+
+
 function render(surf, sx, sy, sw, sh, scale, ctx, dx, dy, palcolored){
   if (!(surf instanceof ISurface)){
     console.log("WARNING: Cannot render non-ISurface object.");
@@ -25,10 +45,9 @@ function render(surf, sx, sy, sw, sh, scale, ctx, dx, dy, palcolored){
 
   if (cw <= 0 || ch <= 0){return;}
 
-  ctx.save(); 
-  ctx.fillStyle = NESPalette.Default[4];
-  ctx.fillRect(0,0,cw,ch);
+  clear(ctx, NESPalette.Default[4]);
 
+  ctx.save();
   var ctximg = ctx.getImageData(0, 0, cw, ch);
   var idat = ctximg.data;
 
@@ -110,6 +129,7 @@ function renderToFit(surf, ctx, palcolored){
 
 
 export default {
+  clear: clear,
   render: render,
   renderToFit: renderToFit
 };
