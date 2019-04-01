@@ -78,8 +78,10 @@ class CTRLBanksStore{
   constructor(){
     var HANDLE_ChangeSurface = function(surf){
       if (!(surf instanceof NESBank)){
-        // TODO: Unselect any current bank element.
-        CurrentBankIndex = "";
+        if (CurrentBank !== ""){
+          Banks[CurrentBank].el.classList.remove(BLI_SELECTED);
+          CurrentBank = "";
+        }
       } else {
         if (Banks.length <= 0 || (CurrentBank !== "" && Banks[CurrentBank].bank !== surf)){
           console.log("WARNING: Bank object being set outside of Bank Store.");
@@ -87,6 +89,19 @@ class CTRLBanksStore{
       }
     }
     GlobalEvents.listen("change_surface", HANDLE_ChangeSurface);
+
+
+    GlobalEvents.listen("bankstore-add", (function(e){
+      if (e.hasOwnProperty("bankname")){
+        this.createBank(e.bankname);
+        this.activateBank(e.bankname);
+      }
+    }).bind(this));
+
+    GlobalEvents.listen("bankstore-remove", (function(e){
+      if (CurrentBank !== "")
+        this.removeBank(CurrentBank);
+    }).bind(this));
   }
 
   get length(){
@@ -152,7 +167,9 @@ class CTRLBanksStore{
       Banks[name].el.parentNode.removeChild(Banks[name].el);
       delete Banks[name];
       if (CurrentBank !== ""){
-        // TODO: Activate new Bank.
+        Banks[CurrentBank].el.click();
+      } else {
+        GlobalEvents.emit("change_surface", null);
       }
     }
     return this;
