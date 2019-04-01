@@ -274,7 +274,7 @@ function ReorderEventName(ename){
     }
 
     // Now handle keyboard event names.
-    else if (!(key in Object.keys(KEYBYNAME))){
+    else if (!(key in KEYBYNAME)){
       if (!isNaN(key))
         ecodes.push(parseInt(key));
       else
@@ -741,7 +741,7 @@ export default class Input{
     } else {
       ename = ReorderEventName(ename);
       if (ename === ""){
-        throw new ValueError("Failed to parse key or key combination.");
+        throw new Error("Failed to parse key or key combination.");
       }
       this.__emitter.listen(ename, func, owner, once);
     }
