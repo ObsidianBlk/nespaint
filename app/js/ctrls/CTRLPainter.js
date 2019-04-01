@@ -139,7 +139,7 @@ class CTRLPainter {
     }).bind(this);
 
     var handle_change_surface = (function(surf){
-      if (!(surf instanceof ISurface)){
+      if (surf !== null && !(surf instanceof ISurface)){
         console.log("WARNING: Attempted to set painter to non-surface instance.");
         return;
       }
@@ -148,14 +148,16 @@ class CTRLPainter {
           this.__surface.unlisten("data_changed", handle_surface_data_changed);
         }
         this.__surface = surf;
-        this.__surface.listen("data_changed", handle_surface_data_changed);
-        if (this.__palette === null && this.__surface.palette !== null){
-          this.__palette = this.__surface.palette;
-        } else if (this.__palette !== null && this.__surface.palette !== this.__palette){
-          this.__surface.palette = this.__palette;
+        if (this.__surface !== null){
+          this.__surface.listen("data_changed", handle_surface_data_changed);
+          if (this.__palette === null && this.__surface.palette !== null){
+            this.__palette = this.__surface.palette;
+          } else if (this.__palette !== null && this.__surface.palette !== this.__palette){
+            this.__surface.palette = this.__palette;
+          }
+          this.scale_to_fit();
+          this.center_surface();
         }
-        this.scale_to_fit();
-        this.center_surface();
       }
       RenderD();
     }).bind(this);
@@ -352,8 +354,11 @@ class CTRLPainter {
   }
 
   render(){
-    if (context === null || this.__surface === null)
-      return;
+    if (context === null){return this;}
+    if (this.__surface === null){
+      Renderer.clear(context, NESPalette.Default[4]);
+      return this;      
+    }
 
     // Drawing the surface to the canvas.
     Renderer.render(
