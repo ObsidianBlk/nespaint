@@ -70,6 +70,9 @@ class CTRLPainter {
     this.__surface = null;
     this.__palette = null;
 
+
+    this.__snapshotTriggered = false;
+
     // var self = this;
 
     var RenderD = Utils.throttle((function(){
@@ -195,14 +198,36 @@ class CTRLPainter {
           var sx = (e.isCombo) ? Math.floor((this.__brushLastPos[0] - this.__offset[0]) * (1.0 / this.__scale)) : x;
           var sy = (e.isCombo) ? Math.floor((this.__brushLastPos[1] - this.__offset[1]) * (1.0 / this.__scale)) : y;
           if (x >= 0 && x < this.__surface.width && y >= 0 && y < this.__surface.height){
+            if (!this.__snapshotTriggered){
+              this.__snapshotTriggered = true;
+              this.__surface.snapshot();
+            }
             LineToSurface(sx, sy, x, y, this.__brushColor, this.__brushPalette);
-            //RenderD();
           }
         }
       }
     }).bind(this);
     input.listen("mouseclick", handle_draw);
     input.listen("mouseleft+mousemove", handle_draw);
+
+    var handle_mouseup = (function(e){
+      this.__snapshotTriggered = false;
+    }).bind(this);
+    input.listen("mouseup", handle_mouseup);
+
+    var handle_undo = (function(e){
+      if (this.__surface !== null){
+        this.__surface.undo();
+      }
+    }).bind(this);
+    input.listen("ctrl+z", handle_undo);
+
+    var handle_redo = (function(e){
+      if (this.__surface !== null){
+        this.__surface.redo();
+      }
+    }).bind(this);
+    input.listen("ctrl+y", handle_redo);
 
     var handle_offset = (function(e){
       this.__offset[0] += e.x - e.lastX;
@@ -313,6 +338,7 @@ class CTRLPainter {
       context.imageSmoothingEnabled = false; 
       ResizeCanvasImg(canvas.clientWidth, canvas.clientHeight); // A forced "resize".
       input.enableMouseInput(true, canvas);
+      input.enableKeyboardInput(true);
       //input.mouseTargetElement = canvas;
 
       this.scale_to_fit();
