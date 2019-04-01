@@ -553,11 +553,11 @@ export default class Input{
               button: button,
               delta: 0,
               action: "mouseup"
-            }
-            this.__emitter.emit("mouseup", data);
+            } 
             if (diff <= MOUSECLICK_DELAY && this.__mouseButtons.length <= 0){
               this.__emitter.emit("mouseclick", data);
             }
+            this.__emitter.emit("mouseup", data);
           }
         }
         return false;
