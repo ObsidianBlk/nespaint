@@ -87,7 +87,11 @@ export default class NESBank extends ISurface{
     this.__AccessMode = NESBank.ACCESSMODE_8K;
     this.__AccessOffset = 0;
 
+    this.__undos = []; // Holds Base64 snapshots of the bank.
+    this.__redos = []; // Holds Base64 snapshots of work undone.
+
     this.__emitsEnabled = true;
+    this.snapshot = Utils.debounce(this.snapshot.bind(this), 250);
 
     var handle_datachanged = Utils.debounce((function(side, idx){
       var sendEmit = false;
@@ -272,6 +276,9 @@ export default class NESBank extends ISurface{
     if (b.length !== 8192){
       throw new Error("Base64 string contains invalid byte count.");
     }
+    b = new Uint8Array(b.split("").map(function(c){
+      return c.charCodeAt(0);
+    }));
     this.chr = b; 
   }
 
@@ -295,6 +302,10 @@ export default class NESBank extends ISurface{
     return 128;
   }
   get length(){return this.width * this.height;}
+
+  get undos(){return this.__undos.length;}
+  get redos(){return this.__redos.length;}
+
 
   get coloridx(){
     return new Proxy(this, {
@@ -536,6 +547,52 @@ export default class NESBank extends ISurface{
       list[res.tileidx].paletteIndex = pi;
       list[res.tileidx].setPixelIndex(res.x, res.y, ci);
     }
+    return this;
+  }
+
+
+  snapshot(){
+    var snap = this.base64;
+    if (this.__undos.length === this.__historyLength){
+      this.__undos.pop();
+    }
+    this.__undos.splice(0,0,snap);
+    return this;
+  }
+
+  undo(){
+    if (this.__undos.length > 0){
+      var usnap = this.__undos.splice(0, 1)[0];
+      var rsnap = this.base64;
+      this.base64 = usnap;
+      if (this.__redos.length === this.__historyLength){
+        this.__redos.pop();
+      }
+      this.__redos.splice(0,0,rsnap); 
+    }
+    return this;
+  }
+
+  redo(){
+    if (this.__redos.length > 0){
+      var rsnap = this.__redos.splice(0,1)[0];
+      var usnap = this.base64;
+      this.base64 = rsnap;
+      if (this.__undos.length === this.__historyLength){
+        this.__undos.pop();
+      }
+      this.__undos.splice(0,0,usnap);
+    }
+    return this;
+  }
+
+  clearUndos(){
+    this.__undos = [];
+    return this;
+  }
+
+  clearRedos(){
+    this.__redos = [];
     return this;
   }
 }

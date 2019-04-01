@@ -4,11 +4,15 @@ import {EventCaller} from "/app/js/common/EventCaller.js"
 export default class ISurface extends EventCaller{
   constructor(){
     super();
+    this.__historyLength = 10;
   }
 
   get width(){return 0;}
   get height(){return 0;}
   get length(){return 0;}
+  get historyLength(){return this.__historyLength;}
+  get undos(){return 0;}
+  get redos(){return 0;}
 
   get coloridx(){
     return new Proxy(this, {
@@ -38,6 +42,15 @@ export default class ISurface extends EventCaller{
 
   copy(b){return this;}
   clone(){return new ISurface();}
+
+  snapshot(){return this;}
+  undo(){return this;}
+  redo(){return this;}
+  clearUndos(){return this;}
+  clearRedos(){return this;}
+  clearHistory(){
+    return this.clearUndos().clearRedos();
+  }
 
   getColor(x, y){
     return this.__default_pi[4];
