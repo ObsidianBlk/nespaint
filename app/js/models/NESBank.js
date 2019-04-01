@@ -91,7 +91,6 @@ export default class NESBank extends ISurface{
     this.__redos = []; // Holds Base64 snapshots of work undone.
 
     this.__emitsEnabled = true;
-    this.snapshot = Utils.debounce(this.snapshot.bind(this), 250);
 
     var handle_datachanged = Utils.debounce((function(side, idx){
       var sendEmit = false;
@@ -552,6 +551,9 @@ export default class NESBank extends ISurface{
 
 
   snapshot(){
+    if (this.__redos.length > 0) // Remove the redo history. We're adding a new snapshot.
+      this.__redos = [];
+
     var snap = this.base64;
     if (this.__undos.length === this.__historyLength){
       this.__undos.pop();
