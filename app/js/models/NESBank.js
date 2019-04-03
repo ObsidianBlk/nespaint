@@ -528,6 +528,29 @@ export default class NESBank extends ISurface{
     };
   }
 
+  getRegion(x, y, w, h){
+    if (w <= 0 || h <= 0)
+      throw new RangeError("Width and/or Height must be greater than zero.");
+    var region = [];
+
+    for (let j=y; j<y+h; j++){
+      if (j === this.height){
+        h = j - y;
+        break;
+      }
+      for (let i=x; i<x+w; i++){
+        if (i === this.width){
+          w = i - x;
+          break;
+        }
+        region.push(this.getColorIndex(i, j));
+      }
+    }
+
+    return {w:w, h:h, r:region};
+
+  }
+
   setColorIndex(x, y, ci, pi){
     if (x < 0 || x >= this.width || y < 0 || y > this.height)
       throw new RangeError("Coordinates out of bounds.");
@@ -546,6 +569,31 @@ export default class NESBank extends ISurface{
       list[res.tileidx].paletteIndex = pi;
       list[res.tileidx].setPixelIndex(res.x, res.y, ci);
     }
+    return this;
+  }
+
+
+  setRegion(x, y, w, h, r){
+    if (w <= 0 || h <= 0)
+      throw new RangeError("Width and/or Height must be greater than zero.");
+    if (!(r instanceof Array)){
+      throw new TypeError("Region expected to be an array.");
+    }
+    if (r.length !== w*h)
+      throw new RangeError("Region length does not match given width/height values.");
+
+    for (let j=0; j < h; j++){
+      for (let i=0; i < w; i++){
+        var index = (j*w) + i;
+        if ("pi" in r[index] && "ci" in r[index] && r[index].ci >= 0){
+          var _x = i+x;
+          var _y = j+y;
+          if (_x >= 0 && _x < this.width && _y >= 0 && _y < this.height)
+            this.setColorIndex(_x, _y, r[index].ci, r[index].pi);
+        }
+      }
+    }
+
     return this;
   }
 
