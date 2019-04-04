@@ -1,5 +1,6 @@
 import GlobalEvents from "/app/js/common/EventCaller.js";
 import Utils from "/app/js/common/Utils.js";
+import EditableText from "/app/js/ui/EditableText.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
 
@@ -23,12 +24,12 @@ function HANDLE_PaletteClick(e){
   var pname = this.getAttribute("palname");
 
   if (Palettes.length > 0){
-    if (Palettes[CurrentPaletteIndex][0] !== pname || !Palettes[CurrentPaletteIndex][2].classList.contains(PLI_SELECTED)){
+    if (Palettes[CurrentPaletteIndex][0].value !== pname || !Palettes[CurrentPaletteIndex][2].classList.contains(PLI_SELECTED)){
       var oel = Palettes[CurrentPaletteIndex][2];
       oel.classList.remove(PLI_SELECTED);
 
       for (let i=0; i < Palettes.length; i++){
-        if (Palettes[i][0] === pname){
+        if (Palettes[i][0].value === pname){
           Palettes[i][2].classList.add(PLI_SELECTED);
           CurrentPaletteIndex = i;
           GlobalEvents.emit("set_app_palette", Palettes[i][1]);
@@ -41,11 +42,15 @@ function HANDLE_PaletteClick(e){
 
 function SetElPaletteName(el, pname){
   el.setAttribute("palname", pname);
-  var sel = el.querySelectorAll("." + PLI_TITLE);
+  var et = new EditableText(el, "title");
+  et.value = pname;
+  et.listen("value_change", (v) => {el.setAttribute("palname", v);});
+  return et;
+  /*var sel = el.querySelectorAll("." + PLI_TITLE);
   if (sel.length === 1){
     sel = sel[0];
     sel.innerHTML = pname;
-  }
+  }*/
 }
 
 function SetElToColor(el, mode, pi, ci, hex){
@@ -123,7 +128,7 @@ function CreatePaletteDOMEntry(pname, palette){
     el.classList.remove("hidden");
     ConnectElementToPalette(el, palette);
     ColorElementToPalette(el, palette);
-    SetElPaletteName(el, pname);
+    //SetElPaletteName(el, pname);
     el.addEventListener("click", HANDLE_PaletteClick);
     oel[0].parentNode.appendChild(el);
     return el;
@@ -199,7 +204,7 @@ class CTRLPalettesStore{
 
   paletteIndexFromName(name){
     for (let i=1; i < Palettes.length; i++){
-      if (Palettes[i][0] == name){
+      if (Palettes[i][0].value == name){
         return i;
       }
     }
@@ -238,10 +243,10 @@ class CTRLPalettesStore{
 
       if (palette !== null){
         var el = CreatePaletteDOMEntry(name, palette);
-        Palettes.push([name, palette, el]);
+        var eltitle = SetElPaletteName(el, name);
+        Palettes.push([eltitle, palette, el]);
 
         if (Palettes.length <= 1 && !BlockEmits){
-          //GlobalEvents.emit("set_app_palette", palette);
           el.click();        
         }
       }
@@ -251,10 +256,10 @@ class CTRLPalettesStore{
 
   removePalette(name){
     for (let i=0; i < Palettes.length; i++){
-      if (Palettes[i][0] === name){
+      if (Palettes[i][0].value === name){
         if (CurrentPaletteIndex === i){
           CurrentPaletteIndex = 0;
-          this.activatePalette(Palettes[0][0]);
+          this.activatePalette(Palettes[0][0].value);
         }
         Palettes[i][2].parentNode.removeChild(Palettes[i][2]);
         Palettes.splice(i, 1);
@@ -270,11 +275,11 @@ class CTRLPalettesStore{
   }
 
   renamePalette(oldname, newname){
-    var i = paletteIndexFromName(oldname);
+    var i = this.paletteIndexFromName(oldname);
     if (i < 0)
       throw new ValueError("Failed to find palette named '" + oldname +"'. Cannot rename.");
-    Palettes[i][0] = newname;
-    SetElPaletteName(Palettes[i][2], newname);
+    Palettes[i][0].value = newname;
+    //SetElPaletteName(Palettes[i][2], newname);
     return this;
   }
 
@@ -282,9 +287,6 @@ class CTRLPalettesStore{
     var i = this.paletteIndexFromName(name);
     if (i >= 0 && CurrentPaletteIndex !== i){
       Palettes[CurrentPaletteIndex][2].click();
-      //if (!BlockEmits){
-      //  GlobalEvents.emit("set_app_palette", Palettes[CurrentPaletteIndex][1]);
-      //}
     }
     return this;
   }

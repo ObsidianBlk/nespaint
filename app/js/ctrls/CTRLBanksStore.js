@@ -1,5 +1,6 @@
 import GlobalEvents from "/app/js/common/EventCaller.js";
 import Utils from "/app/js/common/Utils.js";
+import EditableText from "/app/js/ui/EditableText.js";
 import Renderer from "/app/js/ui/Renderer.js";
 import NESBank from "/app/js/models/NESBank.js";
 import NESPalette from "/app/js/models/NESPalette.js";
@@ -28,11 +29,14 @@ function HANDLE_BankClick(e){
 
 
 function SetElBankName(el, name){
-  el.setAttribute("bankname", name);
-  var sel = el.querySelector("." + BLI_TITLE);
-  if (sel){
-    sel.innerHTML = name;
-  }
+  var et = new EditableText(el, "title");
+  et.listen("value_change", (v) => {el.setAttribute("bankname", v);});
+  et.value = name;
+  return et;
+  //var sel = el.querySelector("." + BLI_TITLE);
+  //if (sel){
+  //  sel.innerHTML = name;
+  //}
 }
 
 
@@ -63,8 +67,7 @@ function CreateBankDOMEntry(name, bank){
   el.classList.remove(BLI_TEMPLATE);
   el.classList.remove("hidden");
   el.setAttribute("bankname", name);
-  ConnectElementToBank(el, bank);
-  SetElBankName(el, name); 
+  ConnectElementToBank(el, bank); 
   el.addEventListener("click", HANDLE_BankClick);
   baseel.parentNode.appendChild(el);
   setTimeout(()=>{
@@ -140,12 +143,11 @@ class CTRLBanksStore{
       if (bank !== null){
         var el = CreateBankDOMEntry(name, bank);
         if (el){
-          Banks[name] = {bank:bank, el:el};
-          //Banks.push([name, bank, el]);
+          var elname = SetElBankName(el, name);
+          Banks[name] = {bank:bank, el:el, elname:elname};
 
           if (this.length <= 1){
             Banks[name].el.click();
-            //GlobalEvents.emit("change_surface", bank);
           }
         }
       }
@@ -178,8 +180,8 @@ class CTRLBanksStore{
   renameBank(name, newname){
     if ((name in Banks) && !(newname in Banks)){
       Banks[newname] = Banks[name];
+      Banks[newname].elname.value = newname;
       delete Banks[name];
-      SetElBankName(Banks[newname].el, newname);
     }
     return this;
   }
@@ -187,8 +189,6 @@ class CTRLBanksStore{
   activateBank(name){
     if (CurrentBank !== name && (name in Banks)){
       Banks[name].el.click();
-      //CurrentBank = name;
-      //GlobalEvents.emit("change_surface", Banks[CurrentBank].bank);
     }
     return this;
   }
