@@ -1,3 +1,4 @@
+import Utils from "/app/js/common/Utils.js";
 import GlobalEvents from "/app/js/common/EventCaller.js";
 import EmitterElements from "/app/js/ui/Emitters.js";
 import Input from "/app/js/ui/Input.js";
@@ -39,6 +40,23 @@ function initialize(DOC){
   CTRLBanksStore.initialize();
 
   CTRLIO.initialize();
+
+  var cover = document.querySelector(".cover");
+  Utils.addListenerToEvents(
+    cover,
+    [
+      "webkitAnimationEnd",
+      "oanimationend",
+      "oAnimationEnd",
+      "msAnimationEnd",
+      "animationend"
+    ],
+    function(){
+      this.parentNode.removeChild(this);
+    });
+  if (cover){
+    cover.classList.add("coverFadeout");
+  }
 }
 
 
