@@ -32,3 +32,25 @@ body{
   flex-flow: row;
 }
 
+// Used to hide the ENTIRE page until the system has finished readying
+// everything.
+.cover {
+  @include cover();  
+}
+
+
+.coverFadeout {
+  -webkit-animation: coverFadeout 1s linear 1 forwards;
+  animation: coverFadeout 1s linear 1 forwards;
+}
+
+@-webkit-keyframes coverFadeout {
+  0% {@include opacity(1);}
+  100% {@include opacity(0);}
+}
+
+
+@keyframes coverFadeout {
+  0% {@include opacity(1);}
+  100% {@include opacity(0);}
+}
