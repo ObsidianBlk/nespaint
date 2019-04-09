@@ -191,7 +191,7 @@ class CTRLBanksStore{
       Banks[name].el.click();
     }
     return this;
-  }
+  } 
 
   clear(){
     Object.keys(Banks).forEach((item) => {

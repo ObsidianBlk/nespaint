@@ -2,14 +2,16 @@ import GlobalEvents from "/app/js/common/EventCaller.js";
 import Utils from "/app/js/common/Utils.js";
 import NESBank from "/app/js/models/NESBank.js";
 import NESPalette from "/app/js/models/NESPalette.js";
+import CTRLPalettesStore from "/app/js/ctrls/CTRLPalettesStore.js";
+import CTRLBanksStore from "/app/js/ctrls/CTRLBanksStore.js";
 
 
 var SURF = null;
 
 function LoadFile(file){
   if (SURF !== null){
+    var reader = new FileReader();
     if (SURF instanceof NESBank){
-      var reader = new FileReader();
       reader.onload = function(e){
         try {
           SURF.chr = new Uint8Array(e.target.result);
@@ -58,6 +60,8 @@ class CTRLIO{
       e[i].addEventListener("dragover", HANDLE_DragOver);
       e[i].addEventListener("drop", HANDLE_FileDrop);
     }
+    CTRLPalettesStore.initialize();
+    CTRLBanksStore.initialize();
   }
 }
 
