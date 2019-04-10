@@ -19,6 +19,9 @@ $main-text-color: $color-bright;
 
 $menu-bg-color: $color-highlight;
 $menu-text-color: $color-mid;
+$menu-item-bg: $color-mid;
+$menu-item-bg-hover: lighten($color-mid, 25%);
+$menu-item-text: $color-dark;
 
 $canvas-bg-color: $color-mid;
 
