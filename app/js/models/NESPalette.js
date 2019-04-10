@@ -22,21 +22,27 @@ export default class NESPalette extends EventCaller{
     ];
   }
 
+  get obj(){
+    return ([this.__BGColor]).concat(this.__palette);
+  }
+
+  set obj(d){
+    if (!(d instanceof Array) || d.length !== 25)
+      throw new TypeError("Invalid Object or value range.");
+    try {
+      this.set_palette(d);
+    } catch (e) {
+      throw e;
+    }
+  }
+
   get json(){
-    return JSON.stringify(([this.__BGColor]).concat(this.__palette));
+    return JSON.stringify(this.obj);
   }
 
   set json(j){
     try{
-      var d = JSON.parse(j);
-    } catch (e) {
-      throw e;
-    }
-
-    if (!(d instanceof Array) || d.length !== 25)
-      throw new TypeError("Invalid JSON or value range.");
-    try {
-      this.set_palette(d);
+      this.obj = JSON.parse(j);
     } catch (e) {
       throw e;
     }

@@ -111,14 +111,33 @@ class CTRLBanksStore{
     return Object.keys(Banks).length;
   }
 
-  get json(){
+  get obj(){
     var data = [];
     Object.keys(Banks).forEach((key) => {
       if (Banks.hasOwnProperty(key)){
         data.push({name:key, data:Banks[key].bank.base64});
       }
     });
-    return JSON.stringify(data);
+    return data;
+  }
+
+  set obj(d){
+    if (!(d instanceof Array))
+      throw new TypeError("Expected Array object.");
+    this.clear();
+    d.forEach((item) => {
+      if (typeof(item) === typeof({})){
+        if ((name in item) && (data in item)){
+          this.createBank(item.name, item.data);
+        } else {
+          console.log("WARNING: Bank object missing required properties. Skipped.");
+        }
+      }
+    });
+  }
+
+  get json(){ 
+    return JSON.stringify(this.obj);
   }
 
   initialize(){

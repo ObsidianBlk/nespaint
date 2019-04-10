@@ -153,24 +153,19 @@ class CTRLPalettesStore{
     }).bind(this));
   }
 
-  get json(){
+  get obj(){
     var d = {
       cpi: CurrentPaletteIndex,
       pals: []
     };
     for (let i=0; i < Palettes.length; i++){
-      d.pals.push([Palettes[i][0], Palettes[i][1].json]);
+      d.pals.push([Palettes[i][0].value, Palettes[i][1].json]);
     }
-    return JSON.stringify(d);
+    return d;
   }
 
-  set json(j){
-    try {
-      var d = JSON.parse(j);
-    } catch (e) {
-      throw e;
-    }
 
+  set obj(d){
     if (d.hasOwnProperty("cpi") && d.hasOwnProperty("pals")){
       if (Utils.isInt(d.cpi) && d.pals instanceof Array){
         var newPalettes = []
@@ -189,10 +184,22 @@ class CTRLPalettesStore{
           GlobalEvents.emit("set_app_palette", Palettes[CurrentPaletteIndex][1]);
         }
       } else {
-        throw new TypeError("JSON Property Value types invalid.");
+        throw new TypeError("Object Property Value types invalid.");
       }
     } else {
-      throw new TypeError("JSON missing expected properties.");
+      throw new TypeError("Object missing expected properties.");
+    }
+  }
+
+  get json(){
+    return JSON.stringify(this.obj);
+  }
+
+  set json(j){
+    try {
+      this.obj = JSON.parse(j);
+    } catch (e) {
+      throw e;
     }
   }
 
