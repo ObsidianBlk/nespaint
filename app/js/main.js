@@ -19,7 +19,7 @@ function TitlePainter(pal){
       var cb = Math.floor(Math.random() * 3);
       var index = (cb*16)+ca;
       el.style.color = pal[index];
-      el.style["background-color"] = "#000";
+      //el.style["background-color"] = "#000";
     });
   }
 }
