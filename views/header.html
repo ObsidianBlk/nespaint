@@ -13,13 +13,14 @@
                 File
               </a>
               <ul class="pure-menu-children">
-                <li class="pure-menu-item">
+                <li class="pure-menu-item" emit="load-project">
+                  <input type="file" class="project-loader" accept="text/plain" style="display:none;"></input>
                   <a href="#" class="pure-menu-link">
                     <i class="fa fa-folder-open"></i>
                     Load Project
                   </a>
                 </li>
-                <li class="pure-menu-item">
+                <li class="pure-menu-item" emit="save-project">
                   <a href="#" class="pure-menu-link">
                     <i class="fa fa-save"></i>
                     Save Project

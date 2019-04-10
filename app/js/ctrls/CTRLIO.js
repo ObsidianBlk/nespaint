@@ -8,6 +8,15 @@ import CTRLBanksStore from "/app/js/ctrls/CTRLBanksStore.js";
 
 var SURF = null;
 
+
+function JSONFromProject(){
+  var proj = {
+    palettesStore:CTRLPalettesStore.obj,
+    banksStore:CTRLBanksStore.obj
+  };
+  return JSON.stringify(proj);
+}
+
 function LoadFile(file){
   if (SURF !== null){
     var reader = new FileReader();
@@ -41,6 +50,42 @@ function HANDLE_FileDrop(e){
   }
 }
 
+
+function HANDLE_SaveProject(e){
+  var a = document.createElement("a");
+  var file = new Blob([JSONFromProject()], {type: "text/plain"});
+  a.href = window.URL.createObjectURL(file);
+  a.download = "nesproject.json";
+  var body = document.querySelector("body");
+  body.appendChild(a);
+  a.click();
+  setTimeout(function(){  // fixes firefox html removal bug
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  }, 500); 
+}
+
+function HANDLE_LoadProjectRequest(){
+  var input = document.querySelectorAll("input.project-loader");
+  if (input.length > 0){
+    input[0].click();
+  }
+}
+
+function HANDLE_LoadProject(e){
+  if (this.files && this.files.length > 0){
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var content = e.target.result;
+      console.log(content);
+      // TODO: Need to clear out the selected files after load.
+    };
+    reader.readAsText(this.files[0]);
+  } else {
+    console.log("Project file not found or no file selected.");
+  }
+}
+
 function HANDLE_SurfChange(surf){
   if (surf instanceof NESBank){
     SURF = surf;
@@ -52,6 +97,13 @@ function HANDLE_SurfChange(surf){
 class CTRLIO{
   constructor(){
     GlobalEvents.listen("change_surface", HANDLE_SurfChange);
+    GlobalEvents.listen("save-project", HANDLE_SaveProject);
+    GlobalEvents.listen("load-project", HANDLE_LoadProjectRequest);
+
+    var input = document.querySelectorAll("input.project-loader");
+    if (input.length > 0){
+      input[0].addEventListener("change", HANDLE_LoadProject);
+    }
   }
 
   initialize(){
