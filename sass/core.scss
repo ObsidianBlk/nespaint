@@ -15,21 +15,12 @@ body{
   text-align: right;
 }
 
-// Overriding some purecss settings. WHY have the grid do anything
-// other than GRID related stuff! Leave text/font alone!
-.pure-g {
-  font-family: inherit;
+.full-height{
+  height: 100%;
 }
 
-.pure-g [class *= "pure-u"] {
-  font-family: inherit;
-}
-
-// Allow for the disabling of the flex-flow: wrap.
-// This allows me to use overflow:hidden without pure-g wrapping on
-// me! ... but only for those pure-g elements I want.
-.pure-g-nw{
-  flex-flow: row;
+.simple-flex{
+  display: flex;
 }
 
 // Used to hide the ENTIRE page until the system has finished readying

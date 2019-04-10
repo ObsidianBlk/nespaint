@@ -1,0 +1,26 @@
+// Overriding some purecss settings. WHY have the grid do anything
+// other than GRID related stuff! Leave text/font alone!
+.pure-g {
+  font-family: inherit;
+}
+
+.pure-g [class *= "pure-u"] {
+  font-family: inherit;
+}
+
+// Allow for the disabling of the flex-flow: wrap.
+// This allows me to use overflow:hidden without pure-g wrapping on
+// me! ... but only for those pure-g elements I want.
+.pure-g-nw{
+  flex-flow: row;
+}
+
+
+.pure-menu-link, .pure-menu-link:focus{
+  background-color: $menu-item-bg;
+  color: $menu-item-text;
+}
+.pure-menu-link:hover{
+  background-color: $menu-item-bg-hover;
+  color: $menu-item-text;
+}
