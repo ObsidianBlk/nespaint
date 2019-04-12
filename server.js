@@ -1,4 +1,5 @@
 const package = require("./package.json");
+const vendors = require("./vendors.json");
 
 const exec = require('child_process').execSync;
 
@@ -93,6 +94,11 @@ app.set('views', path.join(__dirname, "/views"));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use("/app", express.static(path.join(__dirname, "/app")));
+vendors.modules.forEach((m) => {
+  var p = path.normalize(path.join(__dirname, vendors.default_path, m.path));
+  var url = path.join(vendors.url_path, m.url_path);
+  app.use(url, express.static(p));
+});
 app.use("/app/css/nespaint.css", function(req, res){
   res.set("Content-Type", "text/css");
   res.send(new Buffer.from(css_output));

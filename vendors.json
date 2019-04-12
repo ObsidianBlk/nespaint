@@ -1,0 +1,10 @@
+{
+  "url_path":"/app/vendors",
+  "default_path":"node_modules",
+  "modules":[
+    {
+      "url_path":"ajv",
+      "path":"ajv/dist"
+    }
+  ]
+}
