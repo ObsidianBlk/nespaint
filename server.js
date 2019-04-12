@@ -56,8 +56,18 @@ var generateCSS = debounce(function(src, cb){
 
 // -------------------------------------------------------
 // Configuring the current version of the application.
+
+function GitClean(){
+  try {
+    exec("git diff --quiet HEAD");
+  } catch(e) {
+    return false;
+  }
+  return true;
+}
 function GenVersion(){
   var v = package.version;
+  var clean = GitClean();
   // Testing for a GIT repo... if not in a production environment.
   if (production === false){
     try{
@@ -65,7 +75,7 @@ function GenVersion(){
       v += "-[" + res.trim();
 
       res = exec("git rev-parse HEAD").toString();
-      v += ":" + res.substring(0, 5) + "]";
+      v += ":" + res.substring(0, 5) + ((clean) ? "" : "-X") + "]";
     } catch(e) {
       if (v !== package.version){
         v += "]"; // If v doesn't match package.version, then assume that the first git call worked.
@@ -75,7 +85,6 @@ function GenVersion(){
 
   return v;
 }
-var version = GenVersion();
 
 
 // ---------------------------------------------------
@@ -89,7 +98,7 @@ app.use("/app/css/nespaint.css", function(req, res){
   res.send(new Buffer.from(css_output));
 });
 app.get('/', function(req, res){
-  res.render('index.html', {version:version, author:package.author});
+  res.render('index.html', {version:GenVersion(), author:package.author});
 });
 
 
@@ -116,7 +125,7 @@ watcher.on('change', (fpath) => {
 
 // --------------------------------------------------
 // Announce app version!
-console.log("NESPaint (v" + version + ") Server");
+console.log("NESPaint (v" + GenVersion() + ") Server");
 
 
 // --------------------------------------------------
