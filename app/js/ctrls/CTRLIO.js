@@ -75,11 +75,15 @@ function HANDLE_LoadProjectRequest(){
 function HANDLE_LoadProject(e){
   if (this.files && this.files.length > 0){
     var reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = (function(e) {
       var content = e.target.result;
       console.log(content);
-      // TODO: Need to clear out the selected files after load.
-    };
+      if (this.parentNode.nodeName.toLowerCase() === "form"){
+        this.parentNode.reset();
+      } else {
+        console.log("WARNING: Parent node is NOT a <form> element.");
+      }
+    }).bind(this);
     reader.readAsText(this.files[0]);
   } else {
     console.log("Project file not found or no file selected.");
