@@ -1,9 +1,35 @@
 import GlobalEvents from "/app/js/common/EventCaller.js";
 import Utils from "/app/js/common/Utils.js";
+import JSONSchema from "/app/js/common/JSONSchema.js";
 import NESBank from "/app/js/models/NESBank.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 import CTRLPalettesStore from "/app/js/ctrls/CTRLPalettesStore.js";
 import CTRLBanksStore from "/app/js/ctrls/CTRLBanksStore.js";
+
+
+
+const SUPPORTED_PROJECT_VERSIONS=[
+  "0.1"
+];
+
+JSONSchema.add({
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "NESPainterProject.json",
+  "type":"object",
+  "properties":{
+    "id":{
+      "type":"string",
+      "enum":["NESPProj"]
+    },
+    "version":{
+      "type":"string",
+      "pattern":"^[0-9]{1,}\.[0-9]{1,}$"
+    },
+    "paletteStore":{"$ref":"PalettesStoreSchema.json"},
+    "bankStore":{"$ref":"BanksStoreSchema.json"}
+  },
+  "required":["id","version","paletteStore","bankStore"]
+});
 
 
 var SURF = null;
@@ -11,8 +37,10 @@ var SURF = null;
 
 function JSONFromProject(){
   var proj = {
-    palettesStore:CTRLPalettesStore.obj,
-    banksStore:CTRLBanksStore.obj
+    id:"NESPProj",
+    version:SUPPORTED_PROJECT_VERSIONS[SUPPORTED_PROJECT_VERSIONS.length - 1],
+    paletteStore:CTRLPalettesStore.obj,
+    bankStore:CTRLBanksStore.obj
   };
   return JSON.stringify(proj);
 }
@@ -76,8 +104,19 @@ function HANDLE_LoadProject(e){
   if (this.files && this.files.length > 0){
     var reader = new FileReader();
     reader.onload = (function(e) {
-      var content = e.target.result;
-      console.log(content);
+      var validator = null; 
+      try{
+        validator = JSONSchema.getValidator("NESPainterProject.json");
+      } catch (e) {
+        console.log("Failed to validate project file. " + e.toString());
+        return;
+      }
+      if (validator(e.target.result)){
+        var o = JSON.parse(e.target.result);
+        // TODO: Validate 'id' and 'version' properties.
+        CTRLPalettesStore.obj = o.paletteStore;
+        CTRLBanksStore.obj = o.banksStore;
+      }
       if (this.parentNode.nodeName.toLowerCase() === "form"){
         this.parentNode.reset();
       } else {

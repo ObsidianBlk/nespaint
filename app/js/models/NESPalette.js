@@ -1,4 +1,19 @@
-import {EventCaller} from "/app/js/common/EventCaller.js"
+import {EventCaller} from "/app/js/common/EventCaller.js";
+import JSONSchema from "/app/js/common/JSONSchema.js";
+
+
+JSONSchema.add({
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "NESPaletteSchema.json",
+  "type":"array",
+  "minItems":25,
+  "maxItems":25,
+  "items":{
+    "type":"number",
+    "minimum": 0,
+    "exclusiveMaximum": 64
+  }
+});
 
 /**
  * Object for manipulating the eight NES palettes.
@@ -27,10 +42,8 @@ export default class NESPalette extends EventCaller{
   }
 
   set obj(d){
-    if (!(d instanceof Array) || d.length !== 25)
-      throw new TypeError("Invalid Object or value range.");
     try {
-      this.set_palette(d);
+      this.json = JSON.stringify(d);
     } catch (e) {
       throw e;
     }
@@ -42,9 +55,15 @@ export default class NESPalette extends EventCaller{
 
   set json(j){
     try{
-      this.obj = JSON.parse(j);
+      var validator = JSONSchema.getValidator("NESPaletteSchema.json"); 
     } catch (e) {
       throw e;
+    }
+
+    if (validator(j)){
+      this.set_palette(JSON.parse(j));
+    } else {
+      throw new Error("JSON Object failed to pass validation.");
     }
   }
 

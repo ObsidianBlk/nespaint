@@ -1,5 +1,6 @@
 import GlobalEvents from "/app/js/common/EventCaller.js";
 import Utils from "/app/js/common/Utils.js";
+import JSONSchema from "/app/js/common/JSONSchema.js";
 import EditableText from "/app/js/ui/EditableText.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
@@ -17,6 +18,26 @@ var Palettes = [];
 var CurrentPaletteIndex = 0;
 
 var BlockEmits = false;
+
+
+JSONSchema.add({
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "PalettesStoreSchema.json",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name":{
+        "type":"string",
+        "minLength":1
+      },
+      "palette":{
+        "$ref":"NESPaletteSchema.json"
+      }
+    },
+    "required":["name","palette"]
+  }
+});
 
 
 function HANDLE_PaletteClick(e){
@@ -154,19 +175,21 @@ class CTRLPalettesStore{
   }
 
   get obj(){
-    var d = {
-      cpi: CurrentPaletteIndex,
-      pals: []
-    };
+    var d = [];
     for (let i=0; i < Palettes.length; i++){
-      d.pals.push([Palettes[i][0].value, Palettes[i][1].json]);
+      d.push({name:Palettes[i][0].value, palette:Palettes[i][1].obj});
     }
     return d;
   }
 
 
   set obj(d){
-    if (d.hasOwnProperty("cpi") && d.hasOwnProperty("pals")){
+    try {
+      this.json = JSON.stringify(d);
+    } catch (e) {
+      throw e;
+    }
+    /*if (d.hasOwnProperty("cpi") && d.hasOwnProperty("pals")){
       if (Utils.isInt(d.cpi) && d.pals instanceof Array){
         var newPalettes = []
         for (let i=0; i < d.pals.length; i++){
@@ -188,7 +211,7 @@ class CTRLPalettesStore{
       }
     } else {
       throw new TypeError("Object missing expected properties.");
-    }
+    }*/
   }
 
   get json(){
@@ -196,10 +219,21 @@ class CTRLPalettesStore{
   }
 
   set json(j){
+    var validator = null;
     try {
-      this.obj = JSON.parse(j);
+      validator = JSONSchema.getValidator("PalettesStoreSchema.json");
     } catch (e) {
       throw e;
+    }
+
+    if (validator(j)){
+      this.clear();
+      var o = JSON.parse(j);
+      for (let i=0; i < o.length; i++){
+        this.createPalette(o[i].name, JSON.stringify(o[i].palette));
+      }
+    } else {
+      throw new Error("JSON Object failed verification.");
     }
   }
 

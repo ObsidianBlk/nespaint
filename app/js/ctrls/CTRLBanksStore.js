@@ -1,5 +1,6 @@
 import GlobalEvents from "/app/js/common/EventCaller.js";
 import Utils from "/app/js/common/Utils.js";
+import JSONSchema from "/app/js/common/JSONSchema.js";
 import EditableText from "/app/js/ui/EditableText.js";
 import Renderer from "/app/js/ui/Renderer.js";
 import NESBank from "/app/js/models/NESBank.js";
@@ -14,6 +15,29 @@ const BLI_SELECTED = "list-item-selected";
 
 var Banks = {};
 var CurrentBank = "";
+
+
+JSONSchema.add({
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "BanksStoreSchema.json",
+  "type": "array",
+  "items":{
+    "type": "object",
+    "properties":{
+      "name":{
+        "type": "string",
+        "minLength": 1
+      },
+      "data":{
+        "type": "string",
+        "media": {
+          "binaryEncoding": "base64"
+        }
+      }
+    },
+    "required":["name", "data"]
+  }
+});
 
 
 function HANDLE_BankClick(e){
@@ -122,7 +146,12 @@ class CTRLBanksStore{
   }
 
   set obj(d){
-    if (!(d instanceof Array))
+    try {
+      this.json = JSON.stringify(d);
+    } catch (e) {
+      throw e;
+    }
+    /*if (!(d instanceof Array))
       throw new TypeError("Expected Array object.");
     this.clear();
     d.forEach((item) => {
@@ -133,11 +162,30 @@ class CTRLBanksStore{
           console.log("WARNING: Bank object missing required properties. Skipped.");
         }
       }
-    });
+    });*/
   }
 
   get json(){ 
     return JSON.stringify(this.obj);
+  }
+
+  set json(j){
+    var validator = null;
+    try {
+      validator = JSONSchema.getValidator("BanksStoreSchema.json");
+    } catch (e) {
+      throw e;
+    }
+
+    if (validator(j)){
+      this.clear();
+      var o = JSON.parse(j);
+      o.forEach((item) => {
+        this.createBank(item.name, item.data);
+      });
+    } else {
+      throw new Error("JSON Object validation failed.");
+    }
   }
 
   initialize(){
