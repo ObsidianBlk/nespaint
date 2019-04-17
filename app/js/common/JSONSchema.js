@@ -1,9 +1,7 @@
 
 
-
 var SCHEMA_LIST = [];
-var DIRTY = false;
-var CUR_AJV = null;
+var CUR_AJV = new Ajv();
 
 export default Object.freeze({
   add:function(s){
@@ -14,7 +12,7 @@ export default Object.freeze({
         throw new Error("Schema already exists with $id '" + s["$id"] + "'.");
     }
     SCHEMA_LIST.push(s);
-    DIRTY = true;
+    CUR_AJV.addSchema(s);
   },
 
   remove:function(id){
@@ -23,7 +21,7 @@ export default Object.freeze({
     });
     if (idx >= 0){
       SCHEMA_LIST.splice(idx, 1);
-      DIRTY = true;
+      CUR_AJV.removeSchema(id);
     }
   },
 
@@ -34,15 +32,12 @@ export default Object.freeze({
   },
 
   getValidator:function(id){
-    if (DIRTY){
-      DIRTY = false;
-      if (SCHEMA_LIST.length <= 0){
-        CUR_AJV = null;
-      } else {
-        CUR_AJV = new Ajv({schema:SCHEMA_LIST});
-      }
-    }
     return (CUR_AJV !== null) ? CUR_AJV.getSchema(id) : null;
+  },
+
+  getLastErrors:function(){
+    if (CUR_AJV === null || CUR_AJV.errors === null){return null;}
+    return CUR_AJV.errors;
   }
 });
 

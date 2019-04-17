@@ -12,9 +12,10 @@ const SUPPORTED_PROJECT_VERSIONS=[
   "0.1"
 ];
 
+const SCHEMA_ID = "http://nespaint/Project.json";
 JSONSchema.add({
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "NESPainterProject.json",
+  "$id": SCHEMA_ID,
   "type":"object",
   "properties":{
     "id":{
@@ -25,8 +26,8 @@ JSONSchema.add({
       "type":"string",
       "pattern":"^[0-9]{1,}\.[0-9]{1,}$"
     },
-    "paletteStore":{"$ref":"PalettesStoreSchema.json"},
-    "bankStore":{"$ref":"BanksStoreSchema.json"}
+    "paletteStore":{"$ref":"http://nespaint/PalettesStoreSchema.json"},
+    "bankStore":{"$ref":"http://nespaint/BanksStoreSchema.json"}
   },
   "required":["id","version","paletteStore","bankStore"]
 });
@@ -104,18 +105,17 @@ function HANDLE_LoadProject(e){
   if (this.files && this.files.length > 0){
     var reader = new FileReader();
     reader.onload = (function(e) {
-      var validator = null; 
-      try{
-        validator = JSONSchema.getValidator("NESPainterProject.json");
+      var o = null;
+      var validator = JSONSchema.getValidator(SCHEMA_ID);
+      try {
+        o = JSON.parse(e.target.result);
       } catch (e) {
-        console.log("Failed to validate project file. " + e.toString());
-        return;
+        console.log("Failed to parse JSON string. " + e.toString());
       }
-      if (validator(e.target.result)){
-        var o = JSON.parse(e.target.result);
+      if (validator !== null && validator(o)){
         // TODO: Validate 'id' and 'version' properties.
         CTRLPalettesStore.obj = o.paletteStore;
-        CTRLBanksStore.obj = o.banksStore;
+        CTRLBanksStore.obj = o.bankStore;
       }
       if (this.parentNode.nodeName.toLowerCase() === "form"){
         this.parentNode.reset();

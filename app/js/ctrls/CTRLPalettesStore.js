@@ -20,9 +20,10 @@ var CurrentPaletteIndex = 0;
 var BlockEmits = false;
 
 
+const SCHEMA_ID="http://nespaint/PalettesStoreSchema.json";
 JSONSchema.add({
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "PalettesStoreSchema.json",
+  "$id": SCHEMA_ID,
   "type": "array",
   "items": {
     "type": "object",
@@ -32,7 +33,7 @@ JSONSchema.add({
         "minLength":1
       },
       "palette":{
-        "$ref":"NESPaletteSchema.json"
+        "$ref":"http://nespaint/NESPaletteSchema.json"
       }
     },
     "required":["name","palette"]
@@ -184,34 +185,15 @@ class CTRLPalettesStore{
 
 
   set obj(d){
-    try {
-      this.json = JSON.stringify(d);
-    } catch (e) {
-      throw e;
-    }
-    /*if (d.hasOwnProperty("cpi") && d.hasOwnProperty("pals")){
-      if (Utils.isInt(d.cpi) && d.pals instanceof Array){
-        var newPalettes = []
-        for (let i=0; i < d.pals.length; i++){
-          if (d.pals[i] instanceof Array){
-            if (this.getPalette(d.pals[i][0]) === null){
-              this.createPalette(d.pals[i][0], d.pals[i][1]);
-            }
-          }
-        }
-        CurrentPaletteIndex = 0
-        if (Palettes.length > 0){
-          if (d.cpi >= 0 && d.cpi < Palettes.length){
-            CurrentPaletteIndex = d.cpi;
-          }
-          GlobalEvents.emit("set_app_palette", Palettes[CurrentPaletteIndex][1]);
-        }
-      } else {
-        throw new TypeError("Object Property Value types invalid.");
+    var validator = JSONSchema.getValidator(SCHEMA_ID);
+    if (validator !== null && validator(d)){
+      this.clear();
+      for (let i=0; i < d.length; i++){
+        this.createPalette(d[i].name, JSON.stringify(d[i].palette));
       }
     } else {
-      throw new TypeError("Object missing expected properties.");
-    }*/
+      throw new Error("Object failed to validate against PalettesStoreSchema.");
+    }
   }
 
   get json(){
@@ -219,21 +201,10 @@ class CTRLPalettesStore{
   }
 
   set json(j){
-    var validator = null;
     try {
-      validator = JSONSchema.getValidator("PalettesStoreSchema.json");
+      this.obj = JSON.parse(j);
     } catch (e) {
       throw e;
-    }
-
-    if (validator(j)){
-      this.clear();
-      var o = JSON.parse(j);
-      for (let i=0; i < o.length; i++){
-        this.createPalette(o[i].name, JSON.stringify(o[i].palette));
-      }
-    } else {
-      throw new Error("JSON Object failed verification.");
     }
   }
 
@@ -336,6 +307,7 @@ class CTRLPalettesStore{
     for (let i=0; i < Palettes.length; i++){
       Palettes[i][2].parentNode.removeChild(Palettes[i][2]);
     }
+    Palettes = [];
     CurrentPaletteIndex = 0;
   }
 }

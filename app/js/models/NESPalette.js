@@ -2,9 +2,10 @@ import {EventCaller} from "/app/js/common/EventCaller.js";
 import JSONSchema from "/app/js/common/JSONSchema.js";
 
 
+const SCHEMA_ID="http://nespaint/NESPaletteSchema.json";
 JSONSchema.add({
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "NESPaletteSchema.json",
+  "$id": SCHEMA_ID,
   "type":"array",
   "minItems":25,
   "maxItems":25,
@@ -42,10 +43,11 @@ export default class NESPalette extends EventCaller{
   }
 
   set obj(d){
-    try {
-      this.json = JSON.stringify(d);
-    } catch (e) {
-      throw e;
+    var validator = JSONSchema.getValidator(SCHEMA_ID);
+    if (validator !== null && validator(d)){
+      this.set_palette(d);
+    } else {
+      throw new Error("Object failed to validate against NESPaletteSchema");
     }
   }
 
@@ -54,16 +56,10 @@ export default class NESPalette extends EventCaller{
   }
 
   set json(j){
-    try{
-      var validator = JSONSchema.getValidator("NESPaletteSchema.json"); 
+    try {
+      this.obj = JSON.parse(j);
     } catch (e) {
       throw e;
-    }
-
-    if (validator(j)){
-      this.set_palette(JSON.parse(j));
-    } else {
-      throw new Error("JSON Object failed to pass validation.");
     }
   }
 

@@ -17,9 +17,10 @@ var Banks = {};
 var CurrentBank = "";
 
 
+const SCHEMA_ID="http://nespaint/BanksStoreSchema.json";
 JSONSchema.add({
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "BanksStoreSchema.json",
+  "$id": SCHEMA_ID,
   "type": "array",
   "items":{
     "type": "object",
@@ -146,23 +147,19 @@ class CTRLBanksStore{
   }
 
   set obj(d){
-    try {
-      this.json = JSON.stringify(d);
-    } catch (e) {
-      throw e;
-    }
-    /*if (!(d instanceof Array))
-      throw new TypeError("Expected Array object.");
-    this.clear();
-    d.forEach((item) => {
-      if (typeof(item) === typeof({})){
-        if ((name in item) && (data in item)){
-          this.createBank(item.name, item.data);
-        } else {
-          console.log("WARNING: Bank object missing required properties. Skipped.");
-        }
+    var validator = JSONSchema.getValidator(SCHEMA_ID);
+    if (validator !== null && validator(d)){
+      this.clear();
+      d.forEach((item) => {
+        this.createBank(item.name, item.data);
+      });
+    } else {
+      var errs = JSONSchema.getLastErrors();
+      if (errs !== null){
+        console.log(errs);
       }
-    });*/
+      throw new Error("Object failed to validate against BanksStoreSchema.");
+    }
   }
 
   get json(){ 
@@ -170,21 +167,10 @@ class CTRLBanksStore{
   }
 
   set json(j){
-    var validator = null;
     try {
-      validator = JSONSchema.getValidator("BanksStoreSchema.json");
+      this.obj = JSON.parse(j);
     } catch (e) {
       throw e;
-    }
-
-    if (validator(j)){
-      this.clear();
-      var o = JSON.parse(j);
-      o.forEach((item) => {
-        this.createBank(item.name, item.data);
-      });
-    } else {
-      throw new Error("JSON Object validation failed.");
     }
   }
 
@@ -262,12 +248,13 @@ class CTRLBanksStore{
 
   clear(){
     Object.keys(Banks).forEach((item) => {
-      item.el.parentNode.removeChild(item.el);
+      Banks[item].el.parentNode.removeChild(Banks[item].el);
     });
     Banks = {};
-    if (CurrentBank !== "")
+    if (CurrentBank !== ""){
+      CurrentBank = "";
       GlobalEvents.emit("change_surface", null);
-    CurrentBank = ""; 
+    }
   }
 }
 
