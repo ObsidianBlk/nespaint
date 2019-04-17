@@ -1,4 +1,5 @@
 import GlobalEvents from "/app/js/common/EventCaller.js";
+import Utils from "/app/js/common/Utils.js";
 import Input from "/app/js/ui/Input.js";
 
 class Modal{
@@ -12,9 +13,11 @@ class Modal{
     }).bind(this));
 
     GlobalEvents.listen("modal-open", (function(target, event){
-      if (event.hasOwnProperty("id") && typeof(event.id) === 'string'){
-        var force = (event.hasOwnProperty("force")) ? event.force === true : false;
+      var force = (event.hasOwnProperty("force")) ? event.force === true : false;
+      if (event.hasOwnProperty("id") && typeof(event.id) === 'string'){ 
         this.open_modal_id(event.id, force);
+      } else if (event.hasOwnProperty("cls") && typeof(event.cls) === 'string'){
+        this.open_modal_class(event.cls, force);
       }
     }).bind(this));
 
@@ -22,6 +25,7 @@ class Modal{
       this.close_modal();
     }).bind(this));
 
+    // TODO: Deprecate this mechanic. Let other controllers directly handle input.
     GlobalEvents.listen("modal-submit", (function(target, event){
       if (!event.hasOwnProperty("subevent"))
         return;
@@ -49,7 +53,7 @@ class Modal{
 
   open_modal_id(idname, force=false){
     var el = document.getElementById(idname);
-    if (el.classList.contains("modal") && this.__currentModalEl !== el){
+    /*if (el.classList.contains("modal") && this.__currentModalEl !== el){
       if (this.__currentModalEl !== null && force)
         this.close_modal();
       if (this.__currentModalEl === null){
@@ -57,17 +61,24 @@ class Modal{
           return this.open_modal_element(el);
         }
       }
-    }
-    return this;
+    }*/
+    return (el) ? this.open_modal_element(el, force) : this;
+  }
+
+  open_modal_class(clsname, force=false){
+    var el = document.querySelector((clsname.indexOf(".") < 0) ? "." + clsname : clsname);
+    return (el) ? this.open_modal_element(el, force) : this;
   }
 
   open_modal_element(el, force=false){
-    if (el.classList.contains("modal")){
-      if (this.__currentModalEl !== null && force)
-        this.close_modal();
-      if (this.__currentModalEl === null){
-        el.classList.add("modal-visible");
-        this.__currentModalEl = el;
+    if (Utils.isElement(el)){
+      if (el.classList.contains("modal") && this.__currentModalEl !== el){
+        if (this.__currentModalEl !== null && force)
+          this.close_modal();
+        if (this.__currentModalEl === null){
+          el.classList.add("modal-visible");
+          this.__currentModalEl = el;
+        }
       }
     }
     return this;
