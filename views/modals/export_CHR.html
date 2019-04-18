@@ -2,14 +2,14 @@
   <div class="modal-content">
     <form class="pure-form export-chr-form">
         <label for="expchr-op1" class="pure-radio">
-          <input id="expchr-op1" type="radio" name="exportchr-amount" value="full" checked>
+          <input id="expchr-op1" type="radio" name="exportchr-size" value="full" checked>
           Full Bank
         </label>
         <label for="expchr-op2" class="pure-radio">
-          <input id="expchr-op2" type="radio" name="exportchr-amount" value="current">
+          <input id="expchr-op2" type="radio" name="exportchr-size" value="current">
           Current View
         </label>
-      <button type="submit" class="pure-button export-chr-btn">Export CHR</button>
+      <button type="submit" class="pure-button export-chr-btn" emit="export-chr">Export CHR</button>
     </form> 
   </div>
 </div>

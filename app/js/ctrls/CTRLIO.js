@@ -46,6 +46,19 @@ function JSONFromProject(){
   return JSON.stringify(proj);
 }
 
+function RequestDownload(filename, datblob){
+  var a = document.createElement("a");
+  a.href = window.URL.createObjectURL(datblob);
+  a.download = filename;
+  var body = document.querySelector("body");
+  body.appendChild(a);
+  a.click();
+  setTimeout(function(){  // fixes firefox html removal bug
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  }, 500);
+}
+
 function LoadFile(file){
   if (SURF !== null){
     var reader = new FileReader();
@@ -81,9 +94,10 @@ function HANDLE_FileDrop(e){
 
 
 function HANDLE_SaveProject(e){
-  var a = document.createElement("a");
+  //var a = document.createElement("a");
   var file = new Blob([JSONFromProject()], {type: "text/plain"});
-  a.href = window.URL.createObjectURL(file);
+  RequestDownload("nesproject.json", file);
+  /*a.href = window.URL.createObjectURL(file);
   a.download = "nesproject.json";
   var body = document.querySelector("body");
   body.appendChild(a);
@@ -91,7 +105,31 @@ function HANDLE_SaveProject(e){
   setTimeout(function(){  // fixes firefox html removal bug
     window.URL.revokeObjectURL(url);
     a.remove();
-  }, 500); 
+  }, 500);*/ 
+}
+
+
+function HANDLE_ExportCHR(e){
+  e.preventDefault();
+  var bank = CTRLBanksStore.currentBank;
+  if (bank !== null){
+    var dat = null;
+    var size = document.querySelector('input[name="exportchr-size"]:checked').value;
+    switch (size){
+      case "full":
+        dat = bank.getCHR(0,0);
+        break;
+      case "current":
+        dat = bank.chr;
+    }
+
+    if (dat !== null){
+      var file = new Blob([dat], {type:"application/octet-stream"});
+      var filename = CTRLBanksStore.currentBankName.replace(/[^a-z0-9\-_.]/gi, '_').toLowerCase() + ".chr";
+      RequestDownload(filename, file);
+    }
+  }
+  GlobalEvents.emit("modal-close");
 }
 
 function HANDLE_LoadProjectRequest(){
@@ -150,11 +188,20 @@ class CTRLIO{
   }
 
   initialize(){
+    // Connecting drag/drop ability.
     var e = document.querySelectorAll(".drop-zone");
     for (let i=0; i < e.length; e++){
       e[i].addEventListener("dragover", HANDLE_DragOver);
       e[i].addEventListener("drop", HANDLE_FileDrop);
     }
+
+    // Connecting to button for export request.
+    var e = document.querySelectorAll(".export-chr-btn");
+    for (let i=0; i < e.length; i++){
+      e[i].addEventListener("click", HANDLE_ExportCHR);
+    }
+
+
     CTRLPalettesStore.initialize();
     CTRLBanksStore.initialize();
   }
