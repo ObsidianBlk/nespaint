@@ -174,6 +174,14 @@ class CTRLBanksStore{
     }
   }
 
+  get currentBank(){
+    return (CurrentBank === "") ? null : Banks[CurrentBank].bank;
+  }
+
+  get currentBankName(){
+    return CurrentBank;
+  }
+
   initialize(){
     if (this.length <= 0){
       this.createBank("Bank");
