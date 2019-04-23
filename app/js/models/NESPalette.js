@@ -16,6 +16,15 @@ JSONSchema.add({
   }
 });
 
+
+var DEFAULT_PALETTE = [
+  "#080808",
+  "#343434",
+  "#a2a2a2",
+  "#efefef"
+];
+var OOB_COLOR = "#666666";
+
 /**
  * Object for manipulating the eight NES palettes.
  * @extends EventCaller
@@ -298,12 +307,28 @@ NESPalette.SystemColor = [
   "#000000"
 ];
 
-NESPalette.Default = [
-  "#080808",
-  "#343434",
-  "#a2a2a2",
-  "#efefef",
-  "#666666" // Out of bounds color.
-];
+NESPalette.Default = function(index){
+  if (index >= 0 && index < DEFAULT_PALETTE.length)
+    return DEFAULT_PALETTE[index];
+  return OOB_COLOR;
+}
+
+NESPalette.SetDefaultColor = function(index, r,g,b){
+  var Hex = (c) => {
+    c = c.toString(16);
+    return (c.length < 2) ? "0" + c : c;
+  };
+
+  var Clamp = (c) => {
+    return Math.floor(Math.max(0, Math.min(255, c)));
+  };
+
+  var color = "#" + Hex(Clamp(r)) + Hex(Clamp(g)) + Hex(Clamp(b));
+  if (index >= 0 && index < DEFAULT_PALETTE.length){
+    DEFAULT_PALETTE = color;
+  } else {
+    OOB_COLOR = color;
+  }
+}
 
 

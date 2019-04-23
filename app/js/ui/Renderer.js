@@ -45,7 +45,7 @@ function render(surf, sx, sy, sw, sh, scale, ctx, dx, dy, palcolored){
 
   if (cw <= 0 || ch <= 0){return;}
 
-  clear(ctx, NESPalette.Default[4]);
+  clear(ctx, NESPalette.Default(4));
 
   ctx.save();
   var ctximg = ctx.getImageData(0, 0, cw, ch);
@@ -80,12 +80,12 @@ function render(surf, sx, sy, sw, sh, scale, ctx, dx, dy, palcolored){
       var x = (i*scale) + dx;
 
       if (x >= 0 && x < cw && y >= 0 && y < ch){
-        var color = NESPalette.Default[4];
+        var color = NESPalette.Default(4);
         if (palcolored){
           color = surf.getColor(i, j);
         } else {
           var pinfo = surf.getColorIndex(i, j);
-          color = (pinfo.ci >= 0) ? NESPalette.Default[pinfo.ci] : NESPalette.Default[4];
+          color = (pinfo.ci >= 0) ? NESPalette.Default(pinfo.ci) : NESPalette.Default(4);
         }
         PutPixel(x,y,scale,color);
       }
