@@ -23,8 +23,8 @@
       <%- include('docks.html', {
         tabsetname:"assetlists",
         tabs:[
-          {name:"Palettes", id:"palettes", tmpl:"paletteListItem.html", addevent:"PaletteAdd", remevent:"palstore-remove", selected:true},
-          {name:"Banks", id:"banks", tmpl:"bankListItem.html", addevent:"BankAdd", remevent:"bankstore-remove", selected:false},
+          {name:"Palettes", id:"palettes", tmpl:"paletteListItem.html", addevent:"palettes-store-add", remevent:"palstore-remove", selected:true},
+          {name:"Banks", id:"banks", tmpl:"bankListItem.html", addevent:"banks-store-add", remevent:"bankstore-remove", selected:false},
           {name:"Attrib. Tables", id:"attrtbls", selected:false}
         ]  
       }); %>

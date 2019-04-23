@@ -1,0 +1,13 @@
+<% stores.forEach(function(item){ %>
+<div class="modal <%= item.modalclass %>">
+  <div class="modal-content">
+    <form class="store-add-form">
+      <label for="storeitemname">
+        <%= item.title %>: 
+      </label>
+      <input type="text" name="storeitemname" />
+      <button class="pure-button" emit="<%= item.addevent %>">Submit</button>
+    </form>
+  </div>
+</div>
+<% }); %>

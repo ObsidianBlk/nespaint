@@ -4,26 +4,10 @@
   </div>
 </div>
 
-<div id="PaletteAdd" class="modal">
-  <div class="modal-content">
-    <label for="palname">
-      New Palette Name: 
-    </label>
-    <input type="text" name="palname" />
-    <button class="pure-button" emit="modal-submit" emit-args='{"subevent":"palstore-add", "ids":"palname", "closeoncomplete":true}'>Submit</button>
-  </div>
-</div>
-
-<div id="BankAdd" class="modal">
-  <div class="modal-content">
-    <label for="bankname">
-      New Bank Name: 
-    </label>
-    <input type="text" name="bankname" />
-    <button class="pure-button" emit="modal-submit" emit-args='{"subevent":"bankstore-add", "ids":"bankname", "closeoncomplete":true}'>Submit</button>
-  </div>
-</div>
-
+<%- include("modals/storeadd.html", {stores:[
+  {"modalclass":"palettes-store-add", "title":"New Palette Name", "addevent":"palstore-add"},
+  {"modalclass":"banks-store-add", "title":"New Bank Name", "addevent":"bankstore-add"}
+]}); %>
 
 <div id="LoadProject" class="modal">
   <div class="modal-content">

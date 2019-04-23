@@ -119,10 +119,22 @@ class CTRLBanksStore{
     GlobalEvents.listen("change_surface", HANDLE_ChangeSurface);
 
 
-    GlobalEvents.listen("bankstore-add", (function(e){
-      if (e.hasOwnProperty("bankname")){
+    GlobalEvents.listen("bankstore-add", (function(ev){
+      /*if (e.hasOwnProperty("bankname")){
         this.createBank(e.bankname);
         this.activateBank(e.bankname);
+      }*/
+      GlobalEvents.emit("modal-close");
+      var e = document.querySelector(".banks-store-add");
+      if (e){
+        var eform = e.querySelector("form");
+        var einput = e.querySelector('input[name="storeitemname"]');
+        if (eform && einput){
+          var name = einput.value;
+          eform.reset();
+          this.createBank(name);
+          this.activateBank(name);
+        } 
       }
     }).bind(this));
 

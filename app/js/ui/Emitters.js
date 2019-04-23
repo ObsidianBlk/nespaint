@@ -3,6 +3,7 @@ import GlobalEvents from "/app/js/common/EventCaller.js";
 
 function handle_emitter(event){
   if (this.hasAttribute("emit")){
+    event.preventDefault();
     var args = [this.getAttribute("emit"), this];
     if (this.hasAttribute("emit-args")){
       try {

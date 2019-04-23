@@ -163,10 +163,18 @@ function CreatePaletteDOMEntry(pname, palette){
 
 class CTRLPalettesStore{
   constructor(){
-    GlobalEvents.listen("palstore-add", (function(e){
-      if (e.hasOwnProperty("palname")){
-        this.createPalette(e.palname);
-        this.activatePalette(e.palname);
+    GlobalEvents.listen("palstore-add", (function(ev){
+      GlobalEvents.emit("modal-close");
+      var e = document.querySelector(".palettes-store-add");
+      if (e){
+        var eform = e.querySelector("form");
+        var einput = e.querySelector('input[name="storeitemname"]');
+        if (eform && einput){
+          var name = einput.value;
+          eform.reset();
+          this.createPalette(name);
+          this.activatePalette(name);
+        } 
       }
     }).bind(this));
 
