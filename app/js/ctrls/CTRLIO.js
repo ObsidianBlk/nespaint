@@ -54,7 +54,7 @@ function RequestDownload(filename, datblob){
   body.appendChild(a);
   a.click();
   setTimeout(function(){  // fixes firefox html removal bug
-    window.URL.revokeObjectURL(url);
+    window.URL.revokeObjectURL(a.href);
     a.remove();
   }, 500);
 }

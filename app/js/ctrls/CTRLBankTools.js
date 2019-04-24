@@ -24,6 +24,8 @@ function OpenControls(){
       case NESBank.ACCESSMODE_1K:
         ELSel.value = "1K"; break; 
         break;
+      case NESBank.ACCESSMODE_1T:
+        ElSel.value = "1T"; break;
     }
 
     if (ELSel.value !== "8K"){
@@ -68,6 +70,8 @@ function HANDLE_ModeChange(){
         SURF.access_mode = NESBank.ACCESSMODE_2K; break;
       case "1K":
         SURF.access_mode = NESBank.ACCESSMODE_1K; break;
+      case "1T":
+        SURF.access_mode = NESBank.ACCESSMODE_1T; break;
     }
     if (SURF.access_mode !== NESBank.ACCESSMODE_8K){
       ELLab.classList.remove("hidden");
