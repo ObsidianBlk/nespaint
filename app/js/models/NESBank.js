@@ -33,6 +33,10 @@ function CnvIdx(x, y, am, off){
     off -= (off > 3) ? 4 : 0;
     res.tileidx = (off * 64) + ((Math.floor(y/8) * 16) + Math.floor(x / 8));
     break;
+  case NESBank.ACCESSMODE_1T:
+    res.side = (off >= 256) ? 1 : 0;
+    res.tileidx = (off >= 256) ? off - 256 : off;
+    break;
   }
 
   res.x = x%8;
@@ -53,6 +57,8 @@ function AdjOffsetToNewMode(nmode, omode, ooff){
             return Math.floor(ooff * 0.5);
           case NESBank.ACCESSMODE_1K:
             return Math.floor(ooff * 0.25);
+          case NESBank.ACCESSMODE_1T:
+            return Math.floor(ooff / 256);
         }
       }
       return ooff;
@@ -62,6 +68,8 @@ function AdjOffsetToNewMode(nmode, omode, ooff){
           return ooff * 2;
         case NESBank.ACCESSMODE_1K:
           return Math.floor(ooff * 0.5);
+        case NESBank.ACCESSMODE_1T:
+          return Math.floor(ooff * 0.0078125); // divide by 128
       }
       break;
     case NESBank.ACCESSMODE_1K:
@@ -70,6 +78,18 @@ function AdjOffsetToNewMode(nmode, omode, ooff){
           return ooff * 4;
         case NESBank.ACCESSMODE_2K:
           return ooff * 2;
+        case NESBank.ACCESSMODE_1T:
+          return Math.floor(ooff * 0.015625); // divide by 64
+      }
+      break;
+    case NESBank.ACCESSMODE_1T:
+      switch(omode){
+        case NESBank.ACCESSMODE_4K:
+          return ooff * 256;
+        case NESBank.ACCESSMODE_2K:
+          return ooff * 128;
+        case NESBank.ACCESSMODE_1K:
+          return ooff * 64;
       }
       break;
   }
@@ -95,6 +115,11 @@ export default class NESBank extends ISurface{
     var handle_datachanged = Utils.debounce((function(side, idx){
       var sendEmit = false;
       switch(this.__AccessMode){
+        case NESBank.ACCESSMODE_1T:
+          if (side === Math.floor(this.__AccessOffset / 256)){
+            if (idx === this.__AccessOffset)
+              sendEmit = true;
+          }
         case NESBank.ACCESSMODE_1K:
           if (side === Math.floor(this.__AccessOffset / 4)){
             if (Math.floor(idx / 64) === Math.floor(this.__AccessOffset/4))
@@ -148,6 +173,9 @@ export default class NESBank extends ISurface{
       case NESBank.ACCESSMODE_1K:
         this.__AccessMode = NESBank.ACCESSMODE_1K;
         break;
+      case NESBank.ACCESSMODE_1T:
+        this.__AccessMode = NESBank.ACCESSMODE_1T;
+        break;
       default:
         throw new ValueError("Unknown Access Mode.");
     }
@@ -178,6 +206,9 @@ export default class NESBank extends ISurface{
         if (o < 0 || o >= 8)
           throw new RangeError("Access Offset is out of bounds based on current Access Mode.");
         break;
+      case NESBank.ACCESSMODE_1T:
+        if (o < 0 || o >= 512)
+          throw new RangeError("Access Offset is out of bounds based on current Access Mode.");
     }
 
     this.__AccessOffset = o;
@@ -193,6 +224,8 @@ export default class NESBank extends ISurface{
         return 4;
       case NESBank.ACCESSMODE_1K:
         return 8;
+      case NESBank.ACCESSMODE_1T:
+        return 512;
     }
     return 0;
   }
@@ -250,6 +283,10 @@ export default class NESBank extends ISurface{
           offset += 16;
         }
         break;
+      case NESBank.ACCESSMODE_1T:
+        var list = (this.__AccessOffset < 256) ? this.__LP : this.__RP;
+        var idx = this.__AccessOffset % 256;
+        buff = list[idx].chr;
     } 
     return buff;
   }
@@ -290,13 +327,21 @@ export default class NESBank extends ISurface{
     }
   }
 
-  get width(){return (this.__AccessMode == NESBank.ACCESSMODE_8K) ? 256 : 128;}
+  get width(){
+    if (this.__AccessMode == NESBank.ACCESSMODE_8K)
+      return 256;
+    if (this.__AccessMode == NESBank.ACCESSMODE_1T)
+      return 8;
+    return 128;
+  }
   get height(){
     switch(this.__AccessMode){
       case NESBank.ACCESSMODE_2K:
         return 64;
       case NESBank.ACCESSMODE_1K:
         return 32;
+      case NESBank.ACCESSMODE_1T:
+        return 8;
     }
     return 128;
   }
@@ -494,6 +539,15 @@ export default class NESBank extends ISurface{
           idx += 16;
         }
         break;
+      case 16:
+        if (offset < 0)
+          offset = AdjOffsetToNewMode(NESBank.ACCESSMODE_1T, this.__AccessMode, this.__AccessOffset);
+        if (offset >= 512)
+          throw new RangeError("Offset mismatch based on Buffer length.");
+        var list = (offset < 256) ? this.__LP : this.__RP;
+        var idx = offset % 256;
+        list[idx].chr = buff;
+        break; 
       default:
         throw new RangeError("Buffer length does not match any of the supported bank sizes.");
     }
@@ -653,3 +707,4 @@ NESBank.ACCESSMODE_8K = 0;
 NESBank.ACCESSMODE_1K = 1;
 NESBank.ACCESSMODE_2K = 2;
 NESBank.ACCESSMODE_4K = 3;
+NESBank.ACCESSMODE_1T = 4;
