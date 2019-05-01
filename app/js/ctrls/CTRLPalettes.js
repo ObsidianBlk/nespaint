@@ -6,8 +6,7 @@ const ATTRIB_NESIDX = "nesidx";
 const ATTRIB_PALIDX = "pidx";     // This is the palette index (0 - 3 (Tiles) 4 - 7 (Sprites))
 const ATTRIB_COLIDX = "cidx";  // This is the color index in the selected palette (0 - 3)
 
-const CLASS_BTN_ACTIVE = "pure-button-active";
-const SELECT_ID_PALETTEMODE = "palette-mode";
+const CLASS_PALETTE_ACTIVE = "palette-selected";
 
 var Active_Palette_Index = 0;
 var Active_Color_Index = 0;
@@ -52,7 +51,7 @@ function GetPaletteIndexes(el){
       ci = parseInt(ci);
     else
       ci = -1;
-    if (pi >= 0 && pi < 4 && ci >= 0 && ci < 4){
+    if (pi >= 0 && pi < 8 && ci >= 0 && ci < 4){
       return {pi:pi, ci:ci};
     }
   }
@@ -64,19 +63,19 @@ function SetPaletteElStyle(el, c){
   el.style.color = InvertColor(c);
 }
 
-function SetColorPaletteEls(mode, pal){
+function SetColorPaletteEls(pal){
   var elist = document.querySelectorAll("[" + ATTRIB_PALIDX + "]");
   elist.forEach(function(el){
     var i = GetPaletteIndexes(el);
     if (i !== null){
-      SetPaletteElStyle(el, pal.get_palette_color((mode*4) + i.pi, i.ci));
+      SetPaletteElStyle(el, pal.get_palette_color(i.pi, i.ci));
     }
   });
 }
 
-function FindAndColorPalette(mode, pi, ci, pal){
-  if ((mode == 0 && pi < 4) || (mode == 1 && pi >= 4)){
-    var el = document.querySelector("[" + ATTRIB_PALIDX +"='" + (pi%4) + "']" +
+function FindAndColorPalette(pi, ci, pal){
+  if (pi >= 0 && pi < 8){
+    var el = document.querySelector("[" + ATTRIB_PALIDX +"='" + pi + "']" +
       "[" + ATTRIB_COLIDX + "='" + ci + "']");
     if (el){
       SetPaletteElStyle(el, pal.get_palette_color(pi, ci));
@@ -89,7 +88,6 @@ class CTRLPalettes{
   constructor(){
     this.__NESPalette = null;
     this.__activePaletteEl = null;
-    this.__mode = 0; // 0 = Tile palette mode | 1 = Sprite palette mode.
 
     var self = this;
 
@@ -127,11 +125,12 @@ class CTRLPalettes{
           var i = GetPaletteIndexes(this);
           if (i !== null){
             if (self.__activePaletteEl !== null){
-              self.__activePaletteEl.classList.remove(CLASS_BTN_ACTIVE);
+              self.__activePaletteEl.classList.remove(CLASS_PALETTE_ACTIVE); 
             }
-            this.classList.add(CLASS_BTN_ACTIVE);
+
+            this.classList.add(CLASS_PALETTE_ACTIVE); 
             self.__activePaletteEl = this;
-            GlobalEvents.emit("active_palette_color", i.pi, i.ci);
+            GlobalEvents.emit("active_palette_color", (i.pi%4), i.ci);
           }
         }
       }
@@ -145,22 +144,6 @@ class CTRLPalettes{
 
 
     // ------------------------------------------------------------------------------------
-    // Defining hooks for palette mode swapping
-    // ------------------------------------------------------------------------------------
-    var el = document.querySelector("#" + SELECT_ID_PALETTEMODE);
-    if (el){
-      el.addEventListener("change", function(event){
-        switch(this.value){
-          case "sprite":
-            self.__mode = 1; break;
-          case "tile":
-            self.__mode = 0; break;
-        }
-        SetColorPaletteEls(self.__mode, self.__NESPalette);
-      });
-    }
-
-    // ------------------------------------------------------------------------------------
     // Setting some hooks to watch for some global events.
     // ------------------------------------------------------------------------------------
     var handle_set_app_palette = function(p){
@@ -169,14 +152,6 @@ class CTRLPalettes{
       }
     }
     GlobalEvents.listen("set_app_palette", handle_set_app_palette);
-
-    var handle_palettemode = (function(mode){
-      if (mode === 0 || mode ===1){
-        this.__mode = mode;
-        SetColorPaletteEls(this.__mode, this.__NESPalette);
-      }
-    }).bind(this);
-    GlobalEvents.listen("set_palette_mode", handle_palettemode);
   }
 
   get palette(){
@@ -191,9 +166,9 @@ class CTRLPalettes{
     var handle_palettes_changed = function(event){
       if (self.__NESPalette !== null){
         if (event.type == "ALL"){
-          SetColorPaletteEls(self.__mode, self.__NESPalette);
+          SetColorPaletteEls(self.__NESPalette);
         } else {
-          FindAndColorPalette(self.__mode, event.pindex, event.cindex, self.__NESPalette);
+          FindAndColorPalette(event.pindex, event.cindex, self.__NESPalette);
         }
       }
     }
@@ -211,7 +186,7 @@ class CTRLPalettes{
       if (el.hasAttribute(ATTRIB_COLIDX)){
         var i = GetPaletteIndexes(el);
         if (i !== null){
-          SetPaletteElStyle(el, p.get_palette_color((this.__mode * 4) + i.pi, i.ci));
+          SetPaletteElStyle(el, p.get_palette_color(i.pi, i.ci));
         }
       }
     }).bind(this));

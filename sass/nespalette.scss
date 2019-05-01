@@ -5,3 +5,23 @@ div.NES-palette{
 .NES-palette button{
   width:2rem;
 }
+
+
+.palette-unit-t, .palette-unit-full{
+  &.palette-selected{
+    box-shadow: inset 0px 3px $color-highlight;
+  }
+}
+
+.palette-unit-s, .palette-unit-full{
+  &.palette-selected{
+    box-shadow: inset 0px -3px $color-highlight;
+  }
+}
+
+.palette-unit-full{
+  &.palette-selected{
+    box-shadow: inset 3px 3px $color-highlight, inset 0px -3px $color-highlight;
+  }
+}
+

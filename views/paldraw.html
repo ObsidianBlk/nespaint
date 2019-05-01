@@ -1,28 +1,30 @@
-            <div class="pure-u-1-2">
-              <div class-"simple-padding">
-                <label for="palette-mode">
-                  Drawing Palettes
-                </label>
-                <select id="palette-mode">
-                  <option value="sprite">Sprite Palettes</option>
-                  <option value="tile" selected>Tile Palettes</option>
-                </select>
-              </div>
-              <div class="pure-g">
-                <% for(var i=0; i < numpalettes; i++){ %>
-                <div class="pure-u-1-2">
-                  <div class="simple-padding">
-                    Palette <%= i+1 %>
-                  </div>
-                  <div class="simple-padding">
-                    <div class="pure-button-group" role="group">
-                      <button class="pure-button" cidx="0" pidx="<%= i %>">0</button>
-                      <button class="pure-button" cidx="1" pidx="<%= i %>">1</button>
-                      <button class="pure-button" cidx="2" pidx="<%= i %>">2</button>
-                      <button class="pure-button" cidx="3" pidx="<%= i %>">3</button>
-                    </div>
-                  </div>
-                </div>
-                <% } %>
-              </div>
-            </div>
+<div class="pure-u-1-2"> 
+  <div class="pure-g">
+    <% for(var i=0; i < numpalettes; i++){ %>
+    <div class="pure-u-1-2">
+      <div class="simple-padding">
+        Palette <%= i+1 %>
+      </div>
+      <div class="simple-padding">
+        <div class="pure-g pure-g-nw">
+          <div class="pure-u-1-4 palette-unit">
+            <div class="palette-unit-full" cidx="0" pidx="<%= i %>">&nbsp;<BR>&nbsp;</div>
+          </div>
+          <div class="pure-u-1-4 palette-unit">
+            <div class="palette-unit-t" cidx="1" pidx="<%= i %>">&nbsp;</div>
+            <div class="palette-unit-s" cidx="1" pidx="<%= (i+4) %>">&nbsp;</div>
+          </div>
+          <div class="pure-u-1-4 palette-unit">
+            <div class="palette-unit-t" cidx="2" pidx="<%= i %>">&nbsp;</div>
+            <div class="palette-unit-s" cidx="2" pidx="<%= (i+4) %>">&nbsp;</div>
+          </div>
+          <div class="pure-u-1-4 palette-unit">
+            <div class="palette-unit-t" cidx="3" pidx="<%= i %>">&nbsp;</div>
+            <div class="palette-unit-s" cidx="3" pidx="<%= (i+4) %>">&nbsp;</div>
+          </div>
+        </div> 
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>
