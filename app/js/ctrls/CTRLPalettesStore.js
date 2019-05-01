@@ -183,6 +183,14 @@ class CTRLPalettesStore{
     }).bind(this));
   }
 
+  get currentPalette(){
+    return (Palettes.length > 0) ? Palettes[CurrentPaletteIndex][1] : null;
+  }
+
+  get currentPaletteName(){
+    return (Palettes.length > 0) ? Palettes[CurrentPaletteIndex][0].value : "";
+  }
+
   get obj(){
     var d = [];
     for (let i=0; i < Palettes.length; i++){
