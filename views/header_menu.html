@@ -1,0 +1,55 @@
+<div class="pure-menu pure-menu-horizontal">
+  <ul class="pure-menu-list">
+    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+      <a href="#" class="pure-menu-link">
+        <i class="fa fa-folder"></i>
+        Project
+      </a>
+      <ul class="pure-menu-children">
+        <li class="pure-menu-item" emit="load-project">
+          <form>
+            <input type="file" class="project-loader" accept="text/plain" style="display:none;"></input>
+          </form>
+          <a href="#" class="pure-menu-link">
+            <i class="fa fa-folder-open"></i>
+            Load Project
+          </a>
+        </li>
+        <li class="pure-menu-item" emit="save-project">
+          <a href="#" class="pure-menu-link">
+            <i class="fa fa-save"></i>
+            Save Project
+          </a>
+        </li> 
+      </ul>
+    </li>
+
+
+    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+      <a href="#" id="exportchr" class="pure-menu-link">Export Bank</a>
+      <ul class="pure-menu-children">
+        <li class="pure-menu-item" emit="modal-open" emit-args='{"cls":".export-chr"}'>
+          <a href="#" class="pure-menu-link">To CHR</a>
+        </li>
+      </ul>
+    </li>
+
+
+    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+      <a href="#" id="exportpal" class="pure-menu-link">Export Palette</a>
+      <ul class="pure-menu-children">
+        <li class="pure-menu-item" emit="export-pal-asm">
+          <a href="#" class="pure-menu-link">To Assembly</a>
+        </li>
+      </ul>
+    </li>
+
+
+    <li class="pure-menu-item" emit="about">
+      <a href="#" class="pure-menu-link">
+        <i class="fa fa-info-circle"></i>
+        About
+      </a>
+    </li>
+  </ul>
+</div>
