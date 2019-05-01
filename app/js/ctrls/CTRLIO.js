@@ -96,16 +96,7 @@ function HANDLE_FileDrop(e){
 function HANDLE_SaveProject(e){
   //var a = document.createElement("a");
   var file = new Blob([JSONFromProject()], {type: "text/plain"});
-  RequestDownload("nesproject.json", file);
-  /*a.href = window.URL.createObjectURL(file);
-  a.download = "nesproject.json";
-  var body = document.querySelector("body");
-  body.appendChild(a);
-  a.click();
-  setTimeout(function(){  // fixes firefox html removal bug
-    window.URL.revokeObjectURL(url);
-    a.remove();
-  }, 500);*/ 
+  RequestDownload("nesproject.json", file); 
 }
 
 
@@ -130,6 +121,16 @@ function HANDLE_ExportCHR(e){
     }
   }
   GlobalEvents.emit("modal-close");
+}
+
+function HANDLE_ExportPalASM(e){
+  var pal = CTRLPalettesStore.currentPalette;
+  var palname = CTRLPalettesStore.currentPaletteName.replace(/[^a-z0-9\-_.]/gi, '_');
+  if (pal !== null && palname !== ""){
+    var asmtxt = pal.to_asm(palname);
+    var file = new Blob([asmtxt], {type: "text/plain"});
+    RequestDownload(palname + ".asm", file);
+  }
 }
 
 function HANDLE_LoadProjectRequest(){
@@ -180,6 +181,7 @@ class CTRLIO{
     GlobalEvents.listen("change_surface", HANDLE_SurfChange);
     GlobalEvents.listen("save-project", HANDLE_SaveProject);
     GlobalEvents.listen("load-project", HANDLE_LoadProjectRequest);
+    GlobalEvents.listen("export-pal-asm", HANDLE_ExportPalASM);
 
     var input = document.querySelectorAll("input.project-loader");
     if (input.length > 0){
