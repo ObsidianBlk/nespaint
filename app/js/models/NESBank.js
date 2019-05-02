@@ -37,6 +37,11 @@ function CnvIdx(x, y, am, off){
     res.side = (off >= 256) ? 1 : 0;
     res.tileidx = (off >= 256) ? off - 256 : off;
     break;
+  case NESBank.ACCESSMODE_2T:
+    res.side = (off >= 128) ? 1 : 0;
+    off -= (off >= 128) ? 128 : 0;
+    //res.tileidx = (Math.floor(off % 8)*32) + Math.floor(off / 16) + ((y >= 8) ? 16 : 0);
+    res.tileidx = ((Math.floor(off/16)*32) + (off % 16)) + ((y >= 8) ? 16 : 0);
   }
 
   res.x = x%8;
@@ -59,6 +64,8 @@ function AdjOffsetToNewMode(nmode, omode, ooff){
             return Math.floor(ooff * 0.25);
           case NESBank.ACCESSMODE_1T:
             return Math.floor(ooff / 256);
+          case NESBank.ACCESSMODE_2T:
+            return Math.floor(ooff / 128);
         }
       }
       return ooff;
@@ -70,6 +77,8 @@ function AdjOffsetToNewMode(nmode, omode, ooff){
           return Math.floor(ooff * 0.5);
         case NESBank.ACCESSMODE_1T:
           return Math.floor(ooff * 0.0078125); // divide by 128
+        case NESBank.ACCESSMODE_2T:
+          return Math.floor(ooff * 0.015625); // divide by 64
       }
       break;
     case NESBank.ACCESSMODE_1K:
@@ -80,6 +89,8 @@ function AdjOffsetToNewMode(nmode, omode, ooff){
           return ooff * 2;
         case NESBank.ACCESSMODE_1T:
           return Math.floor(ooff * 0.015625); // divide by 64
+        case NESBank.ACCESSMODE_2T:
+          return Math.floor(ooff * 0.03125); // divide by 32
       }
       break;
     case NESBank.ACCESSMODE_1T:
@@ -90,6 +101,21 @@ function AdjOffsetToNewMode(nmode, omode, ooff){
           return ooff * 128;
         case NESBank.ACCESSMODE_1K:
           return ooff * 64;
+        case NESBank.ACCESSMODE_2T:
+          return (Math.floor(ooff / 16)*32) + (ooff % 16);
+      }
+      break;
+    case NESBank.ACCESSMODE_2T:
+      switch(omode){
+        case NESBank.ACCESSMODE_4K:
+          return ooff * 128;
+        case NESBank.ACCESSMODE_2K:
+          return ooff * 64;
+        case NESBank.ACCESSMODE_1K:
+          return ooff * 32;
+        case NESBank.ACCESSMODE_1T:
+          let _off = (ooff >= 128) ? ooff - 128 : ooff;
+          return ((ooff >= 128) ? 256 : 0) + ((Math.floor(_off / 16)*32) + (_off % 16));
       }
       break;
   }
@@ -115,6 +141,11 @@ export default class NESBank extends ISurface{
     var handle_datachanged = Utils.debounce((function(side, idx){
       var sendEmit = false;
       switch(this.__AccessMode){
+        case NESBank.ACCESSMODE_2T:
+          if (side === Math.floor(this.__AccessOffset / 128)){
+            if (idx === this.__AccessOffset)
+              sendEmit = true;
+          }
         case NESBank.ACCESSMODE_1T:
           if (side === Math.floor(this.__AccessOffset / 256)){
             if (idx === this.__AccessOffset)
@@ -176,8 +207,11 @@ export default class NESBank extends ISurface{
       case NESBank.ACCESSMODE_1T:
         this.__AccessMode = NESBank.ACCESSMODE_1T;
         break;
+      case NESBank.ACCESSMODE_2T:
+        this.__AccessMode = NESBank.ACCESSMODE_2T;
+        break;
       default:
-        throw new ValueError("Unknown Access Mode.");
+        throw new Error("Unknown Access Mode.");
     }
 
     this.__AccessOffset = AdjOffsetToNewMode(m, oam, this.__AccessOffset);
@@ -209,6 +243,11 @@ export default class NESBank extends ISurface{
       case NESBank.ACCESSMODE_1T:
         if (o < 0 || o >= 512)
           throw new RangeError("Access Offset is out of bounds based on current Access Mode.");
+        break;
+      case NESBank.ACCESSMODE_2T:
+        if (o < 0 || o >= 256)
+          throw new RangeError("Access Offset is out of bounds based on current Access Mode.");
+        break;
     }
 
     this.__AccessOffset = o;
@@ -226,6 +265,8 @@ export default class NESBank extends ISurface{
         return 8;
       case NESBank.ACCESSMODE_1T:
         return 512;
+      case NESBank.ACCESSMODE_2T:
+        return 256;
     }
     return 0;
   }
@@ -287,6 +328,15 @@ export default class NESBank extends ISurface{
         var list = (this.__AccessOffset < 256) ? this.__LP : this.__RP;
         var idx = this.__AccessOffset % 256;
         buff = list[idx].chr;
+        break;
+      case NESBank.ACCESSMODE_2T:
+        var list = (this.__AccessOffset < 128) ? this.__LP : this.__RP;
+        var off = this.__AccessOffset % 128;
+        var idx = ((Math.floor(off / 16)*32) + (off % 16));
+        buff = new Uint8Array(32);
+        buff.set(list[idx].chr, 0);
+        buff.set(list[idx+16].chr, 16);
+        break;
     } 
     return buff;
   }
@@ -330,7 +380,7 @@ export default class NESBank extends ISurface{
   get width(){
     if (this.__AccessMode == NESBank.ACCESSMODE_8K)
       return 256;
-    if (this.__AccessMode == NESBank.ACCESSMODE_1T)
+    if (this.__AccessMode == NESBank.ACCESSMODE_1T || this.__AccessMode == NESBank.ACCESSMODE_2T)
       return 8;
     return 128;
   }
@@ -342,6 +392,8 @@ export default class NESBank extends ISurface{
         return 32;
       case NESBank.ACCESSMODE_1T:
         return 8;
+      case NESBank.ACCESSMODE_2T:
+        return 16;
     }
     return 128;
   }
@@ -539,6 +591,17 @@ export default class NESBank extends ISurface{
           idx += 16;
         }
         break;
+      case 32:
+        if (offset < 0)
+          offset = AdjOffsetToNewMode(NESBank.ACCESSMODE_2T, this.__AccessMode, this.__AccessOffset);
+        if (offset >= 256)
+          throw new RangeError("Offset mismatch based on Buffer length.");
+        var list = (offset < 128) ? this.__LP : this.__RP;
+        var off = offset % 128;
+        var idx = ((Math.floor(off / 32)*16) + (off % 16));
+        list[idx].chr = buff.slice(0, 16);
+        list[idx+16].char = buff.slice(16, 32);
+        break;
       case 16:
         if (offset < 0)
           offset = AdjOffsetToNewMode(NESBank.ACCESSMODE_1T, this.__AccessMode, this.__AccessOffset);
@@ -707,4 +770,6 @@ NESBank.ACCESSMODE_8K = 0;
 NESBank.ACCESSMODE_1K = 1;
 NESBank.ACCESSMODE_2K = 2;
 NESBank.ACCESSMODE_4K = 3;
-NESBank.ACCESSMODE_1T = 4;
+NESBank.ACCESSMODE_1T = 4; // 8x8 Tile size
+NESBank.ACCESSMODE_2T = 5; // 8x16 Tile size
+
