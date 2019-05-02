@@ -102,7 +102,8 @@ function AdjOffsetToNewMode(nmode, omode, ooff){
         case NESBank.ACCESSMODE_1K:
           return ooff * 64;
         case NESBank.ACCESSMODE_2T:
-          return (Math.floor(ooff / 16)*32) + (ooff % 16);
+          let _off = (ooff >= 128) ? ooff - 128 : ooff;
+          return ((ooff >= 128) ? 256 : 0) + ((Math.floor(_off / 16)*32) + (_off % 16));
       }
       break;
     case NESBank.ACCESSMODE_2T:
@@ -114,8 +115,8 @@ function AdjOffsetToNewMode(nmode, omode, ooff){
         case NESBank.ACCESSMODE_1K:
           return ooff * 32;
         case NESBank.ACCESSMODE_1T:
-          let _off = (ooff >= 128) ? ooff - 128 : ooff;
-          return ((ooff >= 128) ? 256 : 0) + ((Math.floor(_off / 16)*32) + (_off % 16));
+          let _off = (ooff >= 256) ? ooff - 256 : ooff;
+          return ((ooff >= 256) ? 128 : 0) + ((Math.floor(_off / 32)*16) + (_off % 16));
       }
       break;
   }
