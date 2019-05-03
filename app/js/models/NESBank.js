@@ -763,6 +763,59 @@ export default class NESBank extends ISurface{
     this.__redos = [];
     return this;
   }
+
+  removeDuplicates(sameOrientation){
+    sameOrientation = (sameOrientation === true);
+    var remdup = (list, idxoff) => {
+      for (let i=1; i < list.length; i++){
+        for (let j=0; j < i; j++){
+          var res = list[i].isEq(list[j], sameOrientation);
+          if (res >= 0){
+            list[i].clear();
+            this.emit("tile_drop", {
+              oIdx: idxoff + i,
+              nIdx: idxoff + j,
+              flag: res
+            });
+          }
+        }
+      }
+    };
+
+    this.clearUndos();
+    this.clearRedos();
+    remdup(this.__LP, 0);
+    remdup(this.__RP, 256);
+    return this;
+  }
+
+  compact(ignoreTileZero){
+    ignoreTileZero = (ignoreTileZero === true);
+    var comp = (list, idxoff, it0) => {
+      var etile = (it0) ? 1 : 0;
+      while (etile < list.length && !list[etile].isEmpty()){
+        etile++;
+      }
+      var ctile = etile + 1;
+      for (ctile; ctile < list.length; ctile++){
+        if (!list[ctile].isEmpty()){
+          list[etile].copy(list[ctile]);
+          list[ctile].clear();
+          this.emit("tile_move", {
+            oIdx: idxoff + ctile,
+            nIdx: idxoff + etile
+          });
+          etile++;
+        }
+      }
+    };
+
+    this.clearUndos();
+    this.clearRedos();
+    comp(this.__LP, 0, false);
+    comp(this.__RP, 256, ignoreTileZero);
+    return this;
+  }
 }
 
 
