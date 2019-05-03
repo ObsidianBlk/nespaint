@@ -57,6 +57,13 @@ function HANDLE_SurfChange(surf){
 }
 
 
+function HANDLE_RemoveDuplicates(){
+  if (SURF !== null){
+    SURF.removeDuplicates().compact();
+  }
+}
+
+
 function HANDLE_ModeChange(){
   if (ELCtrl !== null && SURF !== null){
     var val = this.options[this.selectedIndex].value; 
@@ -97,6 +104,7 @@ function HANDLE_OffsetChange(){
 class CTRLBankTools{
   constructor(){
     GlobalEvents.listen("change_surface", HANDLE_SurfChange);
+    GlobalEvents.listen("bank_remove_duplicates", HANDLE_RemoveDuplicates);
   }
 
   close(){
