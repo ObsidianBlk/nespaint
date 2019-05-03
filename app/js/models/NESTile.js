@@ -196,27 +196,44 @@ export default class NESTile extends EventCaller{
     return this;
   }
 
-  isEq(tile){
+  clear(){
+    this.__data = new Uint8Array(16);
+    this.emit("data_changed");
+    return this;
+  }
+
+  isEmpty(){
+    for (let i=0; i < this.__data.length; i++){
+      if (this.__data[i] !== 0)
+        return false;
+    }
+    return true;
+  }
+
+  isEq(tile, sameOrientation){
     if (!(tile instanceof NESTile)){
       throw new TypeError("Expected NESTile instance.");
     }
+    sameOrientation = (sameOrientation === true);
     var b64 = this.base64;
     if (tile.base64 === b64){
       return 0;
     }
-    var tc = tile.clone().flip(1); // Flip horizontal.
-    if (tc.base64 === b64){
-      return 1;
-    }
+    if (!sameOrientation){
+      var tc = tile.clone().flip(1); // Flip horizontal.
+      if (tc.base64 === b64){
+        return 1;
+      }
 
-    tc.flip(3); // Flip horizontal AND verticle. Net effect is the same as tile.clone().flip(2) ... Flip Verticle
-    if (tc.base64 === b64){
-      return 2;
-    }
+      tc.flip(3); // Flip horizontal AND verticle. Net effect is the same as tile.clone().flip(2) ... Flip Verticle
+      if (tc.base64 === b64){
+        return 2;
+      }
 
-    tc.flip(1); // Flip horizontal again. Net effect is the same as tile.clone().flip(3) ... flip H & V
-    if (tc.base64 === b64){
-      return 3;
+      tc.flip(1); // Flip horizontal again. Net effect is the same as tile.clone().flip(3) ... flip H & V
+      if (tc.base64 === b64){
+        return 3;
+      }
     }
     return -1;
   }
