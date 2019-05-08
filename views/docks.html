@@ -8,12 +8,12 @@
   <div class="tab-content" fortabs="<%= tabsetname %>" tabid="<%= item.id %>">
     <div class="simple-padding">
       <% if (item.hasOwnProperty("addevent")){ %>
-      <button class="pure-button" emit="modal-open" emit-args='{"cls":"<%= item.addevent %>"}'>
+      <button class="pure-button" <% if (item.hasOwnProperty("addbtntt")){ %>title="<%= item.addbtntt %>"<% } %> emit="modal-open" emit-args='{"cls":"<%= item.addevent %>"}'>
         <i class="fa fa-plus-circle"></i>
       </button>
       <% } %>
       <% if (item.hasOwnProperty("remevent")){ %>
-      <button class="pure-button" emit="<%= item.remevent %>">
+      <button class="pure-button" <% if (item.hasOwnProperty("rembtntt")){ %>title="<%= item.rembtntt %>"<% } %> emit="<%= item.remevent %>">
         <i class="fa fa-trash-alt"></i>
       </button>
       <% } %>
