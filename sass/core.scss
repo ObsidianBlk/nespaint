@@ -5,14 +5,24 @@ body{
   overflow: hidden;
 }
 
-.simple-padding{
-  padding-top: 4px;
+.simple-padding-left, .simple-padding-h, .simple-padding{
   padding-left: 8px;
+}
+
+.simple-padding-right, .simple-padding-h, .simple-padding{
   padding-right: 8px;
+}
+
+.simple-padding-top, .simple-padding-v, .simple-padding{
+  padding-top: 4px;
 }
 
 .text-align-right{
   text-align: right;
+}
+
+.text-align-center{
+  text-align: center;
 }
 
 .full-height{

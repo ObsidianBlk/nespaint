@@ -1,19 +1,26 @@
-<div class="painter-bank-controls hidden">
-  <button class="pure-button" emit="bank_remove_duplicates"><i class="fa fa-eraser"></i></button>
-  <label for="mode-select">
-    Bank Size:
-    <select id="mode-select" class="painter-bank-mode">
-      <option value="8K">8K</option>
-      <option value="4K">4K</option>
-      <option value="2K">2K</option>
-      <option value="1K">1K</option>
-      <option value="2T">Tile (8x16)</option>
-      <option value="1T">Tile (8x8)</option>
-    </select>
-  </label>
+<div class="painter-bank-controls hidden"> 
+  <form class="pure-form">
+    <legend>Bank Tools</legend>
+    <button class="pure-button" title="Remove Duplicates/Compress" emit="bank_remove_duplicates"><i class="fa fa-eraser"></i></button>
+    <div class="pure-control-group simple-padding-top">
+      <label for="mode-select">
+        Bank Size:
+        <select id="mode-select" class="painter-bank-mode">
+          <option value="8K">8K</option>
+          <option value="4K">4K</option>
+          <option value="2K">2K</option>
+          <option value="1K">1K</option>
+          <option value="2T">Tile (8x16)</option>
+          <option value="1T">Tile (8x8)</option>
+        </select>
+      </label>
+    </div>
 
-  <label for="offset-select" class="painter-bank-offset hidden">
-    Offset:
-    <input id="offset-select" class="input-u-1-6" type="number" min="0" max="7" step="1" value="0" /> 
-  </label>
+    <div class="pure-control-group simple-padding-top painter-bank-offset hidden">
+      <label for="offset-select">
+        Offset:
+      </label>
+      <input id="offset-select" class="pure-input-1-2" type="number" min="0" max="7" step="1" value="0" />
+    </div>
+  </form>
 </div>
