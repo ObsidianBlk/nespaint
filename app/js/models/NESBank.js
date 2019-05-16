@@ -349,12 +349,13 @@ export default class NESBank extends ISurface{
   }
 
   get base64(){
-    var b = "";
-    var data = this.chr;
-    for (var i = 0; i < data.length; i++) {
-      b += String.fromCharCode(data[i]);
-    }
-    return window.btoa(b);
+    return this.getBase64(this.__AccessMode, this.__AccessOffset);
+    //var b = "";
+    //var data = this.chr;
+    //for (var i = 0; i < data.length; i++) {
+    //  b += String.fromCharCode(data[i]);
+    //}
+    //return window.btoa(b);
   }
 
   set base64(s){
@@ -513,6 +514,15 @@ export default class NESBank extends ISurface{
     return (new NESBank()).copy(this);
   }
 
+
+  getBase64(mode, offset){
+    var b = "";
+    var data = this.getCHR(mode, offset);
+    for (var i = 0; i < data.length; i++) {
+      b += String.fromCharCode(data[i]);
+    }
+    return window.btoa(b);
+  }
 
   getCHR(mode, offset){
     this.__emitsEnabled = false;
@@ -815,6 +825,14 @@ export default class NESBank extends ISurface{
     comp(this.__LP, 0, false);
     comp(this.__RP, 256, ignoreTileZero);
     return this;
+  }
+
+  eq(b){
+    if (b instanceof NESBank){
+      if (this.getBase64(NESBank.ACCESSMODE_8K, 0) === b.getBase64(NESBank.ACCESSMODE_8K, 0))
+        return true;
+    }
+    return false;
   }
 }
 
