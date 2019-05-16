@@ -235,6 +235,11 @@ export default class NESNameTable extends ISurface{
   }
 
 
+  eq(nt){
+    return (nt instanceof NESNameTable) ? (this.base64 === nt.base64) : false;
+  }
+
+
   /**
    *  Generates a small 6502 assembly block string containing the current nametable data.
    *  @param {string} [ntname="NameTableData"] The label name under which to store the data.
