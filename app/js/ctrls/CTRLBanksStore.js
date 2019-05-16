@@ -194,6 +194,10 @@ class CTRLBanksStore{
     return CurrentBank;
   }
 
+  get keys(){
+    return Object.keys(Banks);
+  }
+
   initialize(){
     if (this.length <= 0){
       this.createBank("Bank");
@@ -265,6 +269,22 @@ class CTRLBanksStore{
     }
     return this;
   } 
+
+  getBankName(b){
+    if (!(b instanceof NESBank))
+      throw new TypeError("Expected NESBank object.");
+    var keys = Object.keys(Banks);
+    for (let i=0; i < keys.length; i++){
+      if (Banks[keys[i]].bank.eq(b)){
+        return keys[i];
+      }
+    }
+    return null;
+  }
+
+  getBank(name){
+    return (name in Banks) ? Banks[name].bank : null;
+  }
 
   clear(){
     Object.keys(Banks).forEach((item) => {
