@@ -5,7 +5,7 @@ import NESBank from "/app/js/models/NESBank.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 import CTRLPalettesStore from "/app/js/ctrls/CTRLPalettesStore.js";
 import CTRLBanksStore from "/app/js/ctrls/CTRLBanksStore.js";
-
+import CTRLNameTablesStore from "/app/js/ctrls/CTRLNameTablesStore.js";
 
 
 const SUPPORTED_PROJECT_VERSIONS=[
@@ -27,7 +27,8 @@ JSONSchema.add({
       "pattern":"^[0-9]{1,}\.[0-9]{1,}$"
     },
     "paletteStore":{"$ref":"http://nespaint/PalettesStoreSchema.json"},
-    "bankStore":{"$ref":"http://nespaint/BanksStoreSchema.json"}
+    "bankStore":{"$ref":"http://nespaint/BanksStoreSchema.json"},
+    "nametableStore":{"$ref":"http://nespaint/NametableStoreSchema.json"}
   },
   "required":["id","version","paletteStore","bankStore"]
 });
@@ -43,6 +44,8 @@ function JSONFromProject(){
     paletteStore:CTRLPalettesStore.obj,
     bankStore:CTRLBanksStore.obj
   };
+  if (CTRLNameTablesStore.keys.length > 0)
+    proj.nametableStore = CTRLNameTablesStore.obj;
   return JSON.stringify(proj);
 }
 
@@ -155,6 +158,8 @@ function HANDLE_LoadProject(e){
         // TODO: Validate 'id' and 'version' properties.
         CTRLPalettesStore.obj = o.paletteStore;
         CTRLBanksStore.obj = o.bankStore;
+        if ("nametableStore" in o)
+          CTRLNametablesStore.obj = o.nametableStore;
       }
       if (this.parentNode.nodeName.toLowerCase() === "form"){
         this.parentNode.reset();
@@ -206,6 +211,7 @@ class CTRLIO{
 
     CTRLPalettesStore.initialize();
     CTRLBanksStore.initialize();
+    CTRLNameTablesStore.initialize();
   }
 }
 
