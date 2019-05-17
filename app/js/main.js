@@ -7,6 +7,7 @@ import Tabs from "/app/js/ui/Tabs.js";
 import CTRLPalettes from "/app/js/ctrls/CTRLPalettes.js";
 import CTRLPainter from "/app/js/ctrls/CTRLPainter.js";
 import CTRLBankTools from "/app/js/ctrls/CTRLBankTools.js";
+import CTRLNametableTools from "/app/js/ctrls/CTRLNametableTools.js";
 import CTRLIO from "/app/js/ctrls/CTRLIO.js";
 
 import NESPalette from "/app/js/models/NESPalette.js";
@@ -33,6 +34,7 @@ function initialize(DOC){
   // Controllers explicitly interface model data to view.
   CTRLPainter.initialize();
   CTRLBankTools.initialize();
+  CTRLNametableTools.initialize();
 
   CTRLIO.initialize();
 
