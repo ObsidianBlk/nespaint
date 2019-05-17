@@ -208,7 +208,7 @@ export default class NESNameTable extends ISurface{
     // To paint the actual tile index, however, we'll use this emit that will be watched by the CTRLNameTable class
     // and call this class's setTileIndex() method for tile painting.
     // YAY to cheating!!
-    this.emit("paint_nametable");
+    this.emit("paint_nametable", x, y);
 
     // Then business as usual!
     var bp = this._GetAttribBlockPalette(x,y);
