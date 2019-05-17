@@ -2,6 +2,33 @@ import ISurface from "/app/js/ifaces/ISurface.js";
 import NESPalette from "/app/js/models/NESPalette.js";
 
 
+
+class NESTileSurface extends ISurface{
+  constructor(tile, palette, palindex){
+    super();
+    this.__tile = tile;
+    this.__palette = (palette instanceof NESPalette) ? palette : null;
+    this.__pi = (palindex >= 0 && palindex < 8) ? palindex : -1;
+  }
+
+  get width(){return 8;}
+  get height(){return 8;}
+  get length(){return 64;}
+
+  getColor(x, y){
+    var ci = this.__tile.getPixelIndex(x, y);
+    if (this.__palette !== null){
+      return this.__palette.get_palette_color(this.__pi, ci);
+    }
+    return NESPalette.Default(ci);
+  }
+
+  getColorIndex(x, y){
+    return {pi:this.__pi, ci:this.__tile.getPixelIndex(x,y)};
+  }
+}
+
+
 function clear(ctx, color, cw, ch){
   if (typeof(cw) !== 'number'){
     cw = (Math.floor(ctx.canvas.clientWidth) > 0) ? 
@@ -131,5 +158,6 @@ function renderToFit(surf, ctx, palcolored){
 export default {
   clear: clear,
   render: render,
-  renderToFit: renderToFit
+  renderToFit: renderToFit,
+  NESTileSurface: NESTileSurface
 };
