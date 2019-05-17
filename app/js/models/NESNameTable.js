@@ -71,7 +71,7 @@ export default class NESNameTable extends ISurface{
 
   get bank(){return this.__bank;}
   set bank(b){
-    if (b !== null and !(b instanceof NESBank))
+    if (b !== null && !(b instanceof NESBank))
       throw new TypeError("Expected a NESBank object.");
     this.__bank = b;
     this.emit("data_changed");

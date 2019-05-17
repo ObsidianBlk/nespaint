@@ -45,7 +45,7 @@ JSONSchema.add({
 });
 
 
-function HANDLE_NTClick(e){
+function HANDLE_NametableClick(e){
   var name = this.getAttribute("ntname");
   if (name !== CurrentNT){
     if (CurrentNT !== "")
@@ -148,7 +148,7 @@ class CTRLNametablesStore{
     var data = [];
     Object.keys(Nametables).forEach((key) => {
       if (Nametables.hasOwnProperty(key)){
-        jdata = {
+        var jdata = {
           name: key,
           data: Nametables[key].nametable.base64
         };
@@ -209,14 +209,14 @@ class CTRLNametablesStore{
   }
 
   initialize(){
-    if (this.length <= 0){
-      this.createNametable("Nametable");
-    }
+    //if (this.length <= 0){
+    //  this.createNametable("Nametable");
+    //}
     return this;
   }
 
 
-  createBank(name, bbase64){
+  createNametable(name, bbase64){
     if (!(name in Nametables)){
       var nametable = new NESNameTable();
       if (typeof(bbase64) === "string"){
@@ -243,7 +243,7 @@ class CTRLNametablesStore{
   }
 
 
-  removeBank(name){
+  removeNametable(name){
     if (name in Nametables){
       if (name === CurrentNT){
         var keys = Object.keys(Nametables);
@@ -264,7 +264,7 @@ class CTRLNametablesStore{
     return this;
   }
 
-  renameBank(name, newname){
+  renameNametable(name, newname){
     if ((name in Nametables) && !(newname in Nametables)){
       Nametables[newname] = Nametables[name];
       Nametables[newname].elname.value = newname;
@@ -273,7 +273,7 @@ class CTRLNametablesStore{
     return this;
   }
 
-  activateBank(name){
+  activateNametable(name){
     if (CurrentNT !== name && (name in Nametables)){
       Nametables[name].el.click();
     }
