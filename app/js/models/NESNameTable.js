@@ -293,9 +293,9 @@ export default class NESNameTable extends ISurface{
     var blockY = Math.floor(y / 32);
     bp.bindex = (blockY * 8) + blockX;
 
-    var palX = Math.floor(x % 16);
-    var palY = Math.floor(y % 16);
-    bp.pindex = ((palX < 8) ? 0 : 1) + ((palY >= 8) ? 2 : 0);
+    var palX = Math.floor(x % 32);
+    var palY = Math.floor(y % 32);
+    bp.pindex = ((palX < 16) ? 0 : 1) + ((palY >= 16) ? 2 : 0);
 
     return bp;
   }
