@@ -186,8 +186,8 @@ export default class NESNameTable extends ISurface{
       var _x = Math.floor(x % 8);
       var _y = Math.floor(y % 8);
 
-      var tileX = Math.floor(x / 32);
-      var tileY = Math.floor(y / 32);
+      var tileX = Math.floor(x / 8);
+      var tileY = Math.floor(y / 8);
 
       ci = this.__bank.rp[this.__tiles[(tileY * 32) + tileX]].getPixelIndex(_x, _y);
       pi = this._PaletteFromCoords(x, y);
