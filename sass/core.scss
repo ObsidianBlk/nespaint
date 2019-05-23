@@ -33,6 +33,10 @@ body{
   display: flex;
 }
 
+canvas.canvas-item-selected{
+  border: 3px solid #FF0000;
+}
+
 // Used to hide the ENTIRE page until the system has finished readying
 // everything.
 .cover {
