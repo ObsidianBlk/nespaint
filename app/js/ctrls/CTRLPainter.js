@@ -379,29 +379,12 @@ class CTRLPainter {
     this.scale = Number(s);
   }
 
-  render(){
-    if (context === null){return this;}
-    if (this.__surface === null){
-      Renderer.clear(context, NESPalette.Default[4]);
-      return this;      
-    }
-
-    // Drawing the surface to the canvas.
-    Renderer.render(
-      this.__surface,
-      0, 0,
-      this.__surface.width, this.__surface.height,
-      this.__scale,
-      context,
-      this.__offset[0], this.__offset[1],
-      !this.__onePaletteMode
-    );
-
-
-    context.save();
+  renderCursor(){
+    if (context === null || this.__surface === null){return this;} 
 
     // Draw the mouse position... if mouse is currently in bounds.
     if (input.isMouseInBounds()){
+      context.save();
       context.fillStyle = "#AA9900";
       var x = Math.floor((this.__brushPos[0] - this.__offset[0]) * (1.0/this.__scale));
       var y = Math.floor((this.__brushPos[1] - this.__offset[1]) * (1.0/this.__scale));
@@ -416,7 +399,15 @@ class CTRLPainter {
         context.fill();
         context.closePath();
       }
+      context.restore();
     }
+ 
+    return this;
+  }
+
+  renderGrid(){
+    if (context === null || this.__surface === null){return this;}
+    context.save();
 
     // Draw grid.
     if (this.__gridEnabled && this.__scale > 0.5){
@@ -451,6 +442,27 @@ class CTRLPainter {
     context.restore();
 
     return this;
+  }
+
+  render(){
+    if (context === null){return this;}
+    if (this.__surface === null){
+      Renderer.clear(context, NESPalette.Default[4]);
+      return this;      
+    }
+
+    // Drawing the surface to the canvas.
+    Renderer.render(
+      this.__surface,
+      0, 0,
+      this.__surface.width, this.__surface.height,
+      this.__scale,
+      context,
+      this.__offset[0], this.__offset[1],
+      !this.__onePaletteMode
+    );
+ 
+    return this.renderCursor().renderGrid();
   }
 }
 
