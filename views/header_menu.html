@@ -26,24 +26,19 @@
 
 
     <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-      <a href="#" id="exportchr" class="pure-menu-link">Export Bank</a>
+      <a href="#" id="exportchr" class="pure-menu-link">Export</a>
       <ul class="pure-menu-children">
         <li class="pure-menu-item" emit="modal-open" emit-args='{"cls":".export-chr"}'>
-          <a href="#" class="pure-menu-link">To CHR</a>
+          <a href="#" class="pure-menu-link">Bank to CHR</a>
         </li>
-      </ul>
-    </li>
-
-
-    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-      <a href="#" id="exportpal" class="pure-menu-link">Export Palette</a>
-      <ul class="pure-menu-children">
         <li class="pure-menu-item" emit="export-pal-asm">
-          <a href="#" class="pure-menu-link">To Assembly</a>
+          <a href="#" class="pure-menu-link">Palette to ASM</a>
+        </li>
+        <li class="pure-menu-item" emit="modal-open" emit-args='{"cls":".export-nametable"}'>
+          <a href="#" class="pure-menu-link">Nametable to ASM</a>
         </li>
       </ul>
     </li>
-
 
     <li class="pure-menu-item" emit="about">
       <a href="#" class="pure-menu-link">
