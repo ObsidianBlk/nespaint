@@ -267,18 +267,34 @@ class CTRLPainter {
     GlobalEvents.listen("painter-fit-to-canvas", handle_fittocanvas);
 
     var handle_togglegrid = (function(target, args){
+      var elgridops = document.querySelector(".painter-grid-options");
       if (args.show){
         target.classList.add("pure-button-active");
         target.setAttribute("emit-args", JSON.stringify({show:false}));
+        if (elgridops)
+          elgridops.classList.remove("hidden");
         this.__gridEnabled = true;
       } else {
         target.classList.remove("pure-button-active");
         target.setAttribute("emit-args", JSON.stringify({show:true}));
+        if (elgridops)
+          elgridops.classList.add("hidden");
         this.__gridEnabled = false;
       }
       RenderD();
     }).bind(this);
     GlobalEvents.listen("painter-togglegrid", handle_togglegrid);
+
+    var elgridops = document.querySelector(".painter-grid-options");
+    if (elgridops){
+      let self = this;
+      elgridops.addEventListener("change", function(e){
+        self.__gridSize = parseInt(this.value);
+        if (self.__gridSize < 1 || self.__gridSize > 6)
+          self.__gridSize = 1;
+        RenderD();
+      });
+    }
 
 
     var handle_colormode = (function(target, args){
@@ -406,40 +422,58 @@ class CTRLPainter {
   }
 
   renderGrid(){
-    if (context === null || this.__surface === null){return this;}
-    context.save();
-
-    // Draw grid.
-    if (this.__gridEnabled && this.__scale > 0.5){
-      context.strokeStyle = "#00FF00";
-
-      var w = this.__surface.width * this.__scale;
-      var h = this.__surface.height * this.__scale;
-
-      var length = Math.max(this.__surface.width, this.__surface.height);
-      for (var i=0; i < length; i += 8){
-        var x = (i*this.__scale) + this.__offset[0];
-        var y = (i*this.__scale) + this.__offset[1];
-
-        if (i < this.__surface.width){
-          context.beginPath();
-          context.moveTo(x, this.__offset[1]);
-          context.lineTo(x, this.__offset[1] + h);
-          context.stroke();
-          context.closePath();
-        }
-
-        if (i < this.__surface.height){
-          context.beginPath();
-          context.moveTo(this.__offset[0], y);
-          context.lineTo(this.__offset[0] + w, y);
-          context.stroke();
-          context.closePath();
-        }
-      }
+    if (context === null || this.__surface === null || this.__gridEnabled === false){return this;}
+   
+    switch (this.__gridSize){
+      case 1: // 8x8
+        Renderer.renderGridNxN(
+          context, 
+          8, 
+          this.__surface.width, this.__surface.height, 
+          this.__scale, this.__offset, 
+          "#00FF00"
+        ); break;
+      case 2: // 16x8
+        Renderer.renderGridMxN(
+          context, 
+          16, 8, 
+          this.__surface.width, this.__surface.height, 
+          this.__scale, this.__offset, 
+          "#00FF00"
+        ); break;
+      case 3: // 16x16
+        Renderer.renderGridNxN(
+          context, 
+          16, 
+          this.__surface.width, this.__surface.height, 
+          this.__scale, this.__offset, 
+          "#00FF00"
+        ); break;
+      case 4:
+        Renderer.renderGridNxN(
+          context, 
+          32,
+          this.__surface.width, this.__surface.height, 
+          this.__scale, this.__offset, 
+          "#00FF00"
+        ); break;
+      case 5: // 16x16 Major | 8x8 Minor
+        Renderer.renderGridMajorMinor(
+          context,
+          16, 8,
+          this.__surface.width, this.__surface.height,
+          this.__scale, this.__offset,
+          "#00FF00", "#008800"
+        ); break;
+      case 6: // 32x32 Major | 16x16 Minor
+        Renderer.renderGridMajorMinor(
+          context,
+          32, 16,
+          this.__surface.width, this.__surface.height,
+          this.__scale, this.__offset,
+          "#00FF00", "#008800"
+        ); break;
     }
-
-    context.restore();
 
     return this;
   }

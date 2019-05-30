@@ -10,12 +10,22 @@
         <i class="fa fa-expand-arrows-alt"></i>
       </button>
 
-      <button emit="painter-togglegrid" title="Toggle Grid" emit-args='{"show":true}' class="pure-button">
-        <i class="fa fa-th"></i>
-      </button>
       <button emit="painter-colormode" title="Toggle Color Mode" emit-args='{"onePaletteMode":false}' class="pure-button">
         <i class="fa fa-palette"></i>
       </button>
+      
+      <button emit="painter-togglegrid" title="Toggle Grid" emit-args='{"show":true}' class="pure-button">
+        <i class="fa fa-th"></i>
+      </button>
+      
+      <select class="painter-grid-options hidden">
+        <option value="1">8x8</option>
+        <option value="2">16x8</option>
+        <option value="3">16x16</option>
+        <option value="4">32x32</option>
+        <option value="5">16mj 8mn</option>
+        <option value="6">32mj 16mn</option>
+      </select>
     </form>
   </div>
 </div>

@@ -154,10 +154,93 @@ function renderToFit(surf, ctx, palcolored){
 }
 
 
+function renderGridNxN(ctx, gsize, sw, sh, scale, offset, color){
+  // Draw grid.
+  if (scale > 0.5){
+    ctx.save();
+    ctx.strokeStyle = color;
+
+    var w = sw * scale;
+    var h = sh * scale;
+
+    var length = Math.max(sw, sh);
+    for (var i=0; i < length; i += gsize){
+      var x = (i*scale) + offset[0];
+      var y = (i*scale) + offset[1];
+
+      if (i < sw){
+        ctx.beginPath();
+        ctx.moveTo(x, offset[1]);
+        ctx.lineTo(x, offset[1] + h);
+        ctx.stroke();
+        ctx.closePath();
+      }
+
+      if (i < sh){
+        ctx.beginPath();
+        ctx.moveTo(offset[0], y);
+        ctx.lineTo(offset[0] + w, y);
+        ctx.stroke();
+        ctx.closePath();
+      }
+    }
+    ctx.restore();
+  } 
+}
+
+
+function renderGridMxN(ctx, gw, gh, sw, sh, scale, offset, color){
+  if (scale > 0.5){
+    ctx.save();
+    ctx.strokeStyle = color;
+
+    var w = sw * scale;
+    var h = sh * scale;
+
+    var length = Math.max(sw, sh);
+    for (let i=0; i < sw; i += gw){
+      var x = (i*scale) + offset[0];
+      //var y = (i*scale) + offset[1];
+
+      if (i < sw){
+        ctx.beginPath();
+        ctx.moveTo(x, offset[1]);
+        ctx.lineTo(x, offset[1] + h);
+        ctx.stroke();
+        ctx.closePath();
+      }
+    }
+
+    for (let i=0; i < sh; i += gh){
+      var y = (i * scale) + offset[1];
+
+      if (i < sh){
+        ctx.beginPath();
+        ctx.moveTo(offset[0], y);
+        ctx.lineTo(offset[0] + w, y);
+        ctx.stroke();
+        ctx.closePath();
+      }
+    }
+    ctx.restore();
+  }
+}
+
+
+function renderGridMajorMinor(ctx, mjsize, mnsize, sw, sh, scale, offset, mjcolor, mncolor){
+  if (scale > 0.5){
+    renderGridNxN(ctx, mnsize, sw, sh, scale, offset, mncolor);
+    renderGridNxN(ctx, mjsize, sw, sh, scale, offset, mjcolor);
+  }
+}
+
 
 export default {
   clear: clear,
   render: render,
   renderToFit: renderToFit,
+  renderGridNxN: renderGridNxN,
+  renderGridMxN: renderGridMxN,
+  renderGridMajorMinor: renderGridMajorMinor,
   NESTileSurface: NESTileSurface
 };
