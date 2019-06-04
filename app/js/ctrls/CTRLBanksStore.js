@@ -152,7 +152,7 @@ class CTRLBanksStore{
     var data = [];
     Object.keys(Banks).forEach((key) => {
       if (Banks.hasOwnProperty(key)){
-        data.push({name:key, data:Banks[key].bank.base64});
+        data.push({name:key, data:Banks[key].bank.getBase64(NESBank.ACCESSMODE_8K, 0)});
       }
     });
     return data;
