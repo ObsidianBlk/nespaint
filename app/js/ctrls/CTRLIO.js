@@ -137,6 +137,32 @@ function HANDLE_ExportPalASM(e){
   }
 }
 
+function HANDLE_ExportNameTableASM(e){
+  var nt = CTRLNameTablesStore.currentNametable;
+  if (nt !== null){
+    var basename = CTRLNameTablesStore.currentNTName.replace(/[^a-z0-9\-_.]/gi, '_');
+    var mode = document.querySelector('input[name="exportnt-op"]:checked').value;
+
+    var asm = "";
+    switch (mode){
+      case "both":
+        asm = nt.to_asm(basename + "_NT", basename + "_AT");
+        break;
+      case "nametable":
+        asm = nt.nametable_asm(basename + "_NT");
+        break;
+      case "attribtable":
+        asm = nt.attribtable_asm(basename + "_AT");
+        break;
+    }
+
+    if (asm !== ""){
+      var file = new Blob([asm], {type: "text/plain"});
+      RequestDownload(basename + ".asm", file);
+    }
+  }
+}
+
 function HANDLE_LoadProjectRequest(){
   var input = document.querySelectorAll("input.project-loader");
   if (input.length > 0){
@@ -160,7 +186,7 @@ function HANDLE_LoadProject(e){
         CTRLPalettesStore.obj = o.paletteStore;
         CTRLBanksStore.obj = o.bankStore;
         if ("nametableStore" in o)
-          CTRLNametablesStore.obj = o.nametableStore;
+          CTRLNameTablesStore.obj = o.nametableStore;
       }
       if (this.parentNode.nodeName.toLowerCase() === "form"){
         this.parentNode.reset();
@@ -206,6 +232,7 @@ class CTRLIO{
     GlobalEvents.listen("save-project", HANDLE_SaveProject);
     GlobalEvents.listen("load-project", HANDLE_LoadProjectRequest);
     GlobalEvents.listen("export-pal-asm", HANDLE_ExportPalASM);
+    GlobalEvents.listen("export-nametable", HANDLE_ExportNameTableASM);
 
     var input = document.querySelectorAll("input.project-loader");
     if (input.length > 0){
