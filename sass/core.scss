@@ -33,6 +33,10 @@ body{
   display: flex;
 }
 
+.disable-links {
+  pointer-events: none;
+}
+
 canvas.canvas-item-selected{
   border: 3px solid #FF0000;
 }

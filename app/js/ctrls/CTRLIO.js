@@ -3,6 +3,7 @@ import Utils from "/app/js/common/Utils.js";
 import JSONSchema from "/app/js/common/JSONSchema.js";
 import NESBank from "/app/js/models/NESBank.js";
 import NESPalette from "/app/js/models/NESPalette.js";
+import NESNameTable from "/app/js/models/NESNameTable.js";
 import CTRLPalettesStore from "/app/js/ctrls/CTRLPalettesStore.js";
 import CTRLBanksStore from "/app/js/ctrls/CTRLBanksStore.js";
 import CTRLNameTablesStore from "/app/js/ctrls/CTRLNameTablesStore.js";
@@ -174,10 +175,28 @@ function HANDLE_LoadProject(e){
 }
 
 function HANDLE_SurfChange(surf){
+  var enableclass = "";
   if (surf instanceof NESBank){
     SURF = surf;
+    enableclass = "surf-bank";
   } else {
     SURF = null;
+    if (surf instanceof NESNameTable)
+      enableclass="surf-nametable";
+  }
+
+  var e = document.querySelectorAll(".surf-export");
+  for (let i=0; i < e.length; i++){
+    var ea = e[i].querySelector("a");
+    if (ea){
+      if (e[i].classList.contains(enableclass)){
+        e[i].classList.remove("disable-links");
+        ea.classList.remove("pure-menu-disabled");
+      } else {
+        e[i].classList.add("disable-links");
+        ea.classList.add("pure-menu-disabled");
+      }
+    }
   }
 }
 
