@@ -34,8 +34,7 @@ export default class NESTile extends EventCaller{
     this.__paletteIndex = 0;
     this.__data = new Uint8Array(16);
 
-    var self = this;
-    this.__pixels = new Proxy(this.__data, {
+    this.__pixels = new Proxy(this, {
       get: function(obj, prop){
         if (prop === "length")
           return 64;
@@ -45,8 +44,8 @@ export default class NESTile extends EventCaller{
           throw new RangeError("Index out of bounds.");
         var dindex = Math.floor(prop*0.125);
         var bitoffset = 7 - (prop%8);
-        var v = (obj[dindex] & (1 << bitoffset)) >> bitoffset;
-        v += 2*((obj[8+dindex] & (1 << bitoffset)) >> bitoffset);
+        var v = (obj.__data[dindex] & (1 << bitoffset)) >> bitoffset;
+        v += 2*((obj.__data[8+dindex] & (1 << bitoffset)) >> bitoffset);
         return v;
       },
 
@@ -64,17 +63,17 @@ export default class NESTile extends EventCaller{
         var dindex = Math.floor(prop*0.125);
         var bitoffset = (prop % 8);
         if (value == 1 || value == 3){
-          obj[dindex] |= BitMask(bitoffset);
+          obj.__data[dindex] |= BitMask(bitoffset);
         } else {
-          obj[dindex] &= BitMask(bitoffset, true);
+          obj.__data[dindex] &= BitMask(bitoffset, true);
         }
         if (value == 2 || value == 3){
-          obj[8+dindex] |= BitMask(bitoffset);
+          obj.__data[8+dindex] |= BitMask(bitoffset);
         } else {
-          obj[8+dindex] &= BitMask(bitoffset, true);
+          obj.__data[8+dindex] &= BitMask(bitoffset, true);
         }
         if (!BLOCK_CHANGE_EMIT)
-          self.emit("data_changed");
+          obj.emit("data_changed");
         return true;
       }
     });
