@@ -17,10 +17,10 @@ function CompileAttribs(attrib){
 
 function DecompileAttribs(v){
   return [
-    v & 0x00000011,
-    (v & 0x00001100) >> 2,
-    (v & 0x00110000) >> 4,
-    (v & 0x11000000) >> 6
+    v & 0b00000011,
+    (v & 0b00001100) >> 2,
+    (v & 0b00110000) >> 4,
+    (v & 0b11000000) >> 6
   ];
 }
 
