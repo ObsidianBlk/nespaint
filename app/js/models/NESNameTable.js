@@ -28,6 +28,7 @@ export default class NESNameTable extends ISurface{
   constructor(){
     super();
     this.__bank = null;
+    this.__bankrp = null;
     this.__palette = null;
     this.__tiles = [];
     this.__attribs = [];
@@ -74,6 +75,7 @@ export default class NESNameTable extends ISurface{
     if (b !== null && !(b instanceof NESBank))
       throw new TypeError("Expected a NESBank object.");
     this.__bank = b;
+    this.__bankrp = (b !== null) ? this.__bank.rp : null;
     this.emit("data_changed");
   }
 
@@ -189,7 +191,7 @@ export default class NESNameTable extends ISurface{
       var tileX = Math.floor(x / 8);
       var tileY = Math.floor(y / 8);
 
-      ci = this.__bank.rp[this.__tiles[(tileY * 32) + tileX]].getPixelIndex(_x, _y);
+      ci = this.__bankrp[this.__tiles[(tileY * 32) + tileX]].getPixelIndex(_x, _y);
       pi = this._PaletteFromCoords(x, y);
     }
     return {pi:pi, ci:ci};
