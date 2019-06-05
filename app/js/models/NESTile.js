@@ -33,13 +33,9 @@ export default class NESTile extends EventCaller{
     super();
     this.__paletteIndex = 0;
     this.__data = new Uint8Array(16);
-  }
 
-  get width(){return 8;}
-  get height(){return 8;}
-
-  get pixels(){
-    return new Proxy(this, {
+    var self = this;
+    this.__pixels = new Proxy(this.__data, {
       get: function(obj, prop){
         if (prop === "length")
           return 64;
@@ -49,8 +45,8 @@ export default class NESTile extends EventCaller{
           throw new RangeError("Index out of bounds.");
         var dindex = Math.floor(prop*0.125);
         var bitoffset = 7 - (prop%8);
-        var v = (obj.__data[dindex] & (1 << bitoffset)) >> bitoffset;
-        v += 2*((obj.__data[8+dindex] & (1 << bitoffset)) >> bitoffset);
+        var v = (obj[dindex] & (1 << bitoffset)) >> bitoffset;
+        v += 2*((obj[8+dindex] & (1 << bitoffset)) >> bitoffset);
         return v;
       },
 
@@ -68,20 +64,27 @@ export default class NESTile extends EventCaller{
         var dindex = Math.floor(prop*0.125);
         var bitoffset = (prop % 8);
         if (value == 1 || value == 3){
-          obj.__data[dindex] |= BitMask(bitoffset);
+          obj[dindex] |= BitMask(bitoffset);
         } else {
-          obj.__data[dindex] &= BitMask(bitoffset, true);
+          obj[dindex] &= BitMask(bitoffset, true);
         }
         if (value == 2 || value == 3){
-          obj.__data[8+dindex] |= BitMask(bitoffset);
+          obj[8+dindex] |= BitMask(bitoffset);
         } else {
-          obj.__data[8+dindex] &= BitMask(bitoffset, true);
+          obj[8+dindex] &= BitMask(bitoffset, true);
         }
         if (!BLOCK_CHANGE_EMIT)
-          obj.emit("data_changed");
+          self.emit("data_changed");
         return true;
       }
     });
+  }
+
+  get width(){return 8;}
+  get height(){return 8;}
+
+  get pixels(){
+    return this.__pixels;
   }
 
   get dataArray(){
@@ -149,7 +152,7 @@ export default class NESTile extends EventCaller{
     if (ci < 0 || ci >= 4){
       throw new ValueError("Color index out of bounds.");
     }
-    this.pixels[(y*8)+x] = ci;
+    this.__pixels[(y*8)+x] = ci;
     return this;
   }
 
@@ -157,7 +160,7 @@ export default class NESTile extends EventCaller{
     if (x < 0 || x >= 8 || y < 0 || y >= 8){
       throw new ValueError("Coordinates out of bounds.");
     }
-    return this.pixels[(8*y) + x];
+    return this.__pixels[(8*y) + x];
   }
 
   flip(flag){
