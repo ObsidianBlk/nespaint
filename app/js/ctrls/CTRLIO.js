@@ -13,6 +13,8 @@ const SUPPORTED_PROJECT_VERSIONS=[
   "0.1"
 ];
 
+const PROJECT_ID="NESPProj"
+
 const SCHEMA_ID = "http://nespaint/Project.json";
 JSONSchema.add({
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -40,7 +42,7 @@ var SURF = null;
 
 function JSONFromProject(){
   var proj = {
-    id:"NESPProj",
+    id:PROJECT_ID,
     version:SUPPORTED_PROJECT_VERSIONS[SUPPORTED_PROJECT_VERSIONS.length - 1],
     paletteStore:CTRLPalettesStore.obj,
     bankStore:CTRLBanksStore.obj
@@ -104,6 +106,53 @@ function HANDLE_SaveProject(e){
 }
 
 
+function HANDLE_LoadProjectRequest(){
+  var input = document.querySelectorAll("input.project-loader");
+  if (input.length > 0){
+    input[0].click();
+  }
+}
+
+function HANDLE_LoadProject(e){
+  if (this.files && this.files.length > 0){
+    var reader = new FileReader();
+    reader.onload = (function(e) {
+      var o = null;
+      var validator = JSONSchema.getValidator(SCHEMA_ID);
+      try {
+        o = JSON.parse(e.target.result);
+      } catch (e) {
+        console.log("Failed to parse JSON string. " + e.toString());
+      }
+      if (validator !== null && validator(o)){
+        if (o.id !== PROJECT_ID){
+          console.log("ERROR: Project ID is invalid. Canceling project load.");
+          return;
+        }
+        if (SUPPORTED_PROJECT_VERSIONS.indexOf(o.version) < 0){
+          console.log("ERROR: Project file version does not match any supported version numbers. Canceling project load.");
+          return;
+        }
+        // NOTE: For future... branch out to specific version loaders as needed.
+        // Since only one version is currently supported, however, just continue on, my friends!
+        CTRLPalettesStore.obj = o.paletteStore;
+        CTRLBanksStore.obj = o.bankStore;
+        if ("nametableStore" in o)
+          CTRLNameTablesStore.obj = o.nametableStore;
+      }
+      if (this.parentNode.nodeName.toLowerCase() === "form"){
+        this.parentNode.reset();
+      } else {
+        console.log("WARNING: Parent node is NOT a <form> element.");
+      }
+    }).bind(this);
+    reader.readAsText(this.files[0]);
+  } else {
+    console.log("Project file not found or no file selected.");
+  }
+}
+
+
 function HANDLE_ExportCHR(e){
   e.preventDefault();
   var bank = CTRLBanksStore.currentBank;
@@ -163,42 +212,6 @@ function HANDLE_ExportNameTableASM(e){
   }
 }
 
-function HANDLE_LoadProjectRequest(){
-  var input = document.querySelectorAll("input.project-loader");
-  if (input.length > 0){
-    input[0].click();
-  }
-}
-
-function HANDLE_LoadProject(e){
-  if (this.files && this.files.length > 0){
-    var reader = new FileReader();
-    reader.onload = (function(e) {
-      var o = null;
-      var validator = JSONSchema.getValidator(SCHEMA_ID);
-      try {
-        o = JSON.parse(e.target.result);
-      } catch (e) {
-        console.log("Failed to parse JSON string. " + e.toString());
-      }
-      if (validator !== null && validator(o)){
-        // TODO: Validate 'id' and 'version' properties.
-        CTRLPalettesStore.obj = o.paletteStore;
-        CTRLBanksStore.obj = o.bankStore;
-        if ("nametableStore" in o)
-          CTRLNameTablesStore.obj = o.nametableStore;
-      }
-      if (this.parentNode.nodeName.toLowerCase() === "form"){
-        this.parentNode.reset();
-      } else {
-        console.log("WARNING: Parent node is NOT a <form> element.");
-      }
-    }).bind(this);
-    reader.readAsText(this.files[0]);
-  } else {
-    console.log("Project file not found or no file selected.");
-  }
-}
 
 function HANDLE_SurfChange(surf){
   var enableclass = "";
