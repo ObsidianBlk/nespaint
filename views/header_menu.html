@@ -9,6 +9,12 @@
         <form>
           <input type="file" class="project-loader" accept="text/plain" style="display:none;"></input>
         </form>
+        <li class="pure-menu-item" emit="modal-open" emit-args='{"cls":".new-project-modal"}'>
+          <a href="#" class="pure-menu-link">
+            <i class="fa fa-file-alt"></i>
+            New Project
+          </a>
+        </li>
         <li class="pure-menu-item" emit="load-project"> 
           <a href="#" class="pure-menu-link">
             <i class="fa fa-folder-open"></i>

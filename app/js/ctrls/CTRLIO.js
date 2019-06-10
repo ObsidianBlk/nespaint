@@ -99,6 +99,17 @@ function HANDLE_FileDrop(e){
 }
 
 
+function HANDLE_NewProject(){
+  GlobalEvents.emit("modal-close");
+  CTRLNameTablesStore.clear();
+  CTRLBanksStore.clear();
+  CTRLPalettesStore.clear();
+
+  CTRLPalettesStore.createPalette("Palette 1");
+  CTRLBanksStore.createBank("Bank 1");
+}
+
+
 function HANDLE_SaveProject(e){
   //var a = document.createElement("a");
   var file = new Blob([JSONFromProject()], {type: "text/plain"});
@@ -246,6 +257,7 @@ class CTRLIO{
     GlobalEvents.listen("load-project", HANDLE_LoadProjectRequest);
     GlobalEvents.listen("export-pal-asm", HANDLE_ExportPalASM);
     GlobalEvents.listen("export-nametable", HANDLE_ExportNameTableASM);
+    GlobalEvents.listen("new-project", HANDLE_NewProject);
 
     var input = document.querySelectorAll("input.project-loader");
     if (input.length > 0){
