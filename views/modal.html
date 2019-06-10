@@ -4,6 +4,7 @@
   </div>
 </div>
 
+<%- include("modals/about.html", {version:version, author:author, license:license, description:description}); %>
 <%- include("modals/storeadd.html", {stores:[
   {"modalclass":"palettes-store-add", "title":"New Palette Name", "addevent":"palstore-add"},
   {"modalclass":"banks-store-add", "title":"New Bank Name", "addevent":"bankstore-add"},

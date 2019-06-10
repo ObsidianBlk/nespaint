@@ -104,7 +104,7 @@ app.use("/app/css/nespaint.css", function(req, res){
   res.send(new Buffer.from(css_output));
 });
 app.get('/', function(req, res){
-  res.render('index.html', {version:GenVersion(), author:package.author});
+  res.render('index.html', {version:GenVersion(), author:package.author, description:package.description, license:package.license});
 });
 
 
